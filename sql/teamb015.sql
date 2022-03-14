@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 13, 2022 at 06:50 PM
+-- Generation Time: Mar 14, 2022 at 09:58 AM
 -- Server version: 5.5.68-MariaDB
 -- PHP Version: 8.0.16
 
@@ -161,10 +161,31 @@ CREATE TABLE `problems` (
   `employee` int(11) NOT NULL,
   `assigned_to` int(11) DEFAULT NULL,
   `problem_type` varchar(45) DEFAULT NULL,
-  `solved` bit(1) NOT NULL DEFAULT b'0',
-  `closed` bit(1) NOT NULL DEFAULT b'0',
+  `solved` tinyint(1) NOT NULL DEFAULT '0',
+  `closed` tinyint(1) NOT NULL DEFAULT '0',
   `closed_on` date DEFAULT NULL,
   `opened_on` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `problem_status`
+--
+
+CREATE TABLE `problem_status` (
+  `status` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `problem_status_relation`
+--
+
+CREATE TABLE `problem_status_relation` (
+  `problem_id` int(11) NOT NULL,
+  `status` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -328,6 +349,20 @@ ALTER TABLE `problems`
   ADD KEY `FK_96` (`last_reviewed_by`);
 
 --
+-- Indexes for table `problem_status`
+--
+ALTER TABLE `problem_status`
+  ADD PRIMARY KEY (`status`);
+
+--
+-- Indexes for table `problem_status_relation`
+--
+ALTER TABLE `problem_status_relation`
+  ADD PRIMARY KEY (`problem_id`),
+  ADD KEY `FK_223` (`problem_id`),
+  ADD KEY `FK_230` (`status`);
+
+--
 -- Indexes for table `problem_types`
 --
 ALTER TABLE `problem_types`
@@ -437,8 +472,8 @@ ALTER TABLE `hardware_relation`
 -- Constraints for table `job_info`
 --
 ALTER TABLE `job_info`
-  ADD CONSTRAINT `FK_202` FOREIGN KEY (`department`) REFERENCES `job_title` (`title`),
-  ADD CONSTRAINT `FK_205` FOREIGN KEY (`job_title`) REFERENCES `departments` (`name`),
+  ADD CONSTRAINT `FK_205` FOREIGN KEY (`job_title`) REFERENCES `job_title` (`title`),
+  ADD CONSTRAINT `FK_202` FOREIGN KEY (`department`) REFERENCES `departments` (`name`),
   ADD CONSTRAINT `FK_208` FOREIGN KEY (`id`) REFERENCES `employees` (`id`);
 
 --
@@ -458,6 +493,13 @@ ALTER TABLE `problems`
   ADD CONSTRAINT `FK_83` FOREIGN KEY (`assigned_to`) REFERENCES `employees` (`id`),
   ADD CONSTRAINT `FK_91` FOREIGN KEY (`employee`) REFERENCES `employees` (`id`),
   ADD CONSTRAINT `FK_94` FOREIGN KEY (`last_reviewed_by`) REFERENCES `employees` (`id`);
+
+--
+-- Constraints for table `problem_status_relation`
+--
+ALTER TABLE `problem_status_relation`
+  ADD CONSTRAINT `FK_221` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`id`),
+  ADD CONSTRAINT `FK_228` FOREIGN KEY (`status`) REFERENCES `problem_status` (`status`);
 
 --
 -- Constraints for table `software`
