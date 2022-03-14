@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 13, 2022 at 11:20 PM
+-- Generation Time: Mar 14, 2022 at 01:55 PM
 -- Server version: 5.5.68-MariaDB
 -- PHP Version: 8.0.16
 
@@ -291,8 +291,8 @@ CREATE TABLE `problems` (
   `employee` int(11) NOT NULL,
   `assigned_to` int(11) DEFAULT NULL,
   `problem_type` varchar(45) DEFAULT NULL,
-  `solved` bit(1) NOT NULL DEFAULT b'0',
-  `closed` bit(1) NOT NULL DEFAULT b'0',
+  `solved` tinyint(1) NOT NULL DEFAULT '0',
+  `closed` tinyint(1) NOT NULL DEFAULT '0',
   `closed_on` date DEFAULT NULL,
   `opened_on` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -302,11 +302,50 @@ CREATE TABLE `problems` (
 --
 
 INSERT INTO `problems` (`id`, `name`, `hardware`, `software`, `os`, `last_reviewed_by`, `employee`, `assigned_to`, `problem_type`, `solved`, `closed`, `closed_on`, `opened_on`) VALUES
-(1, 'Dropped laptop in water.', 1, NULL, 'Windows 10', 1, 6, NULL, 'Hardware', b'1', b'1', '2022-03-06', '2022-03-02'),
-(2, 'Chrome keeps freezing.', 6, 2, 'Windows 10', 2, 7, NULL, 'Software', b'1', b'1', '2022-03-10', '2022-02-22'),
-(3, 'Bluetooth not connecting to laptop.', 2, NULL, 'macOS 12', NULL, 7, 3, 'Network', b'0', b'0', NULL, '2022-03-02'),
-(4, 'Computer not booting up.', 6, NULL, 'Windows 11', 1, 6, 4, 'Hardware', b'0', b'0', NULL, '2022-03-01'),
-(5, 'Application crashes frequently.', 2, 1, 'macOS 12', NULL, 7, 2, 'Software', b'0', b'0', NULL, '2022-02-27');
+(1, 'Dropped laptop in water.', 1, NULL, 'Windows 10', 1, 6, NULL, 'Hardware', 1, 1, '2022-03-06', '2022-03-02'),
+(2, 'Chrome keeps freezing.', 6, 2, 'Windows 10', 2, 7, NULL, 'Software', 1, 1, '2022-03-10', '2022-02-22'),
+(3, 'Bluetooth not connecting to laptop.', 2, NULL, 'macOS 12', NULL, 7, 3, 'Network', 0, 0, NULL, '2022-03-02'),
+(4, 'Computer not booting up.', 6, NULL, 'Windows 11', 1, 6, 4, 'Hardware', 0, 0, NULL, '2022-03-01'),
+(5, 'Application crashes frequently.', 2, 1, 'macOS 12', NULL, 7, 2, 'Software', 0, 0, NULL, '2022-02-27');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `problem_status`
+--
+
+CREATE TABLE `problem_status` (
+  `status` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `problem_status`
+--
+
+INSERT INTO `problem_status` (`status`) VALUES
+('Awaiting support'),
+('Comments recieved'),
+('Pending solution');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `problem_status_relation`
+--
+
+CREATE TABLE `problem_status_relation` (
+  `problem_id` int(11) NOT NULL,
+  `status` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `problem_status_relation`
+--
+
+INSERT INTO `problem_status_relation` (`problem_id`, `status`) VALUES
+(3, 'Awaiting support'),
+(4, 'Awaiting support'),
+(5, 'Awaiting support');
 
 -- --------------------------------------------------------
 
@@ -527,6 +566,20 @@ ALTER TABLE `problems`
   ADD KEY `FK_96` (`last_reviewed_by`);
 
 --
+-- Indexes for table `problem_status`
+--
+ALTER TABLE `problem_status`
+  ADD PRIMARY KEY (`status`);
+
+--
+-- Indexes for table `problem_status_relation`
+--
+ALTER TABLE `problem_status_relation`
+  ADD PRIMARY KEY (`problem_id`),
+  ADD KEY `FK_223` (`problem_id`),
+  ADD KEY `FK_230` (`status`);
+
+--
 -- Indexes for table `problem_types`
 --
 ALTER TABLE `problem_types`
@@ -657,6 +710,13 @@ ALTER TABLE `problems`
   ADD CONSTRAINT `FK_83` FOREIGN KEY (`assigned_to`) REFERENCES `employees` (`id`),
   ADD CONSTRAINT `FK_91` FOREIGN KEY (`employee`) REFERENCES `employees` (`id`),
   ADD CONSTRAINT `FK_94` FOREIGN KEY (`last_reviewed_by`) REFERENCES `employees` (`id`);
+
+--
+-- Constraints for table `problem_status_relation`
+--
+ALTER TABLE `problem_status_relation`
+  ADD CONSTRAINT `FK_221` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`id`),
+  ADD CONSTRAINT `FK_228` FOREIGN KEY (`status`) REFERENCES `problem_status` (`status`);
 
 --
 -- Constraints for table `software`
