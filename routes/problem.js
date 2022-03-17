@@ -3,21 +3,95 @@ var router = express.Router();
 
 
 var conn  = require('../dbconfig');
- 
-/* GET user's home page */
-router.get('/', function(req, res, next) {
-    conn.query(`SELECT * FROM problems ORDER BY id desc`, function(err,rows) {
+
+// GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC EMPLOYEE
+// Restrict to Employees
+router.get('/reportedProblems', function(req, res, next) {
+    conn.query(`SELECT * FROM problems
+                WHERE status <> "Closed"
+                AND
+                reported_by = ?
+                ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
-            req.flash('error', err); 
+            console.error('Error: ' +  err); 
             res.render('problems',
-                        {page_title:"Customers - Node.js",data:''});   
+                        {page_title:"Open Reported Problems",data:''});   
         }else{
             res.render('problems',
-                        {page_title:"Customers - Node.js", data:rows});
+                        {page_title:"Open Reported Problems", data:rows});
         }
-         });
     });
+});
 
+// GET ALL PROBLEMS FOR A SPECIFIC EMPLOYEE
+// Restrict to Employees
+router.get('/allReportedProblems', function(req, res, next) {
+    conn.query(`SELECT * FROM problems
+                WHERE
+                reported_by = ?
+                ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
+        if(err){
+            console.error('Error: ' +  err); 
+            res.render('problems',
+                        {page_title:"My All Reported Problems",data:''});
+        }else{
+            res.render('problems',
+                        {page_title:"My All Reported Problems", data:rows});
+        }
+    });
+});
+
+// GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC SPECIALIST
+// Restrict to Specialists
+router.get('/assignedProblems', function(req, res, next) {
+    conn.query(`SELECT * FROM problems 
+                WHERE status <> "Closed"
+                AND
+                assigned_to = ?
+                ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
+        if(err){
+            console.error('Error: ' +  err); 
+            res.render('problems',
+                        {page_title:"Open Assigned Problems",data:''});   
+        }else{
+            res.render('problems',
+                        {page_title:"Open Assigned Problems", data:rows});
+        }
+    });
+});
+
+// GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC SPECIALIST
+// Restrict to Specialists
+router.get('/allAssignedProblems', function(req, res, next) {
+    conn.query(`SELECT * FROM problems 
+                WHERE
+                assigned_to = ?
+                ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
+        if(err){
+            console.error('Error: ' +  err); 
+            res.render('problems',
+                        {page_title:"My All Assigned Problems",data:''});
+        }else{
+            res.render('problems',
+                        {page_title:"My All Assigned Problems", data:rows});
+        }
+    });
+});
+
+
+// GET REGISTER OF ALL PROBLEMS
+router.get('/register', function(req, res, next) {
+    conn.query(`SELECT * FROM problems ORDER BY id DESC`, function(err, rows) {
+        if(err){
+            console.log('Error: ' + err); 
+            res.render('problems',
+                        {page_title:"Register of all Problems",data:''});   
+        }else{
+            res.render('problems',
+                        {page_title:"Register of all Problems", data:rows});
+        }
+    });
+});
 
 // SHOW ADD PROBLEM FORM
 router.get('/new', function(req, res, next){
@@ -50,7 +124,7 @@ router.post('/new', function(req, res, next){
                     problem,
                     function(err, result) {
                 if (err) {
-                    console.log('error', err)
+                    console.error('Error: ' + err)
 
                     // render to views/problem/add.ejs
                     res.render('customers/add', {
@@ -69,8 +143,9 @@ router.post('/new', function(req, res, next){
 
         errors.forEach(function(error) {
             error_msg += error.msg + '\n'
-        })                
-        req.flash('error', error_msg)        
+        })         
+
+        console.error('Error: ' + error_msg);
          
         res.render('problems/new', { 
             title: 'Submit New Problem',
@@ -82,8 +157,7 @@ router.post('/new', function(req, res, next){
     }
 })
  
-// TODO:
-//  restrict to Admin and Specialist only
+
 // EDIT PROBLEM POST ACTION
 // SHOW EDIT PROBLEM FORM
 router.get('/edit/(:id)', function(req, res, next){
@@ -93,7 +167,7 @@ router.get('/edit/(:id)', function(req, res, next){
 
             // if problem not found
             if (rows.length <= 0) {
-                req.flash('error', 'Problems not found with id = ' + req.params.id)
+                console.log('Error: Problems not found with id = ' + req.params.id)
                 res.redirect('/problems')
             }
             else { 
@@ -126,7 +200,7 @@ router.post('/update/:id', function(req, res, next) {
                     function(err, result) {
 
                 if (err) {
-                    req.flash('error', err)
+                    console.error('Error: ' + err)
 
                     // render to views/problems/new.ejs
                     res.render('problem/edit', {
@@ -148,7 +222,7 @@ router.post('/update/:id', function(req, res, next) {
         errors.forEach(function(error) {
             error_msg += error.msg + '\n'
         })
-        console.log('Error: ' + error_msg)
+        console.error('Error: ' + error_msg)
          
         res.render('problem/edit', { 
             title: 'Edit Problem',
