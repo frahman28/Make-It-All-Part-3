@@ -1,0 +1,29 @@
+body {
+    background-color: #f1f1f1;
+}
+
+.logo {
+    max-width: 100%;
+    height: auto;
+  }
+
+.image-div {
+    background-color: #d3d3d3;
+}
+
+.status {
+    padding: .5rem;
+    border-radius: 1rem;
+}
+
+.all-problem-table td, th {
+    text-align: center;
+    vertical-align: middle;
+    background-color: white;
+}
+
+.my-problem-table td, th {
+    text-align: center;
+    vertical-align: middle;
+    background-color: white;
+}
