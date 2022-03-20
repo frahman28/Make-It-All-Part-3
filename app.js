@@ -1,26 +1,49 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
+var createError  = require('http-errors');
+var express      = require('express');
+var path         = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var morgan       = require("morgan");
+var helmet       = require("helmet");
+var cors         = require("cors");
+var ejs          = require('ejs');
+const session    = require('express-session');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var indexRouter  = require('./routes/auth');
+var usersRouter  = require('./routes/employees');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
+app.set('view engine', 'ejs');
 app.use(express.json());
+
+// for better display in the console
+app.use(morgan("common"));
+
+// for HTTP protection
+app.use(helmet());
+
+// for cros-origin sources
+app.use(cors());
+
 app.use(express.urlencoded({ extended: false }));
+
+// cookie parser middleware
 app.use(cookieParser());
+
+// images
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+	secret: 'team015-make-it-all-2022',
+	resave: true,
+	saveUninitialized: true
+}));
+
+// Add middleware
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/employee', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
