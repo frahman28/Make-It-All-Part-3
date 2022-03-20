@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 19, 2022 at 11:34 AM
+-- Generation Time: Mar 20, 2022 at 08:34 PM
 -- Server version: 5.5.68-MariaDB
 -- PHP Version: 8.0.17
 
@@ -57,10 +57,12 @@ CREATE TABLE `departments` (
 --
 
 CREATE TABLE `employees` (
-  `id` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL,
   `name` text NOT NULL,
   `role_id` int(11) NOT NULL,
-  `extension` varchar(14) DEFAULT NULL
+  `extension` varchar(14) DEFAULT NULL,
+  `external` tinyint(1) NOT NULL DEFAULT '0',
+  `available` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -70,7 +72,7 @@ CREATE TABLE `employees` (
 --
 
 CREATE TABLE `employee_problem_type_relation` (
-  `id` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL,
   `problem_type_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -81,7 +83,7 @@ CREATE TABLE `employee_problem_type_relation` (
 --
 
 CREATE TABLE `hardware` (
-  `id` int(11) NOT NULL,
+  `hardware_id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `type_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -93,7 +95,7 @@ CREATE TABLE `hardware` (
 --
 
 CREATE TABLE `hardware_relation` (
-  `id` int(11) NOT NULL,
+  `hardware_id` int(11) NOT NULL,
   `serial` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -104,7 +106,7 @@ CREATE TABLE `hardware_relation` (
 --
 
 CREATE TABLE `job_info` (
-  `id` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL,
   `title_id` int(11) NOT NULL,
   `department_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -127,8 +129,9 @@ CREATE TABLE `job_title` (
 --
 
 CREATE TABLE `login_info` (
-  `id` int(11) NOT NULL,
-  `password` text NOT NULL
+  `employee_id` int(11) NOT NULL,
+  `password` text NOT NULL,
+  `username` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -138,7 +141,7 @@ CREATE TABLE `login_info` (
 --
 
 CREATE TABLE `os` (
-  `id` int(11) NOT NULL,
+  `os_id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -149,7 +152,7 @@ CREATE TABLE `os` (
 --
 
 CREATE TABLE `problems` (
-  `id` int(11) NOT NULL,
+  `problem_id` int(11) NOT NULL,
   `name` text NOT NULL,
   `problem_type_id` int(11) NOT NULL,
   `software_id` int(11) DEFAULT NULL,
@@ -207,7 +210,7 @@ CREATE TABLE `problem_types` (
 --
 
 CREATE TABLE `software` (
-  `id` int(11) NOT NULL,
+  `software_id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `type_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -219,7 +222,7 @@ CREATE TABLE `software` (
 --
 
 CREATE TABLE `software_relation` (
-  `id` int(11) NOT NULL,
+  `software_id` int(11) NOT NULL,
   `license` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -286,37 +289,37 @@ ALTER TABLE `departments`
 -- Indexes for table `employees`
 --
 ALTER TABLE `employees`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`employee_id`),
   ADD KEY `FK_311` (`role_id`);
 
 --
 -- Indexes for table `employee_problem_type_relation`
 --
 ALTER TABLE `employee_problem_type_relation`
-  ADD PRIMARY KEY (`id`,`problem_type_id`),
+  ADD PRIMARY KEY (`employee_id`,`problem_type_id`),
   ADD KEY `FK_347` (`problem_type_id`),
-  ADD KEY `FK_68` (`id`);
+  ADD KEY `FK_68` (`employee_id`);
 
 --
 -- Indexes for table `hardware`
 --
 ALTER TABLE `hardware`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`hardware_id`),
   ADD KEY `FK_305` (`type_id`);
 
 --
 -- Indexes for table `hardware_relation`
 --
 ALTER TABLE `hardware_relation`
-  ADD PRIMARY KEY (`id`,`serial`),
-  ADD KEY `FK_260` (`id`);
+  ADD PRIMARY KEY (`hardware_id`,`serial`),
+  ADD KEY `FK_260` (`hardware_id`);
 
 --
 -- Indexes for table `job_info`
 --
 ALTER TABLE `job_info`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `FK_210` (`id`),
+  ADD PRIMARY KEY (`employee_id`),
+  ADD KEY `FK_210` (`employee_id`),
   ADD KEY `FK_325` (`title_id`),
   ADD KEY `FK_330` (`department_id`);
 
@@ -331,21 +334,22 @@ ALTER TABLE `job_title`
 -- Indexes for table `login_info`
 --
 ALTER TABLE `login_info`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `FK_122` (`id`);
+  ADD PRIMARY KEY (`employee_id`),
+  ADD UNIQUE KEY `unique_username` (`username`),
+  ADD KEY `FK_122` (`employee_id`);
 
 --
 -- Indexes for table `os`
 --
 ALTER TABLE `os`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`os_id`),
   ADD UNIQUE KEY `unique_name` (`name`);
 
 --
 -- Indexes for table `problems`
 --
 ALTER TABLE `problems`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`problem_id`),
   ADD KEY `FK_190` (`os_id`),
   ADD KEY `FK_266` (`hardware_id`,`serial`),
   ADD KEY `FK_277` (`software_id`,`license`),
@@ -381,15 +385,15 @@ ALTER TABLE `problem_types`
 -- Indexes for table `software`
 --
 ALTER TABLE `software`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`software_id`),
   ADD KEY `FK_319` (`type_id`);
 
 --
 -- Indexes for table `software_relation`
 --
 ALTER TABLE `software_relation`
-  ADD PRIMARY KEY (`id`,`license`),
-  ADD KEY `FK_272` (`id`);
+  ADD PRIMARY KEY (`software_id`,`license`),
+  ADD KEY `FK_272` (`software_id`);
 
 --
 -- Indexes for table `solutions`
@@ -439,7 +443,7 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `hardware`
 --
 ALTER TABLE `hardware`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `hardware_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `job_title`
@@ -451,13 +455,13 @@ ALTER TABLE `job_title`
 -- AUTO_INCREMENT for table `os`
 --
 ALTER TABLE `os`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `os_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `problems`
 --
 ALTER TABLE `problems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `problem_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `problem_status`
@@ -475,7 +479,7 @@ ALTER TABLE `problem_types`
 -- AUTO_INCREMENT for table `software`
 --
 ALTER TABLE `software`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `software_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `type_of_hardware`
@@ -497,8 +501,8 @@ ALTER TABLE `type_of_software`
 -- Constraints for table `comments`
 --
 ALTER TABLE `comments`
-  ADD CONSTRAINT `FK_113` FOREIGN KEY (`author`) REFERENCES `employees` (`id`),
-  ADD CONSTRAINT `FK_298` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`id`);
+  ADD CONSTRAINT `FK_113` FOREIGN KEY (`author`) REFERENCES `employees` (`employee_id`),
+  ADD CONSTRAINT `FK_298` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`problem_id`);
 
 --
 -- Constraints for table `employees`
@@ -511,7 +515,7 @@ ALTER TABLE `employees`
 --
 ALTER TABLE `employee_problem_type_relation`
   ADD CONSTRAINT `FK_345` FOREIGN KEY (`problem_type_id`) REFERENCES `problem_types` (`problem_type_id`),
-  ADD CONSTRAINT `FK_66` FOREIGN KEY (`id`) REFERENCES `employees` (`id`);
+  ADD CONSTRAINT `FK_66` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`);
 
 --
 -- Constraints for table `hardware`
@@ -523,13 +527,13 @@ ALTER TABLE `hardware`
 -- Constraints for table `hardware_relation`
 --
 ALTER TABLE `hardware_relation`
-  ADD CONSTRAINT `FK_258` FOREIGN KEY (`id`) REFERENCES `hardware` (`id`);
+  ADD CONSTRAINT `FK_258` FOREIGN KEY (`hardware_id`) REFERENCES `hardware` (`hardware_id`);
 
 --
 -- Constraints for table `job_info`
 --
 ALTER TABLE `job_info`
-  ADD CONSTRAINT `FK_208` FOREIGN KEY (`id`) REFERENCES `employees` (`id`),
+  ADD CONSTRAINT `FK_208` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
   ADD CONSTRAINT `FK_323` FOREIGN KEY (`title_id`) REFERENCES `job_title` (`title_id`),
   ADD CONSTRAINT `FK_328` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`);
 
@@ -537,25 +541,25 @@ ALTER TABLE `job_info`
 -- Constraints for table `login_info`
 --
 ALTER TABLE `login_info`
-  ADD CONSTRAINT `FK_120` FOREIGN KEY (`id`) REFERENCES `employees` (`id`);
+  ADD CONSTRAINT `FK_120` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`);
 
 --
 -- Constraints for table `problems`
 --
 ALTER TABLE `problems`
-  ADD CONSTRAINT `FK_188` FOREIGN KEY (`os_id`) REFERENCES `os` (`id`),
-  ADD CONSTRAINT `FK_263` FOREIGN KEY (`hardware_id`,`serial`) REFERENCES `hardware_relation` (`id`, `serial`),
-  ADD CONSTRAINT `FK_274` FOREIGN KEY (`software_id`,`license`) REFERENCES `software_relation` (`id`, `license`),
+  ADD CONSTRAINT `FK_188` FOREIGN KEY (`os_id`) REFERENCES `os` (`os_id`),
+  ADD CONSTRAINT `FK_263` FOREIGN KEY (`hardware_id`,`serial`) REFERENCES `hardware_relation` (`hardware_id`, `serial`),
+  ADD CONSTRAINT `FK_274` FOREIGN KEY (`software_id`,`license`) REFERENCES `software_relation` (`software_id`, `license`),
   ADD CONSTRAINT `FK_348` FOREIGN KEY (`problem_type_id`) REFERENCES `problem_types` (`problem_type_id`),
-  ADD CONSTRAINT `FK_83` FOREIGN KEY (`assigned_to`) REFERENCES `employees` (`id`),
-  ADD CONSTRAINT `FK_91` FOREIGN KEY (`employee`) REFERENCES `employees` (`id`),
-  ADD CONSTRAINT `FK_94` FOREIGN KEY (`last_reviewed_by`) REFERENCES `employees` (`id`);
+  ADD CONSTRAINT `FK_83` FOREIGN KEY (`assigned_to`) REFERENCES `employees` (`employee_id`),
+  ADD CONSTRAINT `FK_91` FOREIGN KEY (`employee`) REFERENCES `employees` (`employee_id`),
+  ADD CONSTRAINT `FK_94` FOREIGN KEY (`last_reviewed_by`) REFERENCES `employees` (`employee_id`);
 
 --
 -- Constraints for table `problem_status_relation`
 --
 ALTER TABLE `problem_status_relation`
-  ADD CONSTRAINT `FK_294` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`id`),
+  ADD CONSTRAINT `FK_294` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`problem_id`),
   ADD CONSTRAINT `FK_335` FOREIGN KEY (`status_id`) REFERENCES `problem_status` (`status_id`);
 
 --
@@ -574,12 +578,12 @@ ALTER TABLE `software`
 -- Constraints for table `software_relation`
 --
 ALTER TABLE `software_relation`
-  ADD CONSTRAINT `FK_270` FOREIGN KEY (`id`) REFERENCES `software` (`id`);
+  ADD CONSTRAINT `FK_270` FOREIGN KEY (`software_id`) REFERENCES `software` (`software_id`);
 
 --
 -- Constraints for table `solutions`
 --
 ALTER TABLE `solutions`
   ADD CONSTRAINT `FK_126` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`),
-  ADD CONSTRAINT `FK_290` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`id`);
+  ADD CONSTRAINT `FK_290` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`problem_id`);
 COMMIT;
