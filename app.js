@@ -4,8 +4,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// uncomment if want to reset the database
+const c          = require('./dbcreate');
+
+var indexRouter  = require('./routes/auth');
+var usersRouter  = require('./routes/employees');
 
 var app = express();
 
