@@ -7,6 +7,7 @@
 -- Server version: 5.5.68-MariaDB
 -- PHP Version: 8.0.17
 
+SET foreign_key_checks = 0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -16,6 +17,27 @@ SET time_zone = "+00:00";
 --
 
 -- --------------------------------------------------------
+
+DROP TABLE IF EXISTS `comments`,
+                    `company_roles`,
+                    `departments`,
+                    `employees`,
+                    `employee_problem_type_relation`,
+                    `hardware`,
+                    `hardware_relation`,
+                    `job_info`,
+                    `job_title`,
+                    `login_info`,
+                    `os`,
+                    `problems`,
+                    `problem_status`,
+                    `problem_status_relation`,
+                    `problem_types`,
+                    `software`,
+                    `software_relation`,
+                    `solutions`,
+                    `type_of_hardware`,
+                    `type_of_software`;
 
 --
 -- Table structure for table `comments`
