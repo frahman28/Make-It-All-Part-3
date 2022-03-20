@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
+/* GET dashboard page. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  var userName = res.user.userName;
+  res.render('dashboard',
+    { title: 'Hello ' + userName });
 });
 
 module.exports = router;
