@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 19, 2022 at 09:51 PM
+-- Generation Time: Mar 20, 2022 at 08:52 PM
 -- Server version: 5.5.68-MariaDB
 -- PHP Version: 8.0.17
 
@@ -50,20 +50,20 @@ INSERT INTO `departments` (`department_id`, `name`) VALUES
 -- Dumping data for table `employees`
 --
 
-INSERT INTO `employees` (`id`, `name`, `role_id`, `extension`) VALUES
-(126711, 'Bert Thompson', 5, '101'),
-(228787, 'Clara Hart', 5, '102'),
-(329922, 'Nick Jefferson', 5, '103'),
-(400393, 'Terry Perry', 2, '104'),
-(573827, 'Dave Davidson', 2, '105'),
-(609093, 'Lisa Poole', 3, '106'),
-(737277, 'Johnny Ipkiss', 3, '107');
+INSERT INTO `employees` (`employee_id`, `name`, `role_id`, `extension`, `external`, `available`) VALUES
+(126711, 'Bert Thompson', 5, '101', 0, 1),
+(228787, 'Clara Hart', 5, '102', 0, 1),
+(329922, 'Nick Jefferson', 5, '103', 0, 1),
+(400393, 'Terry Perry', 2, '104', 0, 1),
+(573827, 'Dave Davidson', 2, '105', 0, 1),
+(609093, 'Lisa Poole', 3, '106', 0, 1),
+(737277, 'Johnny Ipkiss', 3, '107', 0, 1);
 
 --
 -- Dumping data for table `employee_problem_type_relation`
 --
 
-INSERT INTO `employee_problem_type_relation` (`id`, `problem_type_id`) VALUES
+INSERT INTO `employee_problem_type_relation` (`employee_id`, `problem_type_id`) VALUES
 (126711, 1),
 (228787, 2),
 (329922, 3);
@@ -72,7 +72,7 @@ INSERT INTO `employee_problem_type_relation` (`id`, `problem_type_id`) VALUES
 -- Dumping data for table `hardware`
 --
 
-INSERT INTO `hardware` (`id`, `name`, `type_id`) VALUES
+INSERT INTO `hardware` (`hardware_id`, `name`, `type_id`) VALUES
 (1, 'Jabra Talk 15', 1),
 (2, 'Lenovo LP7', 1),
 (3, 'iPad Air', 2),
@@ -92,7 +92,7 @@ INSERT INTO `hardware` (`id`, `name`, `type_id`) VALUES
 -- Dumping data for table `hardware_relation`
 --
 
-INSERT INTO `hardware_relation` (`id`, `serial`) VALUES
+INSERT INTO `hardware_relation` (`hardware_id`, `serial`) VALUES
 (1, '127827'),
 (2, '726188'),
 (3, '898181'),
@@ -112,7 +112,7 @@ INSERT INTO `hardware_relation` (`id`, `serial`) VALUES
 -- Dumping data for table `job_info`
 --
 
-INSERT INTO `job_info` (`id`, `title_id`, `department_id`) VALUES
+INSERT INTO `job_info` (`employee_id`, `title_id`, `department_id`) VALUES
 (126711, 5, 2),
 (228787, 5, 2),
 (329922, 5, 2),
@@ -136,20 +136,20 @@ INSERT INTO `job_title` (`title_id`, `title`) VALUES
 -- Dumping data for table `login_info`
 --
 
-INSERT INTO `login_info` (`id`, `password`) VALUES
-(126711, 'specialist'),
-(228787, 'specialist'),
-(329922, 'specialist'),
-(400393, 'adviser'),
-(573827, 'adviser'),
-(609093, 'employee'),
-(737277, 'employee');
+INSERT INTO `login_info` (`employee_id`, `password`, `username`) VALUES
+(126711, 'specialist', 'bthompson'),
+(228787, 'specialist', 'chart'),
+(329922, 'specialist', 'njefferson'),
+(400393, 'adviser', 'tperry'),
+(573827, 'adviser', 'bigddavidson'),
+(609093, 'employee', 'lpoole'),
+(737277, 'employee', 'jipkiss');
 
 --
 -- Dumping data for table `os`
 --
 
-INSERT INTO `os` (`id`, `name`) VALUES
+INSERT INTO `os` (`os_id`, `name`) VALUES
 (1, 'Android'),
 (2, 'iOS 15'),
 (3, 'macOS 12'),
@@ -161,7 +161,7 @@ INSERT INTO `os` (`id`, `name`) VALUES
 -- Dumping data for table `problems`
 --
 
-INSERT INTO `problems` (`id`, `name`, `problem_type_id`, `software_id`, `hardware_id`, `license`, `serial`, `last_reviewed_by`, `employee`, `assigned_to`, `solved`, `closed`, `closed_on`, `opened_on`, `os_id`) VALUES
+INSERT INTO `problems` (`problem_id`, `name`, `problem_type_id`, `software_id`, `hardware_id`, `license`, `serial`, `last_reviewed_by`, `employee`, `assigned_to`, `solved`, `closed`, `closed_on`, `opened_on`, `os_id`) VALUES
 (1, 'Dropped laptop in water.', 1, NULL, 5, NULL, '299388', 126711, 609093, NULL, 1, 1, '2022-03-15', '2022-03-09', 4),
 (2, 'Chrome keeps freezing.', 2, 1, 9, '122611', '726188', 228787, 737277, NULL, 1, 1, '2022-03-09', '2022-03-03', 6),
 (3, 'Bluetooth not connecting to laptop.', 3, NULL, 1, NULL, '127827', NULL, 737277, 329922, 0, 0, NULL, '2022-03-09', 5),
@@ -199,7 +199,7 @@ INSERT INTO `problem_types` (`problem_type_id`, `problem_type`, `child_of`) VALU
 -- Dumping data for table `software`
 --
 
-INSERT INTO `software` (`id`, `name`, `type_id`) VALUES
+INSERT INTO `software` (`software_id`, `name`, `type_id`) VALUES
 (1, 'Google Chrome', 1),
 (2, 'Microsoft Excel', 1),
 (3, 'Microsoft Teams', 1),
@@ -210,7 +210,7 @@ INSERT INTO `software` (`id`, `name`, `type_id`) VALUES
 -- Dumping data for table `software_relation`
 --
 
-INSERT INTO `software_relation` (`id`, `license`) VALUES
+INSERT INTO `software_relation` (`software_id`, `license`) VALUES
 (1, '122611'),
 (2, '898282'),
 (3, '881821'),
