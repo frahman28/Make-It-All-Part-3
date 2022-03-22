@@ -1,14 +1,19 @@
 var express = require('express');
-var router = express.Router();
+var app = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  var userName = res.user.userName;
-  res.render('dashboard',
-    { title: 'Hello ' + userName });
+app.get('/', function(req, res, next) {
+  if (req.session.loggedin) {
+    res.send('Welcome back, ' + req.session.username + '!');
+  } else {
+    res.redirect('/login');
+  }
+  res.end();
+});
 
-    // retrieve problems
+app.get('/login', function(req, res, next) {
+  res.render('login');
 });
 
 
-module.exports = router;
+module.exports = app;
