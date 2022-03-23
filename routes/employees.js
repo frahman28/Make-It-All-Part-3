@@ -15,4 +15,20 @@ router.get("/api/register", (req, res) => {
   });
 });
 
+router.get("/api/edit", (req, res) => {
+  console.log("TEST");
+  if (req.query.employee_id) {
+    conn.query(
+      "SELECT * FROM employees WHERE employee_id = ?",
+      req.query.employee_id,
+      function (err, results) {
+        if (err) throw err;
+        res.send(results);
+      }
+    );
+  } else {
+    res.send([]);
+  }
+});
+
 module.exports = router;
