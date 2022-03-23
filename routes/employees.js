@@ -49,4 +49,17 @@ router.put("/api/update/:employee_id", (req, res) => {
   );
 });
 
+router.delete("/api/:id", (req, res) => {
+  if (req.params.id) {
+    conn.query(
+      "DELETE FROM employees WHERE employee_id = ?",
+      req.params.id,
+      function (err) {
+        if (err) throw err;
+        res.send("Deleted");
+      }
+    );
+  }
+});
+
 module.exports = router;
