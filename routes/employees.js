@@ -11,7 +11,7 @@ router.get("/dashboard", (req, res, next) => {
 router.get("/api", (req, res) => {
   conn.query("SELECT * FROM employees", function (err, results) {
     if (err) throw err;
-    res.send(results);
+    res.json({ success: true, data: results });
   });
 });
 
