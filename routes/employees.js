@@ -23,11 +23,15 @@ router.get("/api/:employee_id", (req, res) => {
       employeeID,
       function (err, results) {
         if (err) throw err;
-        res.send(results);
+        if (results.length > 0) {
+          res.json({ success: true, data: results[0] });
+        } else {
+          res.json({ success: true, data: null });
+        }
       }
     );
   } else {
-    res.send([]);
+    res.json({ success: false, msg: "Employee ID not set" });
   }
 });
 
