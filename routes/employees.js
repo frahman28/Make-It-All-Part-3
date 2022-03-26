@@ -32,11 +32,8 @@ router.get("/api/:employee_id", (req, res) => {
 });
 
 router.put("/api/:employee_id", (req, res) => {
-  console.log(req.body);
   let { name, extension, external, available } = req.body;
-  console.log(name, extension, external, available);
   const employeeID = req.params.employee_id;
-  console.log("I'm here");
   conn.query(
     "SELECT * FROM employees WHERE employee_id = ?",
     employeeID,
@@ -90,7 +87,7 @@ router.delete("/api/:employee_id", (req, res) => {
       employeeID,
       function (err) {
         if (err) throw err;
-        res.send("Deleted");
+        return res.json({ success: false, msg: "Employee deleted" });
       }
     );
   }
