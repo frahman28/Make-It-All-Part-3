@@ -11,7 +11,7 @@ router.get("/dashboard", (req, res, next) => {
 router.get("/api", (req, res) => {
   conn.query("SELECT * FROM employees", function (err, results) {
     if (err) throw err;
-    res.json({ success: true, data: results });
+    return res.json({ success: true, data: results });
   });
 });
 
@@ -24,14 +24,14 @@ router.get("/api/:employee_id", (req, res) => {
       function (err, results) {
         if (err) throw err;
         if (results.length > 0) {
-          res.json({ success: true, data: results[0] });
+          return res.json({ success: true, data: results[0] });
         } else {
-          res.json({ success: true, data: null });
+          return res.json({ success: true, data: null });
         }
       }
     );
   } else {
-    res.json({ success: false, msg: "Employee ID not set" });
+    return res.json({ success: false, msg: "Employee ID not set" });
   }
 });
 
@@ -76,7 +76,7 @@ router.put("/api/:employee_id", (req, res) => {
         [toUpdateWith, toUpdateWith.employee_id],
         function (err, results) {
           if (err) throw err;
-          res.json({ success: true, msg: "Employee updated" });
+          return res.json({ success: true, msg: "Employee updated" });
         }
       );
     }
