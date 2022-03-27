@@ -8,8 +8,24 @@ router.get("/dashboard", (req, res, next) => {
   res.send("respond with a resource");
 });
 
+const getSQLForJoinEmployee = (whereClause = "") => {
+  const sql = `
+  SELECT 
+  employees.employee_id, employees.name, employees.extension, employees.external, employees.available, 
+  departments.name AS "department_name", 
+  job_title.title, 
+  company_roles.role
+  FROM employees 
+  LEFT JOIN job_info ON employees.employee_id = job_info.employee_id#
+  LEFT JOIN departments ON job_info.department_id = departments.department_id
+  LEFT JOIN job_title ON job_info.title_id = job_title.title_id
+  LEFT JOIN company_roles ON employees.role_id = company_roles.role_id
+  ${whereClause};`;
+  return sql;
+};
+
 router.get("/api", (req, res) => {
-  conn.query("SELECT * FROM employees", function (err, results) {
+  conn.query(getSQLForJoinEmployee(), function (err, results) {
     if (err) throw err;
     return res.json({ success: true, data: results });
   });
@@ -19,7 +35,7 @@ router.get("/api/:employee_id", (req, res) => {
   const employeeID = req.params.employee_id;
   if (employeeID) {
     conn.query(
-      "SELECT * FROM employees WHERE employee_id = ?",
+      getSQLForJoinEmployee("WHERE employees.employee_id = ?"),
       employeeID,
       function (err, results) {
         if (err) throw err;
