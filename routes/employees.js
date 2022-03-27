@@ -134,4 +134,52 @@ router.put("/api/:employee_id/role/:role_id", (req, res) => {
   );
 });
 
+router.put("/api/:employee_id/department/:department_id", (req, res) => {
+  const employeeID = req.params.employee_id;
+  const roleID = req.params.department_id;
+  toUpdateWith = {
+    employee_id: employeeID,
+    department_id: roleID,
+  };
+  conn.query(
+    "UPDATE job_info SET ? WHERE employee_id = ?",
+    [toUpdateWith, toUpdateWith.employee_id],
+    function (err, results) {
+      if (err) throw err;
+      if (results.affectedRows > 0) {
+        return res.json({ success: true, msg: "Employee department updated" });
+      } else {
+        return res.json({
+          success: false,
+          msg: "Employee department update failed",
+        });
+      }
+    }
+  );
+});
+
+router.put("/api/:employee_id/title/:title_id", (req, res) => {
+  const employeeID = req.params.employee_id;
+  const roleID = req.params.title_id;
+  toUpdateWith = {
+    employee_id: employeeID,
+    title_id: roleID,
+  };
+  conn.query(
+    "UPDATE job_info SET ? WHERE employee_id = ?",
+    [toUpdateWith, toUpdateWith.employee_id],
+    function (err, results) {
+      if (err) throw err;
+      if (results.affectedRows > 0) {
+        return res.json({ success: true, msg: "Employee title updated" });
+      } else {
+        return res.json({
+          success: false,
+          msg: "Employee title update failed",
+        });
+      }
+    }
+  );
+});
+
 module.exports = router;
