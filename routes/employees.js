@@ -42,7 +42,7 @@ router.get("/api/:employee_id", (req, res) => {
         if (results.length > 0) {
           return res.json({ success: true, data: results[0] });
         } else {
-          return res.json({ success: true, data: null });
+          return res.json({ success: false, data: null });
         }
       }
     );
@@ -107,10 +107,31 @@ router.delete("/api/:employee_id", (req, res) => {
       employeeID,
       function (err) {
         if (err) throw err;
-        return res.json({ success: false, msg: "Employee deleted" });
+        return res.json({ success: true, msg: "Employee deleted" });
       }
     );
   }
+});
+
+router.put("/api/:employee_id/role/:role_id", (req, res) => {
+  const employeeID = req.params.employee_id;
+  const roleID = req.params.role_id;
+  toUpdateWith = {
+    employee_id: employeeID,
+    role_id: roleID,
+  };
+  conn.query(
+    "UPDATE employees SET ? WHERE employee_id = ?",
+    [toUpdateWith, toUpdateWith.employee_id],
+    function (err, results) {
+      if (err) throw err;
+      if (results.affectedRows > 0) {
+        return res.json({ success: true, msg: "Employee role updated" });
+      } else {
+        return res.json({ success: false, msg: "Employee role update failed" });
+      }
+    }
+  );
 });
 
 module.exports = router;
