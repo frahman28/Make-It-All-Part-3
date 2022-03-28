@@ -89,19 +89,19 @@ router.put("/api/:employee_id", (req, res) => {
   }
 });
 
-router.delete("/api/:employee_id", (req, res) => {
-  const employeeID = req.params.employee_id;
-  if (employeeID) {
-    conn.query(
-      "DELETE FROM employees WHERE employee_id = ?",
-      employeeID,
-      function (err) {
-        if (err) throw err;
-        return res.json({ success: true, msg: "Employee deleted" });
-      }
-    );
-  }
-});
+// router.delete("/api/:employee_id", (req, res) => {
+//   const employeeID = req.params.employee_id;
+//   if (employeeID) {
+//     conn.query(
+//       "DELETE FROM employees WHERE employee_id = ?",
+//       employeeID,
+//       function (err) {
+//         if (err) throw err;
+//         return res.json({ success: true, msg: "Employee deleted" });
+//       }
+//     );
+//   }
+// });
 
 router.put("/api/:employee_id/role/:role_id", (req, res) => {
   const employeeID = req.params.employee_id;
