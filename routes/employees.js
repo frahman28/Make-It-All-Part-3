@@ -1,4 +1,5 @@
 const express = require("express");
+const { json } = require("express/lib/response");
 const router = express.Router();
 
 var conn = require("../dbconfig");
@@ -103,70 +104,118 @@ router.put("/api/:employee_id", (req, res) => {
 //   }
 // });
 
-router.put("/api/:employee_id/role/:role_id", (req, res) => {
+router.put("/api/:employee_id/role", (req, res) => {
   const employeeID = req.params.employee_id;
-  const roleID = req.params.role_id;
+  const roleID = req.body.role_id;
+  if (roleID === undefined) {
+    return res.json({ success: false, msg: "Invalid request" });
+  }
   toUpdateWith = {
     employee_id: employeeID,
     role_id: roleID,
   };
   conn.query(
-    "UPDATE employees SET ? WHERE employee_id = ?",
-    [toUpdateWith, toUpdateWith.employee_id],
-    function (err, results) {
+    "SELECT * FROM company_roles WHERE role_id = ?",
+    roleID,
+    (err, results) => {
       if (err) throw err;
-      if (results.affectedRows > 0) {
-        return res.json({ success: true, msg: "Employee role updated" });
+      if (results.length > 0) {
+        conn.query(
+          "UPDATE employees SET ? WHERE employee_id = ?",
+          [toUpdateWith, toUpdateWith.employee_id],
+          function (err, results) {
+            if (err) throw err;
+            if (results.affectedRows > 0) {
+              return res.json({ success: true, msg: "Employee role updated" });
+            } else {
+              return res.json({
+                success: false,
+                msg: "Employee role update failed",
+              });
+            }
+          }
+        );
       } else {
-        return res.json({ success: false, msg: "Employee role update failed" });
+        return res.json({ success: false, msg: "Role does not exist" });
       }
     }
   );
 });
 
-router.put("/api/:employee_id/department/:department_id", (req, res) => {
+router.put("/api/:employee_id/department", (req, res) => {
   const employeeID = req.params.employee_id;
-  const roleID = req.params.department_id;
+  const departmentID = req.body.department_id;
+  if (departmentID === undefined) {
+    return res.json({ success: false, msg: "Invalid request" });
+  }
   toUpdateWith = {
     employee_id: employeeID,
-    department_id: roleID,
+    department_id: departmentID,
   };
   conn.query(
-    "UPDATE job_info SET ? WHERE employee_id = ?",
-    [toUpdateWith, toUpdateWith.employee_id],
-    function (err, results) {
+    "SELECT * FROM departments WHERE department_id = ?",
+    departmentID,
+    (err, results) => {
       if (err) throw err;
-      if (results.affectedRows > 0) {
-        return res.json({ success: true, msg: "Employee department updated" });
+      if (results.length > 0) {
+        conn.query(
+          "UPDATE job_info SET ? WHERE employee_id = ?",
+          [toUpdateWith, toUpdateWith.employee_id],
+          function (err, results) {
+            if (err) throw err;
+            if (results.affectedRows > 0) {
+              return res.json({
+                success: true,
+                msg: "Employee department updated",
+              });
+            } else {
+              return res.json({
+                success: false,
+                msg: "Employee department update failed",
+              });
+            }
+          }
+        );
       } else {
-        return res.json({
-          success: false,
-          msg: "Employee department update failed",
-        });
+        return res.json({ success: false, msg: "Department does not exist" });
       }
     }
   );
 });
 
-router.put("/api/:employee_id/title/:title_id", (req, res) => {
+router.put("/api/:employee_id/title", (req, res) => {
   const employeeID = req.params.employee_id;
-  const roleID = req.params.title_id;
+  const titleID = req.body.title_id;
+  if (titleID === undefined) {
+    return res.json({ success: false, msg: "Invalid request" });
+  }
   toUpdateWith = {
     employee_id: employeeID,
-    title_id: roleID,
+    title_id: titleID,
   };
   conn.query(
-    "UPDATE job_info SET ? WHERE employee_id = ?",
-    [toUpdateWith, toUpdateWith.employee_id],
-    function (err, results) {
+    "SELECT * FROM job_title WHERE title_id = ?",
+    titleID,
+    (err, results) => {
       if (err) throw err;
-      if (results.affectedRows > 0) {
-        return res.json({ success: true, msg: "Employee title updated" });
+      if (results.length > 0) {
+        conn.query(
+          "UPDATE job_info SET ? WHERE employee_id = ?",
+          [toUpdateWith, toUpdateWith.employee_id],
+          function (err, results) {
+            if (err) throw err;
+            if (results.affectedRows > 0) {
+              return res.json({ success: true, msg: "Employee title updated" });
+            } else {
+              return res.json({
+                success: false,
+                msg: "Employee title update failed",
+              });
+            }
+          }
+        );
       } else {
-        return res.json({
-          success: false,
-          msg: "Employee title update failed",
-        });
+        return res.json({ success: false, msg: "Title does not exist" });
       }
     }
   );
