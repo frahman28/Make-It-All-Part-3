@@ -28,4 +28,30 @@ router.get("/api/children", (req, res) => {
   );
 });
 
+router.get("/api/specialist", (req, res) => {
+  // This API call will return a list of specialists who match to a problem type
+  // this can be used to find specialists who specialize in a given problem type, useful for assigning problems to
+  // the correct people
+  const { problemTypeID, showOnlyAvailable } = req.body;
+  // Check to see if the problem type id supplied is valid and was supplied
+  if (problemTypeID === undefined || !Number.isInteger(problemTypeID)) {
+    return res.json({ success: false, msg: "Problem type id not supplied" });
+  }
+  let availableQuery;
+  if (showOnlyAvailable === true) {
+    availableQuery = `AND employees.available = true`;
+  } else {
+    availableQuery = "";
+  }
+  const sqlQuery = `
+  SELECT employees.employee_id, employees.name 
+  FROM employees 
+  LEFT JOIN employee_problem_type_relation ON employee_problem_type_relation.employee_id = employees.employee_id
+  WHERE employees.role_id = 5 AND employee_problem_type_relation.problem_type_id = ? ${availableQuery};`;
+  conn.query(sqlQuery, problemTypeID, (err, results) => {
+    if (err) throw err;
+    return res.json({ success: true, data: results });
+  });
+});
+
 module.exports = router;
