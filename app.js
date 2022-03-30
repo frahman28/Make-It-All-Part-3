@@ -12,6 +12,7 @@ const c          = require("./dbcreate");
 
 var indexRouter  = require('./routes/auth');
 var usersRouter  = require('./routes/employees');
+var problemTypeRouter = require('./routes/problem-type');
 
 var app = express();
 
@@ -46,6 +47,7 @@ app.use(session({
 // Add middleware
 app.use('/', indexRouter);
 app.use('/employee', usersRouter);
+app.use("/problem-type", problemTypeRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
