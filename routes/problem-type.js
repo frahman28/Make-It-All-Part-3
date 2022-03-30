@@ -38,6 +38,7 @@ router.get("/api/specialist", (req, res) => {
     return res.json({ success: false, msg: "Problem type id not supplied" });
   }
   let availableQuery;
+  // If the query should only show the specialists who are available or not
   if (showOnlyAvailable === true) {
     availableQuery = `AND employees.available = true`;
   } else {
@@ -52,6 +53,81 @@ router.get("/api/specialist", (req, res) => {
     if (err) throw err;
     return res.json({ success: true, data: results });
   });
+});
+
+router.delete("/api/specialist/:specialist_id", (req, res) => {
+  // This API will remove problem types that a user is specialised in
+  // The parameter will take the specialist id
+  // The body of the request will be the problem type id to remove the user from
+  const { problemTypeID } = req.body;
+  const specialistID = req.params.specialist_id;
+  // Check the problem type id and specialist id were defined, and the problem type id supplied is not a number
+  if (
+    problemTypeID === undefined ||
+    specialistID === undefined ||
+    !Number.isInteger(problemTypeID)
+  ) {
+    return res.json({ success: false, msg: "Invalid request" });
+  }
+  // Check if the problem type id is equal to that of Hardware, Network, Software
+  // As these shouldn't be removed from the specialists
+  conn.query(
+    `SELECT problem_type_id
+    FROM employee_problem_type_relation 
+    WHERE employee_id = ?`,
+    specialistID,
+    (err, results) => {
+      if (err) throw err;
+      // Convert the array of objects as the result of sql into an array
+      // With each value being a problem type the specialist specializes in
+      const activeProblemTypes = results.map(
+        ({ problem_type_id }) => problem_type_id
+      );
+      console.log(activeProblemTypes);
+      // The list of key problem types in the database, each user should have one of these
+      // Hardware, Software, Network
+      const keyProblemTypes = [1, 2, 3];
+      // This will create a new array which contains the matching elements from both of the two arrays above
+      const intersection = keyProblemTypes.filter((problemType) =>
+        activeProblemTypes.includes(problemType)
+      );
+      // If the intersection is equal to 1, then that specialist only specializes in 1 of the key problem types
+      // Therefore we should check to see if this is the one they're attempting to remove
+      // If the intersection length is greater than 1 then it's okay to delete a key problem type
+      if (intersection.length === 1) {
+        // We now check to see if the problem id supplied
+        if (intersection[0] === problemTypeID) {
+          // The problem type they're trying to delete is the specialists only key problem type so this is not allowed
+          return res.json({
+            success: false,
+            msg: "Problem type cannot be removed, as it is a key problem type, and only one key problem type remains on the user",
+          });
+        }
+      }
+      conn.query(
+        "DELETE FROM employee_problem_type_relation WHERE employee_id = ? AND problem_type_id = ?",
+        [specialistID, problemTypeID],
+        (err, results) => {
+          if (err) throw err;
+          // If there was an affected row then the relation was succesfully deleted
+          if (results.affectedRows > 0) {
+            return res.json({
+              success: true,
+              msg: "Problem type no longer assigned to specialist",
+            });
+          } else {
+            // Otherwise the relation couldn't be deleted
+            // Most likely because the specialist isn't assigned to that problem type
+            // or the problem type doesn't exist
+            return res.json({
+              success: false,
+              msg: "Problem type could not be removed from specialist",
+            });
+          }
+        }
+      );
+    }
+  );
 });
 
 module.exports = router;
