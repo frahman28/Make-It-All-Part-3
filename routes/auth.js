@@ -1,17 +1,14 @@
 var express = require('express');
 var app = express.Router();
 
-var session;
-
-/* GET users listing. */
+/* GET home page. */
 app.get('/', function(req, res, next) {
-    if (req.session.loggedin) {
-		res.send('Welcome back, ' + req.session.username + '!');
-	} else {
-		res.send('Please login to view this page!');
-        res.redirect('/login');
-	}
-	res.end();
+  if (req.session.loggedin) {
+    res.send('Welcome back, ' + req.session.username + '!');
+  } else {
+    res.redirect('/login');
+  }
+  res.end();
 });
 
 app.get('/login', function(req, res, next) {
@@ -37,7 +34,7 @@ app.get('/login', function(req, res, next) {
                 break;
         }
     }
-    res.render('login');
+  res.render('login');
 });
 
 app.post('/login', function(req, res, next) {
@@ -49,5 +46,6 @@ app.get('/logout', function(req, res) {
     req.session.destroy();
     res.redirect('/');
 });
+
 
 module.exports = app;

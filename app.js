@@ -8,6 +8,8 @@ var cors         = require("cors");
 var ejs          = require('ejs');
 const session    = require('express-session');
 
+const c          = require("./dbcreate");
+
 var indexRouter  = require('./routes/auth');
 var usersRouter  = require('./routes/employees');
 
@@ -18,13 +20,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.json());
 
-// for better display in the console
+// for better display in the terminal
 app.use(morgan("common"));
 
 // for HTTP protection
 app.use(helmet());
 
-// for cros-origin sources
+// for cross-origin sources
 app.use(cors());
 
 app.use(express.urlencoded({ extended: false }));
