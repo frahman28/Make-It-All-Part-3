@@ -83,7 +83,6 @@ router.delete("/api/specialist/:specialist_id", (req, res) => {
       const activeProblemTypes = results.map(
         ({ problem_type_id }) => problem_type_id
       );
-      console.log(activeProblemTypes);
       // The list of key problem types in the database, each user should have one of these
       // Hardware, Software, Network
       const keyProblemTypes = [1, 2, 3];
@@ -245,6 +244,158 @@ router.post("/api", (req, res) => {
       msg: `Problem type has been created, ID is ${results.insertId}`,
     });
   });
+});
+
+async function unassignAllProblems(problemTypeID) {
+  // This function will return a promise if all the problems that have the given problem id are set to null
+  // It will reject the promise if there's an error
+  return new Promise((resolve, reject) => {
+    const updateTo = {
+      problem_type_id: null,
+    };
+    // We update all the problem types to null where the problem type of the problem type intending to be deleted exists
+    // This is for foreign key constraints
+    conn.query(
+      "UPDATE problems SET ? WHERE problem_type_id = ?",
+      [updateTo, problemTypeID],
+      (err) => {
+        if (err) throw reject(err);
+        resolve();
+      }
+    );
+  });
+}
+
+async function removeRelationToProblemType(problemTypeID) {
+  // This function will remove all relations a specialist might have to the problem type
+  return new Promise((resolve, reject) => {
+    // Delete from the database any row that has the problem type id of the one intending to be deleted
+    conn.query(
+      "DELETE FROM employee_problem_type_relation WHERE problem_type_id = ?",
+      problemTypeID,
+      (err) => {
+        if (err) reject(err);
+        resolve();
+      }
+    );
+  });
+}
+
+async function getChildNodeID(problemTypeID) {
+  // This function will return a promise if the parent node is found of the node intending to be deleted
+  // Otherwise it will be rejected
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "SELECT child_of FROM problem_types WHERE problem_type_id = ?",
+      problemTypeID,
+      (err, results) => {
+        if (err) throw err;
+        // If there are no results or if the result is null then it is rejected
+        if (results.length === 0 || results[0].child_of === null) {
+          reject();
+        }
+        resolve(results);
+      }
+    );
+  });
+}
+
+async function reassignChildOf(problemTypeID, newParentID) {
+  // This function will reassign the children of a problem type
+  // It will set the child_of to the new parent of that problem type
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "UPDATE problem_types SET child_of = ? WHERE child_of = ?",
+      [newParentID, problemTypeID],
+      (err) => {
+        if (err) reject(err);
+        resolve();
+      }
+    );
+  });
+}
+
+async function deleteProblemType(problemTypeID) {
+  // This function will delete the problem type from the database
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "DELETE FROM problem_types WHERE problem_type_id = ?",
+      problemTypeID,
+      (err) => {
+        if (err) reject(err);
+        resolve();
+      }
+    );
+  });
+}
+
+router.delete("/api/:problem_type_id", (req, res) => {
+  // Get the problem type id from the parameters
+  const problemTypeIDString = req.params.problem_type_id;
+  // If the problem type is undefined then return an error message
+  if (problemTypeIDString === undefined) {
+    return res.json({ success: false, msg: "Problem type ID not defined" });
+  }
+  // Convert the problem type id to a number, and check it can be a number
+  const problemTypeID = Number.parseInt(problemTypeIDString);
+  if (isNaN(problemTypeID)) {
+    return res.json({ success: false, msg: "Problem type given incorrect" });
+  }
+  // Check if the problem type is a key problem type, in this case it shouldn't be deleted
+  if ([1, 2, 3].includes(problemTypeID)) {
+    return res.json({
+      success: false,
+      msg: "Problem type is a key problem type and cannot be removed",
+    });
+  }
+  // First unassign all the problems that have the problem type
+  unassignAllProblems(problemTypeID)
+    .then(() => {
+      // Once this has been done, then remove all specialist relations to that problem
+      // type
+      removeRelationToProblemType(problemTypeID)
+        .then(() => {
+          // Once that is done then get the parent problem type of the problem type to delete
+          getChildNodeID(problemTypeID)
+            .then((newParentNode) => {
+              const newParentNodeID = newParentNode[0].child_of;
+              // Reassign all the children of the problem type to the parent problem type of the one
+              // to delete
+              reassignChildOf(problemTypeID, newParentNodeID)
+                .then(() => {
+                  // Can now finally delete the problem type
+                  deleteProblemType(problemTypeID)
+                    .then(() => {
+                      // Return a succesful message
+                      return res.json({
+                        success: true,
+                        msg: "Problem type succesfully removed",
+                      });
+                    })
+                    .catch((err) => {
+                      throw err;
+                    });
+                })
+                .catch((err) => {
+                  throw err;
+                });
+            })
+            .catch(() => {
+              // If the parent problem type doesn't exist or the problem type doesn't exist
+              // then return an error message
+              return res.json({
+                success: false,
+                msg: "Error occured finding parent problem type or problem type does not exist",
+              });
+            });
+        })
+        .catch((err) => {
+          throw err;
+        });
+    })
+    .catch((err) => {
+      throw err;
+    });
 });
 
 module.exports = router;
