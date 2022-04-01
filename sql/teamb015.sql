@@ -176,7 +176,7 @@ CREATE TABLE `os` (
 CREATE TABLE `problems` (
   `problem_id` int(11) NOT NULL,
   `name` text NOT NULL,
-  `problem_type_id` int(11) NOT NULL,
+  `problem_type_id` int(11) DEFAULT NULL,
   `software_id` int(11) DEFAULT NULL,
   `hardware_id` int(11) DEFAULT NULL,
   `license` varchar(45) DEFAULT NULL,
