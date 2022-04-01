@@ -206,4 +206,45 @@ router.post("/api/specialist/:specialist_id", (req, res) => {
   );
 });
 
+router.post("/api", (req, res) => {
+  // This API will create a new problem type
+  const { problemTypeName, problemTypeChild } = req.body;
+  // Check the problem type id and specialist id were defined, and the problem type id supplied is not a number
+  if (problemTypeName === undefined) {
+    return res.json({ success: false, msg: "Problem type name not specified" });
+  }
+  let toInsert = { problem_type: problemTypeName };
+  if (problemTypeChild !== undefined) {
+    if (Number.isInteger(problemTypeChild)) {
+      toInsert.child_of = problemTypeChild;
+    } else {
+      return res.json({ success: false, msg: "Invalid child problem type" });
+    }
+  }
+  conn.query("INSERT INTO problem_types SET ?", toInsert, (err, results) => {
+    if (err) {
+      // This can be used to check if the problem type that was attempted to be added already exists
+      if (err.errno === 1062) {
+        return res.json({
+          success: false,
+          msg: "Problem type already exists",
+        });
+      } else if (err.errno === 1452) {
+        // An error of 1452 means the foreign key check failed, so the child problem type trying to be added
+        // is not referencing a problem type
+        return res.json({
+          success: false,
+          msg: "Child problem type does not reference a problem type",
+        });
+      } else {
+        throw err;
+      }
+    }
+    return res.json({
+      success: true,
+      msg: `Problem type has been created, ID is ${results.insertId}`,
+    });
+  });
+});
+
 module.exports = router;
