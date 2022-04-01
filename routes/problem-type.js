@@ -45,10 +45,12 @@ router.get("/api/specialist", (req, res) => {
     availableQuery = "";
   }
   const sqlQuery = `
-  SELECT employees.employee_id, employees.name 
+  SELECT employees.employee_id, employees.name, COUNT(problems.problem_id) AS numberOfAssignedProblems
   FROM employees 
   LEFT JOIN employee_problem_type_relation ON employee_problem_type_relation.employee_id = employees.employee_id
-  WHERE employees.role_id = 5 AND employee_problem_type_relation.problem_type_id = ? ${availableQuery};`;
+  LEFT JOIN problems ON problems.assigned_to = employees.employee_id
+  WHERE employees.role_id = 5 AND employee_problem_type_relation.problem_type_id = ? ${availableQuery}
+  GROUP BY problems.assigned_to;`;
   conn.query(sqlQuery, problemTypeID, (err, results) => {
     if (err) throw err;
     return res.json({ success: true, data: results });
