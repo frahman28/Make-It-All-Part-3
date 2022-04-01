@@ -130,4 +130,80 @@ router.delete("/api/specialist/:specialist_id", (req, res) => {
   );
 });
 
+router.post("/api/specialist/:specialist_id", (req, res) => {
+  // This API will add a specialist to a problem type
+  // The parameter will take the specialist id
+  // The body of the request will be the problem type id to remove the user from
+  const { problemTypeID } = req.body;
+  const specialistID = req.params.specialist_id;
+  // Check the problem type id and specialist id were defined, and the problem type id supplied is not a number
+  if (
+    problemTypeID === undefined ||
+    specialistID === undefined ||
+    !Number.isInteger(problemTypeID)
+  ) {
+    return res.json({ success: false, msg: "Invalid request" });
+  }
+  // We need to check that the employee ID is specialist
+  // We need to check the problemTypeID exists
+  // We can then add the relation between the two
+  conn.query(
+    "SELECT * FROM employees WHERE role_id = 5 AND employee_id = ?",
+    specialistID,
+    (err, results) => {
+      if (err) throw err;
+      // If the length of the results is 0 then the employee is not a specialist
+      if (results.length === 0) {
+        return res.json({
+          success: false,
+          msg: "Employee is not a specialist or does not exist",
+        });
+      }
+      // Check if the problem type exists
+      conn.query(
+        "SELECT * FROM problem_types WHERE problem_type_id = ?",
+        problemTypeID,
+        (err, results) => {
+          if (err) throw err;
+          // If the length of the results is 0 then the problem type does not exist
+          if (results.length === 0) {
+            return res.json({
+              success: false,
+              msg: "Problem type does not exist",
+            });
+          }
+          // Now the checks have passed we insert the relation between the employee and the problem type
+          const toInsert = {
+            problem_type_id: problemTypeID,
+            employee_id: specialistID,
+          };
+          conn.query(
+            `INSERT INTO employee_problem_type_relation SET ?`,
+            toInsert,
+            (err, results) => {
+              if (err) {
+                // An error code of 1062 means the row attempting to insert already exists
+                // So this way we catch the error and can handle it specifically, which involves
+                // sending a json message back
+                if (err.errno !== 1062) {
+                  throw err;
+                } else {
+                  return res.json({
+                    success: false,
+                    msg: "Relation already exists",
+                  });
+                }
+              }
+              return res.json({
+                success: true,
+                msg: "Specialist is now assigned to the problem type",
+              });
+            }
+          );
+        }
+      );
+    }
+  );
+});
+
 module.exports = router;
