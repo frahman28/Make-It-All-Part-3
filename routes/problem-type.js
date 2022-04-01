@@ -209,17 +209,16 @@ router.post("/api", (req, res) => {
   // This API will create a new problem type
   const { problemTypeName, problemTypeChild } = req.body;
   // Check the problem type id and specialist id were defined, and the problem type id supplied is not a number
-  if (problemTypeName === undefined) {
+  if (problemTypeName === undefined && problemTypeChild === undefined) {
     return res.json({ success: false, msg: "Problem type name not specified" });
   }
-  let toInsert = { problem_type: problemTypeName };
-  if (problemTypeChild !== undefined) {
-    if (Number.isInteger(problemTypeChild)) {
-      toInsert.child_of = problemTypeChild;
-    } else {
-      return res.json({ success: false, msg: "Invalid child problem type" });
-    }
+  if (!Number.isInteger(problemTypeChild)) {
+    return res.json({ success: false, msg: "Invalid child problem type" });
   }
+  const toInsert = {
+    problem_type: problemTypeName,
+    child_of: problemTypeChild,
+  };
   conn.query("INSERT INTO problem_types SET ?", toInsert, (err, results) => {
     if (err) {
       // This can be used to check if the problem type that was attempted to be added already exists
