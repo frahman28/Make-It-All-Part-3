@@ -3,7 +3,7 @@ const router = express.Router();
 
 var conn = require("../dbconfig");
 
-async function getClosedByProblemTypeCount(dateOne, dateTwo) {
+function getDateQuery(dateOne, dateTwo) {
   let dateQuery = "";
   // Assuming not to filter between two dates
   // If the dates were supplied in the parameters then change the query to have in the SQL
@@ -13,6 +13,11 @@ async function getClosedByProblemTypeCount(dateOne, dateTwo) {
       dateOne.toISOString().split("T")[0]
     }' AND problems.closed_on <= '${dateTwo.toISOString().split("T")[0]}'`;
   }
+  return dateQuery;
+}
+
+async function getClosedByProblemTypeCount(dateOne, dateTwo) {
+  const dateQuery = getDateQuery(dateOne, dateTwo);
   // Create a promise to wait for the SQL to execute
   return new Promise((resolve, reject) => {
     // The SQL query will select the problem type, find how many problems exist that have been closed, between two
@@ -52,6 +57,43 @@ router.get("/api/problem-type", (req, res) => {
   // Execute the sql query to get the number of problems, between two dates and group them by the number of problems
   // each problem type has, to see what problem types are causing the most problems
   getClosedByProblemTypeCount(dates[0], dates[1])
+    .then((results) => {
+      // If the query is succesful then return the results
+      return res.json({ success: true, data: results });
+    })
+    .catch((err) => {
+      // Else throw an error
+      throw err;
+    });
+});
+
+async function getClosedBySpecialistCount(dateOne, dateTwo) {
+  const dateQuery = getDateQuery(dateOne, dateTwo);
+  // Create a promise to wait for the SQL to execute
+  return new Promise((resolve, reject) => {
+    // The SQL query will get the number of problems a specialist has solved when they were assigned to that problem
+    conn.query(
+      `
+      SELECT employees.employee_id, employees.name, COUNT(problems.problem_id) AS numberOfProblems 
+      FROM problems 
+      LEFT JOIN employees ON problems.assigned_to = employees.employee_id 
+      WHERE problems.closed = 1 AND problems.assigned_to is NOT NULL ${dateQuery}
+      GROUP BY problems.assigned_to;
+      `,
+      (err, results) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(results);
+      }
+    );
+  });
+}
+
+router.get("/api/specialist", (req, res) => {
+  // This API will get the number of problems each specialist has closed, assuming they've closed a problem
+  const dates = checkTwoDates(req.body.startDate, req.body.endDate);
+  getClosedBySpecialistCount(dates[0], dates[1])
     .then((results) => {
       // If the query is succesful then return the results
       return res.json({ success: true, data: results });
