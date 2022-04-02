@@ -1,11 +1,9 @@
 var express = require('express');
-var router = express.Router();
+var app = express.Router();
 
 /* GET dashboard page. */
-router.get('/', function(req, res, next) {
-  var userName = res.user.userName;
-  res.render('dashboard',
-    { title: 'Hello ' + userName });
+app.get('/', function(req, res, next) {
+  res.render('problems/my_problems');
 });
 
-module.exports = router;
+module.exports = app;
