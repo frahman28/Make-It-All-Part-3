@@ -8,7 +8,7 @@ var cors         = require("cors");
 var ejs          = require('ejs');
 const session    = require('express-session');
 
-const c          = require("./dbcreate");
+// const c          = require("./dbcreate");
 
 var indexRouter  = require('./routes/auth');
 var usersRouter  = require('./routes/employees');
@@ -24,7 +24,11 @@ app.use(express.json());
 app.use(morgan("common"));
 
 // for HTTP protection
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 // for cross-origin sources
 app.use(cors());
@@ -60,7 +64,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', { errorMessage: err});
 });
 
 module.exports = app;
