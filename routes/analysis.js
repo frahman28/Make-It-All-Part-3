@@ -22,7 +22,7 @@ async function getClosedByProblemTypeCount(dateOne, dateTwo) {
     SELECT problem_types.problem_type, COUNT(problem_types.problem_type) AS numberOfProblems 
     FROM problems 
     LEFT JOIN problem_types ON problem_types.problem_type_id = problems.problem_type_id 
-    WHERE problems.closed = 1 ${dateQuery}
+    WHERE problems.closed = 1 AND problems.problem_type_id is NOT NULL ${dateQuery}
     GROUP BY problems.problem_type_id;`,
       (err, results) => {
         if (err) {
