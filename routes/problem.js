@@ -1,19 +1,18 @@
 var express = require('express');
-var router = express.Router();
-
+var app = express.app();
 
 var conn  = require('../dbconfig');
 
 // GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC EMPLOYEE
 // Restrict to Employees
-router.get('/reportedProblems', function(req, res, next) {
+app.get('/reportedProblems', function(req, res, next) {
     conn.query(`SELECT * FROM problems
                 WHERE status <> "Closed"
                 AND
                 reported_by = ?
                 ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
-            console.error('Error: ' +  err); 
+            req.flash('error', err)
             res.render('problems',
                         {page_title:"Open Reported Problems",data:''});   
         }else{
@@ -25,13 +24,13 @@ router.get('/reportedProblems', function(req, res, next) {
 
 // GET ALL PROBLEMS FOR A SPECIFIC EMPLOYEE
 // Restrict to Employees
-router.get('/allReportedProblems', function(req, res, next) {
+app.get('/allReportedProblems', function(req, res, next) {
     conn.query(`SELECT * FROM problems
                 WHERE
                 reported_by = ?
                 ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
-            console.error('Error: ' +  err); 
+            req.flash('error', err)
             res.render('problems',
                         {page_title:"My All Reported Problems",data:''});
         }else{
@@ -43,14 +42,14 @@ router.get('/allReportedProblems', function(req, res, next) {
 
 // GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC SPECIALIST
 // Restrict to Specialists
-router.get('/assignedProblems', function(req, res, next) {
+app.get('/assignedProblems', function(req, res, next) {
     conn.query(`SELECT * FROM problems 
                 WHERE status <> "Closed"
                 AND
                 assigned_to = ?
                 ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
-            console.error('Error: ' +  err); 
+            req.flash('error', err)
             res.render('problems',
                         {page_title:"Open Assigned Problems",data:''});   
         }else{
@@ -62,13 +61,13 @@ router.get('/assignedProblems', function(req, res, next) {
 
 // GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC SPECIALIST
 // Restrict to Specialists
-router.get('/allAssignedProblems', function(req, res, next) {
+app.get('/allAssignedProblems', function(req, res, next) {
     conn.query(`SELECT * FROM problems 
                 WHERE
                 assigned_to = ?
                 ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
-            console.error('Error: ' +  err); 
+            req.flash('error', err)
             res.render('problems',
                         {page_title:"My All Assigned Problems",data:''});
         }else{
@@ -80,10 +79,10 @@ router.get('/allAssignedProblems', function(req, res, next) {
 
 
 // GET REGISTER OF ALL PROBLEMS
-router.get('/register', function(req, res, next) {
+app.get('/register', function(req, res, next) {
     conn.query(`SELECT * FROM problems ORDER BY id DESC`, function(err, rows) {
         if(err){
-            console.log('Error: ' + err); 
+            req.flash('error', err)
             res.render('problems',
                         {page_title:"Register of all Problems",data:''});   
         }else{
@@ -94,7 +93,7 @@ router.get('/register', function(req, res, next) {
 });
 
 // SHOW ADD PROBLEM FORM
-router.get('/new', function(req, res, next){
+app.get('/new', function(req, res, next){
     // render to views/problem/new.ejs
     res.render('problem/new', {
         title: 'Submit a new problem',
@@ -102,7 +101,7 @@ router.get('/new', function(req, res, next){
 })
 
 // ADD NEW PROBLEM POST ACTION
-router.post('/new', function(req, res, next){    
+app.post('/new', function(req, res, next){    
     req.assert('name', 'Name is required').notEmpty()                   //Validate name
     req.assert('hardware', 'A valid hardware is required').notEmpty()   //Validate hardware
     req.assert('software', 'A valid software is required').notEmpty()   //Validate hardware
@@ -124,7 +123,7 @@ router.post('/new', function(req, res, next){
                     problem,
                     function(err, result) {
                 if (err) {
-                    console.error('Error: ' + err)
+                    req.flash('error', err)
 
                     // render to views/problem/add.ejs
                     res.render('customers/add', {
@@ -145,7 +144,7 @@ router.post('/new', function(req, res, next){
             error_msg += error.msg + '\n'
         })         
 
-        console.error('Error: ' + error_msg);
+        req.flash('error', error_msg)
          
         res.render('problems/new', { 
             title: 'Submit New Problem',
@@ -160,7 +159,7 @@ router.post('/new', function(req, res, next){
 
 // EDIT PROBLEM POST ACTION
 // SHOW EDIT PROBLEM FORM
-router.get('/edit/(:id)', function(req, res, next){
+app.get('/edit/(:id)', function(req, res, next){
     conn.query('SELECT * FROM problems WHERE id = ' + req.params.id,
                 function(err, rows, fields) {
             if(err) throw err
@@ -185,7 +184,7 @@ router.get('/edit/(:id)', function(req, res, next){
 // TODO:
 //  restrict to Admin and Specialist only
 // EDIT PROBLEM POST ACTION
-router.post('/update/:id', function(req, res, next) {
+app.post('/update/:id', function(req, res, next) {
     req.assert('name', "Problem's name is required").notEmpty()
     // TODO: what other info can be updated?
 
@@ -200,7 +199,7 @@ router.post('/update/:id', function(req, res, next) {
                     function(err, result) {
 
                 if (err) {
-                    console.error('Error: ' + err)
+                    req.flash('error', err)
 
                     // render to views/problems/new.ejs
                     res.render('problem/edit', {
@@ -232,4 +231,4 @@ router.post('/update/:id', function(req, res, next) {
     }
 })
 
-module.exports = router;
+module.exports = app;
