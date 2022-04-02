@@ -10,6 +10,7 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+SET FOREIGN_KEY_CHECKS = 0;
 
 --
 -- Database: `teamb015`
@@ -246,4 +247,5 @@ INSERT INTO `type_of_software` (`type_id`, `type`) VALUES
 (2, 'Driver'),
 (3, 'Firmware'),
 (4, 'Operating System');
+SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
