@@ -24,7 +24,7 @@ async function getClosedByProblemTypeCount(dateOne, dateTwo) {
     // optional dates. Get the number of problems for each problem type
     conn.query(
       `
-    SELECT problem_types.problem_type, COUNT(problem_types.problem_type) AS numberOfProblems 
+    SELECT problem_types.problem_type, COUNT(problem_types.problem_type)AS numberOfProblems, AVG(DATEDIFF(problems.closed_on, problems.opened_on)) AS averageDaysToClose
     FROM problems 
     LEFT JOIN problem_types ON problem_types.problem_type_id = problems.problem_type_id 
     WHERE problems.closed = 1 AND problems.problem_type_id is NOT NULL ${dateQuery}
@@ -74,7 +74,7 @@ async function getClosedBySpecialistCount(dateOne, dateTwo) {
     // The SQL query will get the number of problems a specialist has solved when they were assigned to that problem
     conn.query(
       `
-      SELECT employees.employee_id, employees.name, COUNT(problems.problem_id) AS numberOfProblems 
+      SELECT employees.employee_id, employees.name, COUNT(problems.problem_id) AS numberOfProblems, AVG(DATEDIFF(problems.closed_on, problems.opened_on)) AS averageDaysToClose 
       FROM problems 
       LEFT JOIN employees ON problems.assigned_to = employees.employee_id 
       WHERE problems.closed = 1 AND problems.assigned_to is NOT NULL ${dateQuery}
