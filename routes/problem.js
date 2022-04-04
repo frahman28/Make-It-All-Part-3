@@ -6,17 +6,16 @@ var conn  = require('../dbconfig');
 // GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC EMPLOYEE
 // Restrict to Employees
 app.get('/reportedProblems', function(req, res, next) {
-    conn.query(`SELECT * FROM problems
-                WHERE status <> "Closed"
-                AND
-                reported_by = ?
-                ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
+    conn.query(`SELECT * FROM problems 
+                WHERE closed <> 1 
+                AND employee = ? 
+                ORDER BY problem_id DESC;`, req.sessiom.employeeId, function(err, rows) {
         if(err){
             req.flash('error', err)
-            res.render('problems',
+            return res.render('problems',
                         {page_title:"Open Reported Problems",data:''});   
         }else{
-            res.render('problems',
+            return res.render('problems',
                         {page_title:"Open Reported Problems", data:rows});
         }
     });
@@ -25,10 +24,9 @@ app.get('/reportedProblems', function(req, res, next) {
 // GET ALL PROBLEMS FOR A SPECIFIC EMPLOYEE
 // Restrict to Employees
 app.get('/allReportedProblems', function(req, res, next) {
-    conn.query(`SELECT * FROM problems
-                WHERE
-                reported_by = ?
-                ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
+    conn.query(`SELECT * FROM problems 
+                AND employee = ? 
+                ORDER BY problem_id DESC;`, req.sessiom.employeeId, function(err, rows) {
         if(err){
             req.flash('error', err)
             res.render('problems',
@@ -44,10 +42,10 @@ app.get('/allReportedProblems', function(req, res, next) {
 // Restrict to Specialists
 app.get('/assignedProblems', function(req, res, next) {
     conn.query(`SELECT * FROM problems 
-                WHERE status <> "Closed"
+                WHERE closed <> 1
                 AND
                 assigned_to = ?
-                ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
+                ORDER BY problem_id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
             req.flash('error', err)
             res.render('problems',
@@ -65,7 +63,7 @@ app.get('/allAssignedProblems', function(req, res, next) {
     conn.query(`SELECT * FROM problems 
                 WHERE
                 assigned_to = ?
-                ORDER BY id DESC`, req.user.employee_id, function(err, rows) {
+                ORDER BY problem_id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
             req.flash('error', err)
             res.render('problems',
@@ -80,7 +78,7 @@ app.get('/allAssignedProblems', function(req, res, next) {
 
 // GET REGISTER OF ALL PROBLEMS
 app.get('/register', function(req, res, next) {
-    conn.query(`SELECT * FROM problems ORDER BY id DESC`, function(err, rows) {
+    conn.query(`SELECT * FROM problems ORDER BY problem_id DESC`, function(err, rows) {
         if(err){
             req.flash('error', err)
             res.render('problems',
