@@ -5,7 +5,7 @@ var conn = require('../dbconfig');
 
 //get all hardware information
 //admin, specialist, employee
-router.get('/viewEquipment', function(req, res) {
+router.get('/equipment/hardware', function(req, res) {
     conn.query(`SELECT 
                 hardware.hardware_id, name, type_id, hardware_relation.serial
                 FROM
@@ -26,8 +26,8 @@ router.get('/viewEquipment', function(req, res) {
 
 //get hardware info based on inputted id
 //admin
-router.get('/:id', function(req, res) {
-    const id = req.params.id;
+router.get('/equipment/hardware/:id', function(req, res) {
+    const id = parseInt(req.params.id);
     conn.query(`SELECT 
                 hardware.hardware_id, name, type_id, hardware_relation.serial
                 FROM
@@ -50,7 +50,7 @@ router.get('/:id', function(req, res) {
 
 //add new hardware to hardware table
 //admin
-router.post('/', function(req, res) {
+router.post('/equipment/hardware', function(req, res) {
     const { name, type } = req.body;
     if (name && type) {
         try {
@@ -68,9 +68,9 @@ router.post('/', function(req, res) {
 
 //update hardware info based on inputted id
 //admin
-router.patch('/:id', function(req, res) {
+router.patch('/equipment/hardware/:id', function(req, res) {
     const { name, type, } = req.body;
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     if (name && type) {
         try {
             conn.query(`UPDATE 
@@ -89,8 +89,8 @@ router.patch('/:id', function(req, res) {
 
 //delete hardware row based on inputted id
 //admin
-router.delete('/:id', function(req, res) {
-    const id = req.params.id;
+router.delete('/equipment/hardware/:id', function(req, res) {
+    const id = parseInt(req.params.id);
     try {
         conn.query(`DELETE
                     FROM 

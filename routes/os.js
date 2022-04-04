@@ -5,7 +5,7 @@ var conn = require('../dbconfig');
 
 //get all os information
 //admin, specialist, employee
-router.get('/', function(req, res) {
+router.get('/equipment/os', function(req, res) {
     conn.query(`SELECT 
                 *
                 FROM
@@ -22,8 +22,8 @@ router.get('/', function(req, res) {
 
 //get os info based on inputted id
 //admin
-router.get('/:id', function(req, res) {
-    const id = req.params.id;
+router.get('/equipment/os/:id', function(req, res) {
+    const id = parseInt(req.params.id);
     conn.query(`SELECT 
                 *
                 FROM
@@ -42,7 +42,7 @@ router.get('/:id', function(req, res) {
 
 //add new os to os table
 //admin
-router.post('/', function(req, res) {
+router.post('/equipment/os', function(req, res) {
     const name = req.body.name;
     if (name) {
         try {
@@ -60,9 +60,9 @@ router.post('/', function(req, res) {
 
 //update os info based on inputted id
 //admin
-router.patch('/:id', function(req, res) {
+router.patch('/equipment/os/:id', function(req, res) {
     const name = req.body.name;
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     if (name) {
         try {
             conn.query(`UPDATE 
@@ -80,8 +80,8 @@ router.patch('/:id', function(req, res) {
 
 //delete os row based on inputted id
 //admin
-router.delete('/:id', function(req, res) {
-    const id = req.params.id;
+router.delete('/equipment/os/:id', function(req, res) {
+    const id = parseInt(req.params.id);
     try {
         conn.query(`DELETE
                     FROM 
