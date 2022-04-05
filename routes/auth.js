@@ -54,6 +54,7 @@ app.post('/login', (req, res, next) => {
                     const token = jwt.sign({id:result[0]['employee_id']}, 'Make-It-All-Team-15',{ expiresIn: '1h' });
                     var userRole = result[0]["role"].toLowerCase();
                     req.session.loggedIn = true;
+                    req.session.userId = result[0]['employee_id']; 
                     req.session.userRole = userRole; 
                     req.session.userName = req.body.username;
                     return res.redirect('../' + userRole);
