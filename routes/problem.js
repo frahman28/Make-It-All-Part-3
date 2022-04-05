@@ -3,41 +3,6 @@ var app = express.app();
 
 var conn  = require('../dbconfig');
 
-// GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC EMPLOYEE
-// Restrict to Employees
-app.get('/reportedProblems', function(req, res, next) {
-    conn.query(`SELECT * FROM problems 
-                WHERE closed <> 1 
-                AND employee = ? 
-                ORDER BY problem_id DESC;`, req.sessiom.employeeId, function(err, rows) {
-        if(err){
-            req.flash('error', err)
-            return res.render('problems',
-                        {page_title:"Open Reported Problems",data:''});   
-        }else{
-            return res.render('problems',
-                        {page_title:"Open Reported Problems", data:rows});
-        }
-    });
-});
-
-// GET ALL PROBLEMS FOR A SPECIFIC EMPLOYEE
-// Restrict to Employees
-app.get('/allReportedProblems', function(req, res, next) {
-    conn.query(`SELECT * FROM problems 
-                AND employee = ? 
-                ORDER BY problem_id DESC;`, req.sessiom.employeeId, function(err, rows) {
-        if(err){
-            req.flash('error', err)
-            res.render('problems',
-                        {page_title:"My All Reported Problems",data:''});
-        }else{
-            res.render('problems',
-                        {page_title:"My All Reported Problems", data:rows});
-        }
-    });
-});
-
 // GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC SPECIALIST
 // Restrict to Specialists
 app.get('/assignedProblems', function(req, res, next) {
@@ -48,11 +13,11 @@ app.get('/assignedProblems', function(req, res, next) {
                 ORDER BY problem_id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
             req.flash('error', err)
-            res.render('problems',
-                        {page_title:"Open Assigned Problems",data:''});   
+            res.render('problems/my_problems',
+                        {page_title:"Open Assigned Problems",results: ''});   
         }else{
-            res.render('problems',
-                        {page_title:"Open Assigned Problems", data:rows});
+            res.render('problems/my_problems',
+                        {page_title:"Open Assigned Problems", results: rows});
         }
     });
 });
@@ -66,10 +31,10 @@ app.get('/allAssignedProblems', function(req, res, next) {
                 ORDER BY problem_id DESC`, req.user.employee_id, function(err, rows) {
         if(err){
             req.flash('error', err)
-            res.render('problems',
+            res.render('problems/my_problems',
                         {page_title:"My All Assigned Problems",data:''});
         }else{
-            res.render('problems',
+            res.render('problems/my_problems',
                         {page_title:"My All Assigned Problems", data:rows});
         }
     });
@@ -81,10 +46,10 @@ app.get('/register', function(req, res, next) {
     conn.query(`SELECT * FROM problems ORDER BY problem_id DESC`, function(err, rows) {
         if(err){
             req.flash('error', err)
-            res.render('problems',
+            res.render('problems/my_problems',
                         {page_title:"Register of all Problems",data:''});   
         }else{
-            res.render('problems',
+            res.render('problems/my_problems',
                         {page_title:"Register of all Problems", data:rows});
         }
     });
@@ -124,14 +89,14 @@ app.post('/new', function(req, res, next){
                     req.flash('error', err)
 
                     // render to views/problem/add.ejs
-                    res.render('customers/add', {
+                    res.render('problems/add', {
                         title: 'Submit New Problem',
                         name: user.name,
                         // TODO
                     })
                 } else {
                     console.log('Data added successfully!');
-                    res.redirect('/customers');
+                    res.redirect('/views');
                 }
             })
     } else {   
