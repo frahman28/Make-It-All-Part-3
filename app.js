@@ -7,6 +7,8 @@ var helmet       = require("helmet");
 var cors         = require("cors");
 var ejs          = require('ejs');
 const session    = require('express-session');
+var passport = require('passport');
+var flash = require('connect-flash');
 
 // const c          = require("./dbcreate");
 
@@ -19,6 +21,16 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.json());
+
+app.use(session({
+	secret: 'team015-make-it-all-2022',
+	resave: true,
+	saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 // for better display in the terminal
 app.use(morgan("common"));
@@ -41,11 +53,6 @@ app.use(cookieParser());
 // images
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(session({
-	secret: 'team015-make-it-all-2022',
-	resave: true,
-	saveUninitialized: true
-}));
 
 // Add middleware
 app.use('/', indexRouter);
