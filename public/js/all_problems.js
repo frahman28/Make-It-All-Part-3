@@ -13,5 +13,4 @@ $("tr td:last-child").each(function(i) {
     } else if (status == "Closed") {
         $(".status").eq(i).css({"background-color":"#ff4f4f"});
     }
-    console.log(status)
 });

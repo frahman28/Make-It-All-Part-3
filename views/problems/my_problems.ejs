@@ -46,7 +46,15 @@
                 <th>Problem ID</th>
                 <th>Problem Date</th>
                 <th>Problem Name</th>
-                <th>Specialist Assigned</th>
+                
+                <% if (role == "specialist" || role == "admin") { %>
+                    <th>Reported by</th>
+                <% } %>
+
+                <% if (role == "employee" || role == "admin") { %>
+                    <th>Specialist Assigned</th>
+                <% } %>       
+
                 <th>Status</th>
             </tr>
             <% for(var i=0; i<problems.length; i++) {%>
@@ -54,7 +62,14 @@
                     <td>#<%= problems[i]["problemId"] %></td>
                     <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
                     <td><%= problems[i]["problemName"] %></td>
-                    <td><%= problems[i]["specialistName"] %></td>
+                    <% if (role == "specialist" || role == "admin") { %>
+                        <td><%= problems[i]["reportedByName"] %></td>
+                    <% } %>
+
+                    <% if (role == "employee" || role == "admin") { %>
+                        <td><%= problems[i]["specialistName"] %></td>
+                    <% } %>  
+
                     <td>
                         <div class="status">
                             <% if (problems[i]["solved"] == 1) { %>

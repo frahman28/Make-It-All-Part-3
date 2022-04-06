@@ -7,13 +7,14 @@ var helmet       = require("helmet");
 var cors         = require("cors");
 var ejs          = require('ejs');
 const session    = require('express-session');
-var passport = require('passport');
-var flash = require('connect-flash');
+var passport     = require('passport');
+var flash        = require('connect-flash');
 
 // const c          = require("./dbcreate");
 
 var indexRouter  = require('./routes/auth');
-var usersRouter  = require('./routes/employees');
+var employeesRouter  = require('./routes/employees');
+var specialistsRouter  = require('./routes/specialists');
 
 var app = express();
 
@@ -56,7 +57,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Add middleware
 app.use('/', indexRouter);
-app.use('/employee', usersRouter);
+app.use('/employee', employeesRouter);
+app.use('/specialist', specialistsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

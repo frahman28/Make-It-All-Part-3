@@ -3,57 +3,6 @@ var app = express.app();
 
 var conn  = require('../dbconfig');
 
-// GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC SPECIALIST
-// Restrict to Specialists
-app.get('/assignedProblems', function(req, res, next) {
-    conn.query(`SELECT * FROM problems 
-                WHERE closed <> 1
-                AND
-                assigned_to = ?
-                ORDER BY problem_id DESC`, req.user.employee_id, function(err, rows) {
-        if(err){
-            req.flash('error', err)
-            res.render('problems/my_problems',
-                        {page_title:"Open Assigned Problems",results: ''});   
-        }else{
-            res.render('problems/my_problems',
-                        {page_title:"Open Assigned Problems", results: rows});
-        }
-    });
-});
-
-// GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC SPECIALIST
-// Restrict to Specialists
-app.get('/allAssignedProblems', function(req, res, next) {
-    conn.query(`SELECT * FROM problems 
-                WHERE
-                assigned_to = ?
-                ORDER BY problem_id DESC`, req.user.employee_id, function(err, rows) {
-        if(err){
-            req.flash('error', err)
-            res.render('problems/my_problems',
-                        {page_title:"My All Assigned Problems",data:''});
-        }else{
-            res.render('problems/my_problems',
-                        {page_title:"My All Assigned Problems", data:rows});
-        }
-    });
-});
-
-
-// GET REGISTER OF ALL PROBLEMS
-app.get('/register', function(req, res, next) {
-    conn.query(`SELECT * FROM problems ORDER BY problem_id DESC`, function(err, rows) {
-        if(err){
-            req.flash('error', err)
-            res.render('problems/my_problems',
-                        {page_title:"Register of all Problems",data:''});   
-        }else{
-            res.render('problems/my_problems',
-                        {page_title:"Register of all Problems", data:rows});
-        }
-    });
-});
 
 // SHOW ADD PROBLEM FORM
 app.get('/new', function(req, res, next){

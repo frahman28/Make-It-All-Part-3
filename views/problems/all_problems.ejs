@@ -76,7 +76,7 @@
             <% for(var i=0; i<problems.length; i++) {%>
                 <tr>
                     <td>#<%= problems[i]["problemId"] %></td>
-                    <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
+                    <td><%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %></td>
                     <td><%= problems[i]["problemName"] %></td>
                     <td>
                         <div class="status">
