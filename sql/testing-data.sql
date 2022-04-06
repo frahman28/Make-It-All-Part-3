@@ -31,7 +31,7 @@ INSERT INTO `comments` (`comment_id`, `problem_id`, `author`, `comment`) VALUES
 --
 
 INSERT INTO `company_roles` (`role_id`, `role`) VALUES
-(1, 'Administrator'),
+(1, 'Admin'),
 (2, 'Adviser'),
 (3, 'Employee'),
 (4, 'Manager'),
