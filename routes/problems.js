@@ -50,8 +50,6 @@ app.get('/', function(req, res, next) {
   
   // GET ALL PROBLEMS FOR A SPECIFIC EMPLOYEE
   app.all('/allProblems', function(req, res, next) {
-    let query = req.session.userRole == 'specialist' ? 'assigned_to' : 'employee';
-
     conn.query(`SELECT problems.problem_id as problemId, 
               problems.name as problemName, 
               employee as reportedById,
@@ -66,8 +64,6 @@ app.get('/', function(req, res, next) {
               AND problems.problem_id = problem_status_relation.problem_id 
               AND specialists.employee_id = assigned_to
               AND employees.employee_id = employee
-              AND closed <> 1 
-              AND ${query} = ? 
               ORDER BY problems.problem_id ASC;`, 
             req.session.userId, 
             function(err, rows) {

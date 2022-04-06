@@ -9,7 +9,7 @@ const conn  = require('../dbconfig');
 app.get('/', function(req, res, next) {
   if (req.session.loggedIn) {
     // TO CHANGE
-    res.redirect("../problems")
+    res.redirect("/myProblems")
   } else {
     res.redirect('/logout');
   }
@@ -66,6 +66,41 @@ app.post('/login', (req, res, next) => {
             });
         }
     );
+});
+
+app.get('/settings', function(req, res) {
+    res.render("settings", {userName: req.session.userName});
+});
+
+app.post('/settings', function(req, res, next) {
+    bcrypt.hash(req.body["new-password"], 15, function(err, hash) {
+        // console.log(req.body["new-password"])
+        // console.log(hash)
+        conn.query(
+            `UPDATE login_info 
+            SET password = '${hash}'
+            WHERE employee_id = ${req.session.userId};`,
+            (err, result) => {
+                
+            if (err) {
+                console.log("ERROR: " + err);
+                res.render("settings", {
+                    userName: req.session.userName,
+                    messageType: "error",
+                    message: "Something went wrong."
+                });
+            } else {
+                res.render("settings", {
+                    userName: req.session.userName,
+                    messageType: "success",
+                    message: "Password updated successfully!"
+                });
+            }
+        });
+    });
+    
+    
+    
 });
 
 app.get('/logout', function(req, res) {
