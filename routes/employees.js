@@ -49,6 +49,8 @@ app.all('/allReportedProblems', function(req, res, next) {
               employee as employeeId, 
               employees.name as specialistName, 
               opened_on as dateOpened, 
+              closed,
+              solved,
               status 
               FROM employees, problems, problem_status, problem_status_relation 
               WHERE problem_status_relation.status_id = problem_status.status_id
