@@ -13,8 +13,7 @@ var flash        = require('connect-flash');
 // const c          = require("./dbcreate");
 
 var indexRouter  = require('./routes/auth');
-var employeesRouter  = require('./routes/employees');
-var specialistsRouter  = require('./routes/specialists');
+var problemsRouter  = require('./routes/problems');
 
 var app = express();
 
@@ -57,8 +56,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Add middleware
 app.use('/', indexRouter);
-app.use('/employee', employeesRouter);
-app.use('/specialist', specialistsRouter);
+app.use('/', problemsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

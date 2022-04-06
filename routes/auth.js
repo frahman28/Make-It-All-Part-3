@@ -9,10 +9,9 @@ const conn  = require('../dbconfig');
 app.get('/', function(req, res, next) {
   if (req.session.loggedIn) {
     // TO CHANGE
-    res.redirect("../" + req.session.userRole)
+    res.redirect("../problems")
   } else {
-    req.session.loggedIn = false;
-    res.redirect('/login');
+    res.redirect('/logout');
   }
   res.end();
 });
@@ -57,7 +56,7 @@ app.post('/login', (req, res, next) => {
                     req.session.userId = result[0]['employee_id']; 
                     req.session.userRole = userRole; 
                     req.session.userName = req.body.username;
-                    return res.redirect('../' + userRole);
+                    return res.redirect('myProblems');
                     
                 } else {
                     return res.render('login', {
@@ -70,9 +69,8 @@ app.post('/login', (req, res, next) => {
 });
 
 app.get('/logout', function(req, res) {
-    req.session.loggedIn = false;
     req.session.destroy();
-    res.redirect('/');
+    res.redirect('/login');
 });
 
 
