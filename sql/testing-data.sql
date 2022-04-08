@@ -183,7 +183,7 @@ INSERT INTO `problems` (`problem_id`, `name`, `problem_type_id`, `software_id`, 
 
 INSERT INTO `problem_status` (`status_id`, `status`) VALUES
 (1, 'Awaiting support'),
-(2, 'Comments recieved'),
+(2, 'Comments received'),
 (3, 'Pending solution');
 
 --
