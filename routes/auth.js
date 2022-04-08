@@ -1,14 +1,14 @@
 var express = require('express');
 var app = express.Router();
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const conn  = require('../dbconfig');
+const {secretKey, salt} = require("../constants");
+const {verifySession, checkRoles} = require("./middleware");
+
 
 /* GET home page. */
-
-app.get('/', function(req, res, next) {
-  if (req.session.loggedIn) {
-    // TO CHANGE
+app.get('/', function(req, res) {
+  if (req.session) {
     res.redirect("/myProblems")
   } else {
     res.redirect('/logout');
@@ -17,14 +17,13 @@ app.get('/', function(req, res, next) {
 });
 
 
-app.get('/login', function(req, res, next) {
+app.get('/login', function(req, res) {
     res.render('login');
 });
 
-
-app.post('/login', (req, res, next) => {
+app.post('/login', (req, res) => {
     conn.query(
-        `SELECT login_info.employee_id, role, password
+        `SELECT login_info.employee_id, username, role, password
         FROM company_roles, login_info, employees 
         WHERE company_roles.role_id = employees.role_id 
         AND login_info.employee_id = employees.employee_id 
@@ -33,7 +32,7 @@ app.post('/login', (req, res, next) => {
         // If no username or result provided.
         if (!result.length || err) {
             return res.render('login', {
-                errorMessage: 'Email or password is incorrect!'
+                errorMessage: 'Invalid username or password.'
             });
         }
 
@@ -45,22 +44,21 @@ app.post('/login', (req, res, next) => {
                 // wrong password
                 if (bErr) {
                     return res.render('login', {
-                        errorMessage: 'Email or password is incorrect!'
+                        errorMessage: 'Invalid username or password.'
                     });
                 }
 
                 if (bResult) {
-                    const token = jwt.sign({id:result[0]['employee_id']}, 'Make-It-All-Team-15',{ expiresIn: '1h' });
-                    var userRole = result[0]["role"].toLowerCase();
-                    req.session.loggedIn = true;
-                    req.session.userId = result[0]['employee_id']; 
-                    req.session.userRole = userRole; 
-                    req.session.userName = req.body.username;
-                    return res.redirect('myProblems');
+                    
+                    req.session.userId   = result[0]['employee_id']
+                    req.session.userName = result[0]['username']
+                    req.session.userRole = (result[0]['role']).toLowerCase()
+
+                    return res.redirect('/myProblems');
                     
                 } else {
                     return res.render('login', {
-                        errorMessage: 'Something went wrong!'
+                        errorMessage: 'Invalid username or password.'
                     });
                 }
             });
@@ -68,22 +66,18 @@ app.post('/login', (req, res, next) => {
     );
 });
 
-app.get('/settings', function(req, res) {
+app.get('/settings', verifySession, function(req, res) {
     res.render("settings", {userName: req.session.userName});
 });
 
-app.post('/settings', function(req, res, next) {
-    bcrypt.hash(req.body["new-password"], 15, function(err, hash) {
-        // console.log(req.body["new-password"])
-        // console.log(hash)
-        conn.query(
-            `UPDATE login_info 
-            SET password = '${hash}'
-            WHERE employee_id = ${req.session.userId};`,
+app.post('/settings', verifySession, function(req, res, next) {
+    bcrypt.hash(req.body["new-password"], salt, function(err, hash) {
+        conn.query(`UPDATE login_info 
+                    SET password = '${hash}'
+                    WHERE employee_id = ${req.user.userId};`,
             (err, result) => {
                 
             if (err) {
-                console.log("ERROR: " + err);
                 res.render("settings", {
                     userName: req.session.userName,
                     messageType: "error",
@@ -98,13 +92,10 @@ app.post('/settings', function(req, res, next) {
             }
         });
     });
-    
-    
-    
 });
 
 app.get('/logout', function(req, res) {
-    req.session.destroy();
+    if (req.session) req.session.destroy();
     res.redirect('/login');
 });
 

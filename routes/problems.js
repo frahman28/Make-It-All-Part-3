@@ -2,14 +2,24 @@ var express = require('express');
 var app = express.Router();
 var conn  = require('../dbconfig');
 var moment = require('moment');
+const {verifySession, checkRoles} = require("./middleware");
+
+// var requireAuth = passport.authenticate('jwt', {session: true});
+
 
 /* GET dashboard page. */
 app.get('/', function(req, res, next) {
-    res.redirect('/myProblems');
+  if (req.session) res.redirect('/myProblems');
+  else res.redirect("../login", {errorMessage: "User not logged in."})
   });
 
+// FOR TESTING
+app.get('/myProblems', checkRoles("admin", "adviser"), function(req, res, next) {
+    res.render('dashboard');
+});
+
   // GET ALL UNRESOLVED PROBLEMS FOR A SPECIFIC EMPLOYEE
-  app.all('/myProblems', function(req, res, next) {
+app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, next) {
     let query = req.session.userRole == 'specialist' ? 'assigned_to' : 'employee';
 
     conn.query(`SELECT problems.problem_id as problemId, 
@@ -49,7 +59,7 @@ app.get('/', function(req, res, next) {
   });
   
   // GET ALL PROBLEMS FOR A SPECIFIC EMPLOYEE
-  app.all('/allProblems', function(req, res, next) {
+  app.all('/allProblems', checkRoles("specialist", "employee"), function(req, res, next) {
     conn.query(`SELECT problems.problem_id as problemId, 
               problems.name as problemName, 
               employee as reportedById,
