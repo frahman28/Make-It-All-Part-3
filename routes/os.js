@@ -3,9 +3,9 @@ var router = express.Router();
 
 var conn = require('../dbconfig');
 
-//get all os information
+//Get all os information
 //admin, specialist, employee
-router.get('/equipment/os', function(req, res) {
+router.get('/os', function(req, res) {
     conn.query(`SELECT 
                 *
                 FROM
@@ -13,16 +13,16 @@ router.get('/equipment/os', function(req, res) {
                 function(err, rows) {
                     if (err) {
                         console.error('Error: ' + err);
-                        res.render('os', {page_title: "All Operating Systems", data: ''});
+                        res.json({ message: "Error in request" });
                     } else {
-                        res.render('os', {page_title: "All Operating Systems", data:rows});
+                        res.json({ data:rows });
                     }
                 });
     });
 
-//get os info based on inputted id
+//Get os info based on inputted id
 //admin
-router.get('/equipment/os/:id', function(req, res) {
+router.get('/os/:id', function(req, res) {
     const id = parseInt(req.params.id);
     conn.query(`SELECT 
                 *
@@ -33,16 +33,16 @@ router.get('/equipment/os/:id', function(req, res) {
                 function(err, rows) {
                     if (err) {
                         console.error('Error: ' + err);
-                        res.render('os', {page_title: "All Operating Systems", data: ''});
+                        res.json({ message: "Error in request" });
                     } else {
-                        res.render('os', {page_title: "All Operating Systems", data:rows});
+                        res.json({ data:rows });
                     }
                 });
     });
 
-//add new os to os table
+//Add new os to os table
 //admin
-router.post('/equipment/os', function(req, res) {
+router.post('/os', function(req, res) {
     const name = req.body.name;
     if (name) {
         try {
@@ -54,13 +54,14 @@ router.post('/equipment/os', function(req, res) {
             res.status(201).send({ msg: 'Added Operating System to database'});
         } catch (err) {
             console.log(err);
+            res.json({ message: "Error in request" });
         }
     }
 });
 
-//update os info based on inputted id
+//Update os info based on inputted id
 //admin
-router.patch('/equipment/os/:id', function(req, res) {
+router.patch('/os/:id', function(req, res) {
     const name = req.body.name;
     const id = parseInt(req.params.id);
     if (name) {
@@ -74,13 +75,14 @@ router.patch('/equipment/os/:id', function(req, res) {
             res.status(200).send({ msg: 'Updated Operating System details'});
         } catch (err) {
             console.log(err);
+            res.json({ message: "Error in request" });
         }
     }
 });
 
-//delete os row based on inputted id
+//Delete os row based on inputted id
 //admin
-router.delete('/equipment/os/:id', function(req, res) {
+router.delete('/os/:id', function(req, res) {
     const id = parseInt(req.params.id);
     try {
         conn.query(`DELETE
@@ -91,6 +93,7 @@ router.delete('/equipment/os/:id', function(req, res) {
         res.status(200).send({ msg: 'Deleted Operating System details'});
     } catch (err) {
         console.log(err);
+        res.json({ message: "Error in request" });
     }
 });
 
