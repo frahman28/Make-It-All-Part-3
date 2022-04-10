@@ -17,7 +17,7 @@ const {verifySession, checkRoles} = require("./auth.middleware");
 // Navigates user to their dashboard, if they are logged in
 // (session exists). Otherwise logs them out.
 app.get('/', function(req, res) {
-  if (req.session) {
+  if (req.session.userId) {
     res.redirect("/myProblems")
   } else {
     res.redirect('/logout');
@@ -51,7 +51,10 @@ app.post('/login', (req, res) => {
 
     // Retreive details about user of a given username.
     conn.query(
-        `SELECT login_info.employee_id, username, role, password
+        `SELECT login_info.employee_id AS userId, 
+        username, 
+        role, 
+        password
         FROM company_roles, login_info, employees 
         WHERE company_roles.role_id = employees.role_id 
         AND login_info.employee_id = employees.employee_id 
@@ -66,7 +69,7 @@ app.post('/login', (req, res) => {
 
         // Compare password with hashed copy in the database.
         bcrypt.compare(
-            req.body.password, userPassword,
+            password, result[0]["password"],
             (bErr, bResult) => {
                 // If error occured, show error message.
                 if (bErr) {
@@ -75,15 +78,28 @@ app.post('/login', (req, res) => {
                     });
                 }
 
-                let userId       = result[0]['employee_id'];
-                let userRole     = (result[0]['role']).toLowerCase();
+                if (!bResult) {
+                    // If incorrect pasword.
+                    return res.render('login', {
+                        errorMessage: 'Invalid username or password.'
+                    });
+                }
+
+                let userId   = result[0]['userId'];
+                let userRole = (result[0]['role']).toLowerCase();
 
                 // Create a session and store user's details.
                 req.session.userId   = userId;
                 req.session.userName = username;
                 req.session.userRole = userRole;
 
-                return res.redirect('/myProblems');
+                // Redirect users to their dashboards accordingly to their role.
+                if (userRole === "adviser" || userRole == "admin") {
+                    return res.redirect('/dashboard');
+                } else {
+                    return res.redirect('/myProblems');
+                }
+
             });
         }
     );
@@ -109,11 +125,11 @@ app.post('/settings', verifySession, function(req, res, next) {
     // If no username or password provided, show error message. 
     if (!newPassword || !confirmNewPassword || newPassword !== confirmNewPassword) {
         return res.render('settings', {
-            errorMessage: 'Ensure that your passwords are the same.'
+                            userName: req.session.userName,
+                            messageType: "danger",
+                            message: 'Ensure that your passwords are the same.'
         });
     }
-
-    let userId = req.user.userId;
 
     // Hash the new password and save it in the databse.
     bcrypt.hash(newPassword, salt, function(err, hash) {
@@ -121,10 +137,12 @@ app.post('/settings', verifySession, function(req, res, next) {
         if (err) {
             return res.render("settings", {
                 userName: req.session.userName,
-                messageType: "error",
+                messageType: "danger",
                 message: "Something went wrong."
             });
         }
+
+        let userId = req.session.userId;
 
         // Update password for current user in the database.
         conn.query(`UPDATE login_info 
@@ -135,7 +153,7 @@ app.post('/settings', verifySession, function(req, res, next) {
             if (bErr) {
                 res.render("settings", {
                     userName: req.session.userName,
-                    messageType: "error",
+                    messageType: "danger",
                     message: "Something went wrong."
                 });
             } else {

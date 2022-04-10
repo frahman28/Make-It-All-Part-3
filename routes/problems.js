@@ -16,7 +16,7 @@ var {verifySession, checkRoles} = require("./auth.middleware");
 // (session exists). Otherwise regirect to the login page
 // and show error message.
 app.get('/', function (req, res, next) {
-    if (req.session) {
+    if (req.session.userId) {
         res.redirect('/myProblems');
     } else {
         res.redirect("../login");
@@ -28,7 +28,7 @@ app.get('/', function (req, res, next) {
 // access: ADMINS, ADVISERS
 // Navigates users of role Admin or Adviser to their own
 // dashboards.
-app.get('/myProblems', checkRoles("admin", "adviser"), function (req, res, next) {
+app.get('/dashboard', checkRoles("admin", "adviser"), function (req, res, next) {
     res.render('dashboard');
 });
 
@@ -40,7 +40,8 @@ app.get('/myProblems', checkRoles("admin", "adviser"), function (req, res, next)
 // which have not been resolved.
 app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, next) {
     // Change query sytax depending on current user's role.
-    let query = req.session.userRole === 'specialist' ? 'assigned_to' : 'employee';
+    let query  = req.session.userRole === 'specialist' ? 'assigned_to' : 'employee';
+    let userId = req.session.userId;
 
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
@@ -58,7 +59,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
                 AND specialists.employee_id = assigned_to
                 AND employees.employee_id = employee
                 AND closed <> 1
-                AND ${query} = ${req.session.userId}
+                AND ${query} = ${userId}
                 ORDER BY problems.problem_id ASC;`,  function (err, rows) {
         if (err){
             // If error occured, return an empty array.
