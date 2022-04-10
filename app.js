@@ -10,64 +10,68 @@ const session    = require('express-session');
 var flash        = require('connect-flash');
 const { secretKey, salt } = require("./constants");
 
+// Uncomment to populate the database with testing data.
 // const c          = require("./dbcreate");
 
 var indexRouter  = require('./routes/auth');
 var problemsRouter  = require('./routes/problems');
 
+// Initialize the app.
 var app = express();
 
-// view engine setup
+// Set up view engine.
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.json());
 
+// Set up sessions.
 app.use(session({
 	secret: secretKey,
 	resave: true,
 	saveUninitialized: true
 }));
 
+// Use flash messages in the app.
 app.use(flash());
 
-// for better display in the terminal
+// Show details in console whilst debugging.
 app.use(morgan("common"));
 
-// for HTTP protection
+// Protect HTTP requests.
 app.use(
   helmet({
     contentSecurityPolicy: false,
   })
 );
 
-// for cross-origin sources
+// Handle Cross-Origin errors.
 app.use(cors());
 
 app.use(express.urlencoded({ extended: false }));
 
-// cookie parser middleware
+// Enable cookies.
 app.use(cookieParser());
 
-// images
+// Set up static files path.
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-// Add middleware
+// Add routes.
 app.use('/', indexRouter);
 app.use('/', problemsRouter);
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler.
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler.
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+  // Set locals, only providing error in development.
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // Render the error page.
   res.status(err.status || 500);
   res.render('error', { errorMessage: err});
 });

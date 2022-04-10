@@ -28,6 +28,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown px-4">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <!-- Render user's username -->
                             <%= userName %>
                         </a>
                         <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
@@ -63,6 +64,7 @@
             <input type="submit" id="submit" name="submit" class="btn btn-dark">
         </div>
     </form>
+    <!-- Displays an error message in case of unsuccessful password change. -->
     <% if (typeof message != "undefined") { %>
 		<div class="alert alert-<%= messageType %> mt-4 col-md-6 container" role="alert">
 			<%= message %>
