@@ -1,23 +1,24 @@
-//Used to colour the data in status row
-$("tr td:last-child").each(function(i) {
-    var status = $.trim($(this).text());
-    
-    if (status == "Comments received") {
-        $(".status").eq(i).css({"background-color":"#ffb94f"});
-    } else if (status == "Pending solution") {
-        $(".status").eq(i).css({"background-color":"#d1ff4f"});
-    } else if (status == "Awaiting support") {
-        $(".status").eq(i).css({"background-color":"#878787"});
-    } else if (status == "Solved") {
-        $(".status").eq(i).css({"background-color":"#62cc3d"});
-    } else if (status == "Closed") {
-        $(".status").eq(i).css({"background-color":"#ff4f4f"});
-    } else {
-        $(".status").eq(i).css({"background-color":"#070707", color: "white"});
-    }
-});
-
 $(document).ready(function () {
+
+    //Used to colour the data in status row
+    $(".status").each(function(i) {
+        var status = $.trim($(this).text());
+        console.log(status)
+        if (status == "Comments received") {
+            $(".status").eq(i).css({"background-color":"#ffb94f"});
+        } else if (status == "Pending solution") {
+            $(".status").eq(i).css({"background-color":"#d1ff4f"});
+        } else if (status == "Awaiting support") {
+            $(".status").eq(i).css({"background-color":"#878787"});
+        } else if (status == "Solved") {
+            $(".status").eq(i).css({"background-color":"#62cc3d"});
+        } else if (status == "Closed") {
+            $(".status").eq(i).css({"background-color":"#ff4f4f"});
+        } else {
+            $(".status").eq(i).css({"background-color":"#070707", color: "white"});
+        }
+    });
+
     //Change colour of row on hover
     $(".visible-row").hover(function () {
         $(this).find("td:nth-child(n)").css("background-color", "#666564");
@@ -33,3 +34,4 @@ $(document).ready(function () {
         $(this).next("tr").collapse("toggle");
         $(this).next().find("div").collapse("toggle");
     });
+});
