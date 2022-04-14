@@ -12,6 +12,8 @@ $("tr td:last-child").each(function(i) {
         $(".status").eq(i).css({"background-color":"#62cc3d"});
     } else if (status == "Closed") {
         $(".status").eq(i).css({"background-color":"#ff4f4f"});
+    } else {
+        $(".status").eq(i).css({"background-color":"#070707", color: "white"});
     }
 });
 

@@ -87,9 +87,16 @@
             </tr>
             <!-- Loop through all problems and render their details. -->
             <% for(var i=0; i<problems.length; i++) {%>
-                <tr>
+                <tr class="visible-row accordion" data-bs-toggle="collapse">
                     <td>#<%= problems[i]["problemId"] %></td>
-                    <td><%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %></td>
+                    <td>
+                        <!-- Check whether problem has resolution date, and label accordingly  -->
+                        <% if (problems[i]["dateClosed"].length == 0) { %>
+                            -
+                        <%} else { %>
+                            <%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %>
+                        <% } %>
+                    </td>
                     <td><%= problems[i]["problemName"] %></td>
                     <td>
                         <div class="status">
@@ -99,10 +106,82 @@
                             <!-- Check if problem has been solved and if so, correct its label. -->
                             <%} else if (problems[i]["solved"] == 1) { %>
                                 Solved
+                            <!-- Check if missing status for the problem. -->
+                            <%} else if (problems[i]["status"].length == 0) { %>
+                                Unknown status
                             <!-- Otherwise show default status. -->
                             <%} else { %>
                                 <%= problems[i]["status"] %>
                             <% } %>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
+                    <td class="hidden-data" colspan="5">
+                        <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
+                            <br>
+                            <table class="hidden-table table table-striped table-bordered">
+                                <tr>
+                                    <td>Problem ID:</td>
+                                    <td><%= problems[i]["problemId"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Problem Type:</td>
+                                    <td><%= problems[i]["problemType"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Problem Description:</td>
+                                    <td><%= problems[i]["problemName"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Solution:</td>
+
+                                    <td>Pending solution</td>
+
+                                </tr>
+                                <tr>
+                                    <td>Specialist Name:</td>
+                                    <td><%= problems[i]["specialistName"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Opened on:</td>
+                                    <td><%= problems[i]["dateOpened"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Closed on:</td>
+                                    <td><%= problems[i]["dateClosed"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Operating System:</td>
+                                    <td><%= problems[i]["OS"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Software Name:</td>
+                                    <td><%= problems[i]["softwareName"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Software Type:</td>
+                                    <td><%= problems[i]["softwareType"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Device Name:</td>
+                                    <td><%= problems[i]["hardwareName"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Equipment type:</td>
+                                    <td><%= problems[i]["hardwareType"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Serial Number:</td>
+                                    <td><%= problems[i]["serialNumber"] %></td>
+                                </tr>
+                                <tr>
+                                    <td>Comments:</td>
+                                    <td><%= problems[i]["comment"] %></td>
+                                </tr>
+                            </table>
+                            <br>
                         </div>
                     </td>
                 </tr>

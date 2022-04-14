@@ -88,19 +88,49 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
 app.all('/allProblems', checkRoles("specialist", "employee"), function (req, res, next) {
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
-                problems.name as problemName,
-                employee as reportedById,
-                assigned_to as specialistId,
-                employees.name as reportedByName,
-                specialists.name as specialistName,
-                opened_on as dateOpened,
-                closed_on as dateClosed,
-                status
-                FROM employees as specialists, employees, problems, problem_status, problem_status_relation
-                WHERE problem_status_relation.status_id = problem_status.status_id
-                AND problems.problem_id = problem_status_relation.problem_id
-                AND specialists.employee_id = assigned_to
-                AND employees.employee_id = employee
+                    problems.name as problemName,
+                    employee as reportedById,
+                    employees.name as reportedByName,
+                    specialists.name as specialistName,
+                    opened_on as dateOpened,
+                    closed_on as dateClosed,
+                    status,
+                    solut.comment as solution,
+                    comments.comment,
+                    os.name as OS,
+                    software.name as softwareName,
+                    type_of_software.type as softwareType,
+                    hardware.name as hardwareName,
+                    type_of_hardware.type as hardwareType,
+                    hardware_relation.serial as serialNumber
+                FROM problems
+                JOIN employees as specialists 
+                    ON specialists.employee_id = assigned_to
+                JOIN employees 
+                    ON employees.employee_id = employee
+                LEFT JOIN os 
+                    ON os.os_id = problems.os_id
+                LEFT JOIN hardware 
+                    ON hardware.hardware_id = problems.hardware_id
+                LEFT JOIN type_of_hardware 
+                    ON type_of_hardware.type_id = hardware.type_id
+                LEFT JOIN software 
+                    ON software.software_id = problems.software_id
+                LEFT JOIN type_of_software 
+                    ON type_of_software.type_id = software.type_id
+                LEFT JOIN hardware_relation 
+                    ON hardware_relation.hardware_id = hardware.hardware_id
+                LEFT JOIN problem_status_relation 
+                    ON problems.problem_id = problem_status_relation.problem_id
+                LEFT JOIN problem_status
+                    ON problem_status_relation.status_id = problem_status.status_id
+                LEFT JOIN solutions 
+                    ON solutions.problem_id = problems.problem_id
+                LEFT JOIN comments AS solut 
+                    ON solut.comment_id = solutions.comment_id
+                LEFT JOIN comments 
+                    ON comments.problem_id = problems.problem_id 
+                    AND comments.comment_id NOT IN (select comment_id FROM solutions)
                 ORDER BY problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
