@@ -14,3 +14,20 @@ $("tr td:last-child").each(function(i) {
         $(".status").eq(i).css({"background-color":"#ff4f4f"});
     }
 });
+
+$(document).ready(function () {
+    //Change colour of row on hover
+    $(".visible-row").hover(function () {
+        $(this).find("td:nth-child(n)").css("background-color", "#666564");
+        $(this).css('cursor', 'pointer');
+    }, function () {
+        $(this).find("td:nth-child(n)").css("background-color", "#ffffff");
+        $(this).css('cursor', 'default');
+    });
+
+    //Collapse rows seperately
+    $(".visible-row").click(function () {
+        $(this).find("td:nth-child(n)").css("background-color", "#ffffff");
+        $(this).next("tr").collapse("toggle");
+        $(this).next().find("div").collapse("toggle");
+    });
