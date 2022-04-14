@@ -53,12 +53,16 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
                 opened_on as dateOpened,
                 closed_on as dateClosed,
                 status
-                FROM employees as specialists, employees, problems, problem_status, problem_status_relation 
-                WHERE problem_status_relation.status_id = problem_status.status_id
-                AND problems.problem_id = problem_status_relation.problem_id 
-                AND specialists.employee_id = assigned_to
-                AND employees.employee_id = employee
-                AND closed <> 1
+                FROM problems
+                LEFT JOIN employees 
+                    ON employees.employee_id = employee
+                LEFT JOIN employees as specialists 
+                    ON specialists.employee_id = assigned_to
+                LEFT JOIN problem_status_relation 
+                    ON problems.problem_id = problem_status_relation.problem_id 
+                LEFT JOIN problem_status 
+                    ON problem_status_relation.status_id = problem_status.status_id
+                WHERE closed <> 1
                 AND ${query} = ${userId}
                 ORDER BY problems.problem_id ASC;`,  function (err, rows) {
         if (err){
@@ -69,8 +73,8 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
                                             role: req.session.userRole});           // used for dynamic rendering (decides which column 
                                                                                     // should be displayed).
         } else {
-        // Otherwise return an array of problems..
-        res.render('problems/my_problems', {userName: req.session.userName,         // displays user's username.
+            // Otherwise return an array of problems..
+            res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
                                             moment: moment,                         // used for date formatting.
                                             problems: rows,                         // array of problems.
                                             role: req.session.userRole});           // used for dynamic rendering (decides which column 
