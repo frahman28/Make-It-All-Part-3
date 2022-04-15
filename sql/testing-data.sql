@@ -31,7 +31,7 @@ INSERT INTO `comments` (`comment_id`, `problem_id`, `author`, `comment`) VALUES
 --
 
 INSERT INTO `company_roles` (`role_id`, `role`) VALUES
-(1, 'Administrator'),
+(1, 'Admin'),
 (2, 'Adviser'),
 (3, 'Employee'),
 (4, 'Manager'),
@@ -144,13 +144,13 @@ INSERT INTO `job_title` (`title_id`, `title`) VALUES
 --
 
 INSERT INTO `login_info` (`employee_id`, `password`, `username`) VALUES
-(126711, 'specialist', 'bthompson'),
-(228787, 'specialist', 'chart'),
-(329922, 'specialist', 'njefferson'),
-(400393, 'adviser', 'tperry'),
-(573827, 'adviser', 'bigddavidson'),
-(609093, 'employee', 'lpoole'),
-(737277, 'employee', 'jipkiss');
+(126711, '$2a$15$52hdF/KGr0PISjAG9dBOGePi5nyNSHksToroeyr6gcGSTRMzW3vUi', 'bthompson'),
+(228787, '$2a$15$52hdF/KGr0PISjAG9dBOGePi5nyNSHksToroeyr6gcGSTRMzW3vUi', 'chart'),
+(329922, '$2a$15$52hdF/KGr0PISjAG9dBOGePi5nyNSHksToroeyr6gcGSTRMzW3vUi', 'njefferson'),
+(400393, '$2a$15$VMv21TgBN76umEcpEYzrRupXKENrT2.NKmxaj6i5O4Zz9/QEOKi96', 'tperry'),
+(573827, '$2a$15$VMv21TgBN76umEcpEYzrRupXKENrT2.NKmxaj6i5O4Zz9/QEOKi96', 'bigddavidson'),
+(609093, '$2a$15$sbT60XaES9wqX1kW6T0gPufmX1UJ8gokcNvcEKmdJYTS1U49ddfZK', 'lpoole'),
+(737277, '$2a$15$sbT60XaES9wqX1kW6T0gPufmX1UJ8gokcNvcEKmdJYTS1U49ddfZK', 'jipkiss');
 
 --
 -- Dumping data for table `os`
@@ -183,7 +183,7 @@ INSERT INTO `problems` (`problem_id`, `name`, `problem_type_id`, `software_id`, 
 
 INSERT INTO `problem_status` (`status_id`, `status`) VALUES
 (1, 'Awaiting support'),
-(2, 'Comments recieved'),
+(2, 'Comments received'),
 (3, 'Pending solution');
 
 --

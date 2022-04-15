@@ -7,60 +7,73 @@ var helmet       = require("helmet");
 var cors         = require("cors");
 var ejs          = require('ejs');
 const session    = require('express-session');
+var flash        = require('connect-flash');
+const { secretKey, salt } = require("./constants");
 
-const c          = require("./dbcreate");
+// Uncomment to populate the database with testing data.
+// const c          = require("./dbcreate");
 
 var indexRouter  = require('./routes/auth');
-var usersRouter  = require('./routes/employees');
+var problemsRouter  = require('./routes/problems');
 
+// Initialize the app.
 var app = express();
 
-// view engine setup
+// Set up view engine.
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.json());
 
-// for better display in the terminal
-app.use(morgan("common"));
-
-// for HTTP protection
-app.use(helmet());
-
-// for cross-origin sources
-app.use(cors());
-
-app.use(express.urlencoded({ extended: false }));
-
-// cookie parser middleware
-app.use(cookieParser());
-
-// images
-app.use(express.static(path.join(__dirname, 'public')));
-
+// Set up sessions.
 app.use(session({
-	secret: 'team015-make-it-all-2022',
+	secret: secretKey,
 	resave: true,
 	saveUninitialized: true
 }));
 
-// Add middleware
-app.use('/', indexRouter);
-app.use('/employee', usersRouter);
+// Use flash messages in the app.
+app.use(flash());
 
-// catch 404 and forward to error handler
+// Show details in console whilst debugging.
+app.use(morgan("common"));
+
+// Protect HTTP requests.
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+
+// Handle Cross-Origin errors.
+app.use(cors());
+
+app.use(express.urlencoded({ extended: false }));
+
+// Enable cookies.
+app.use(cookieParser());
+
+// Set up static files path.
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+// Add routes.
+app.use('/', indexRouter);
+app.use('/', problemsRouter);
+
+// Catch 404 and forward to error handler.
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler.
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+  // Set locals, only providing error in development.
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // Render the error page.
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', { errorMessage: err});
 });
 
 module.exports = app;
