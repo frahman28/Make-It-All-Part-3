@@ -174,14 +174,6 @@ var updateHardware = function(req, res) {
                             }
                         })
         }
-        if (serial) {
-            conn.query(`UPDATE
-                        hardware_relation
-                        SET
-                        serial = '${serial}'
-                        WHERE
-                        hardware_id = '${id}'`)
-        }
         res.status(200).send({ msg: 'Updated Hardware details'});
     } catch (err) {
         console.log(err);

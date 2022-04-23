@@ -175,14 +175,6 @@ var updateSoftware = function(req, res) {
                             }
                         })
         }
-        if (license) {
-            conn.query(`UPDATE
-                        software_relation
-                        SET
-                        license = '${license}'
-                        WHERE
-                        software_id = '${id}'`)
-        }
         res.status(200).send({ msg: 'Updated Software details'});
     } catch (err) {
         console.log(err);
