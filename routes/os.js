@@ -1,48 +1,54 @@
 var express = require('express');
 var router = express.Router();
 
-var conn = require('../dbconfig');
+var conn = require('../config');
+
+//All queries stored as functions to be called in corresponding get route in equipment.js
+//Use of promise to pass rows returned outside of functions
 
 //Get all os information
-//admin, specialist, employee
-router.get('/os', function(req, res) {
-    conn.query(`SELECT 
+var getAllOS = function() {
+    return new Promise((resolve, reject) => {
+        conn.query(`SELECT 
                 *
                 FROM
                 os`,
                 function(err, rows) {
                     if (err) {
+                        reject(err);
                         console.error('Error: ' + err);
-                        res.json({ message: "Error in request" });
                     } else {
-                        res.json({ data:rows });
+                        console.log(rows);
+                        return resolve(rows); 
                     }
-                });
-    });
+                })
+    })           
+};
 
 //Get os info based on inputted id
-//admin
-router.get('/os/:id', function(req, res) {
-    const id = parseInt(req.params.id);
-    conn.query(`SELECT 
-                *
-                FROM
-                os
-                WHERE
-                os_id = ?`,
-                function(err, rows) {
-                    if (err) {
-                        console.error('Error: ' + err);
-                        res.json({ message: "Error in request" });
-                    } else {
-                        res.json({ data:rows });
-                    }
-                });
-    });
+var getOSById = function(req) {
+    return new Promise((resolve, reject) => {
+        const id = parseInt(req.params.id);
+        conn.query(`SELECT 
+                    *
+                    FROM
+                    os
+                    WHERE
+                    os_id = '${id}'`,
+                    function(err, rows) {
+                        if (err) {
+                            reject(err);
+                            console.error('Error: ' + err);
+                        } else {
+                            console.log(rows);
+                            return resolve(rows); 
+                        }
+                    })
+        })           
+};
 
 //Add new os to os table
-//admin
-router.post('/os', function(req, res) {
+var addOS = function(req, res) {
     const name = req.body.name;
     if (name) {
         try {
@@ -54,14 +60,13 @@ router.post('/os', function(req, res) {
             res.status(201).send({ msg: 'Added Operating System to database'});
         } catch (err) {
             console.log(err);
-            res.json({ message: "Error in request" });
+            res.render({ message: "Error in request" });
         }
     }
-});
+};
 
 //Update os info based on inputted id
-//admin
-router.patch('/os/:id', function(req, res) {
+var updateOS = function(req, res) {
     const name = req.body.name;
     const id = parseInt(req.params.id);
     if (name) {
@@ -75,14 +80,13 @@ router.patch('/os/:id', function(req, res) {
             res.status(200).send({ msg: 'Updated Operating System details'});
         } catch (err) {
             console.log(err);
-            res.json({ message: "Error in request" });
+            res.render({ message: "Error in request" });
         }
     }
-});
+};
 
 //Delete os row based on inputted id
-//admin
-router.delete('/os/:id', function(req, res) {
+var deleteOS = function(req, res) {
     const id = parseInt(req.params.id);
     try {
         conn.query(`DELETE
@@ -93,8 +97,8 @@ router.delete('/os/:id', function(req, res) {
         res.status(200).send({ msg: 'Deleted Operating System details'});
     } catch (err) {
         console.log(err);
-        res.json({ message: "Error in request" });
+        res.render({ message: "Error in request" });
     }
-});
+};
 
-module.exports = router;
+module.exports = {getAllOS, getOSById, addOS, updateOS, deleteOS};

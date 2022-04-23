@@ -1,12 +1,15 @@
 var express = require('express');
 var router = express.Router();
 
-var conn = require('../dbconfig');
+var conn = require('../config');
+
+//All queries stored as functions to be called in corresponding get route in equipment.js
+//Use of promise to pass rows returned outside of functions
 
 //Get all data for software, including type names and licenses
-//admin, specialist, employee
-router.get('/software', function(req, res) {
-    conn.query(`SELECT 
+var getAllSoftware = function() {
+    return new Promise((resolve, reject) => {
+        conn.query(`SELECT 
                 software.software_id, name, type_of_software.type, software_relation.license
                 FROM
                 software 
@@ -20,35 +23,40 @@ router.get('/software', function(req, res) {
                 software.type_id = type_of_software.type_id`,
                 function(err, rows) {
                     if (err) {
+                        reject(err);
                         console.error('Error: ' + err);
-                        res.json({ message: "Error in request" });
                     } else {
-                        res.json({ data:rows });
+                        console.log(rows);
+                        return resolve(rows); 
                     }
-                });
-    });
+                })
+            
+    })           
+};
 
 //Get all software types to display (for simpler changing/updating types?)
-//admin
-router.get('/software/types', function(req, res) {
-    conn.query(`SELECT 
+var getSoftwareTypes = function() {
+    return new Promise((resolve, reject) => {
+        conn.query(`SELECT 
                 *
                 FROM
                 type_of_software`,
                 function(err, rows) {
                     if (err) {
+                        reject(err);
                         console.error('Error: ' + err);
-                        res.json({ message: "Error in request" });
                     } else {
-                        res.json({ data:rows });
+                        console.log(rows);
+                        return resolve(rows); 
                     }
-                });
-    });
+                })
+    })
+};
 
 //Get software info based on inputted id, including type name and license
-//admin
-router.get('/software/:id', function(req, res) {
-    const id = parseInt(req.params.id);
+var getSoftwareById = function(req) {
+    return new Promise((resolve, reject) => {
+        const id = parseInt(req.params.id);
     conn.query(`SELECT 
                 software.software_id, name, type_of_software.type, software_relation.license
                 FROM
@@ -65,18 +73,18 @@ router.get('/software/:id', function(req, res) {
                 software.software_id = '${id}'`,
                 function(err, rows) {
                     if (err) {
+                        reject(err);
                         console.error('Error: ' + err);
-                        res.json({ message: "Error in request" });
                     } else {
-                        res.json({ data:rows[0] });
- 
+                        console.log(rows);
+                        return resolve(rows); 
                     }
-                });
-    });
+                })
+    })                
+};
 
 //Add new software to software table and license to software relation table
-//admin
-router.post('/software', function(req, res) {
+var addSoftware = function(req, res) {
     const { name, type, license } = req.body;
     if (name && type && license) { //Check if all required data is inputted
         try {
@@ -128,14 +136,13 @@ router.post('/software', function(req, res) {
             res.status(201).send({ msg: 'Added Software to database'});
         } catch (err) {
             console.log(err);
-            res.json({ message: "Error in request" });
+            res.render({ message: "Error in request" });
         }
     }
-});
+};
 
 //Update software info based on inputted id
-//admin
-router.patch('/software/:id', function(req, res) {
+var updateSoftware = function(req, res) {
     const { name, type, license } = req.body;
     const id = parseInt(req.params.id);
     try { //Update each attribute seperately incase certain attributes are not inputted
@@ -179,25 +186,34 @@ router.patch('/software/:id', function(req, res) {
         res.status(200).send({ msg: 'Updated Software details'});
     } catch (err) {
         console.log(err);
-        res.json({ message: "Error in request" });
+        res.render({ message: "Error in request" });
     }
-});
+};
 
-//Delete software row based on inputted id
-//admin
-router.delete('/software/:id', function(req, res) {
+var deleteSoftware = function(req, res) {
     const id = parseInt(req.params.id);
     try {
         conn.query(`DELETE
                     FROM 
-                    software
+                    software_relation
                     WHERE
-                    software_id = '${id}'`);
+                    software_id = '${id}'`, 
+                    function(err, rows) {
+                        if (err) {
+                            console.error('Error: ' + err);
+                        } else {
+                            conn.query(`DELETE
+                                        FROM 
+                                        software
+                                        WHERE
+                                        software_id = '${id}'`);
+                        }
+                    })
         res.status(200).send({ msg: 'Deleted Software details'});
     } catch (err) {
         console.log(err);
-        res.json({ message: "Error in request" });
+        res.render({ message: "Error in request" });
     }
-});
+};
 
-module.exports = router;
+module.exports = {getAllSoftware, getSoftwareTypes, getSoftwareById, addSoftware, updateSoftware, deleteSoftware};

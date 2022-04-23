@@ -1,81 +1,89 @@
 var express = require('express');
 var router = express.Router();
 
-var conn = require('../dbconfig');
+var conn = require('../config');
+
+//All queries stored as functions to be called in corresponding get route in equipment.js
+//Use of promise to pass rows returned outside of functions
 
 //Get all data for hardware, including type names and serials
-//admin, specialist, employee
-router.get('/hardware', function(req, res) {
-    conn.query(`SELECT 
-                hardware.hardware_id, name, type_of_hardware.type, hardware_relation.serial
-                FROM
-                hardware 
-                LEFT JOIN 
-                hardware_relation
-                ON
-                hardware_relation.hardware_id = hardware.hardware_id
-                LEFT JOIN
-                type_of_hardware
-                ON 
-                hardware.type_id = type_of_hardware.type_id`,
-                function(err, rows) {
+var getAllHardware = function() {
+    return new Promise((resolve, reject) => {
+        conn.query(`SELECT 
+        hardware.hardware_id, name, type_of_hardware.type, hardware_relation.serial
+        FROM
+        hardware 
+        LEFT JOIN 
+        hardware_relation
+        ON
+        hardware_relation.hardware_id = hardware.hardware_id
+        LEFT JOIN
+        type_of_hardware
+        ON 
+        hardware.type_id = type_of_hardware.type_id`,
+                function(err, rows) { 
                     if (err) {
+                        reject(err);
                         console.error('Error: ' + err);
-                        res.json({ message: "Error in request" });
                     } else {
-                        res.json({ data:rows });
-                    }
-                });
-    });
+                        console.log(rows);
+                        return resolve(rows); 
+                    } 
+                })
+    })            
+};
 
 //Get all hardware types to display (for simpler changing/updating types?)
-//admin
-router.get('/hardware/types', function(req, res) {
-    conn.query(`SELECT 
-                *
-                FROM
-                type_of_hardware`,
-                function(err, rows) {
-                    if (err) {
-                        console.error('Error: ' + err);
-                        res.json({ message: "Error in request" });
-                    } else {
-                        res.json({ data:rows });
-                    }
-                });
-    });
+var getHardwareTypes = function() {
+    return new Promise((resolve, reject) => {
+        conn.query(`SELECT 
+                    *
+                    FROM
+                    type_of_hardware`,
+                    function(err, rows) {
+                        if (err) {
+                            reject(err);
+                            console.error('Error: ' + err);
+                        } else {
+                            console.log(rows);
+                            return resolve(rows); 
+                        }
+                    })
+    })
+};
 
 //Get hardware info based on inputted id, including type name and serial
-//admin
-router.get('/hardware/:id', function(req, res) {
-    const id = parseInt(req.params.id);
-    conn.query(`SELECT 
-                hardware.hardware_id, name, type_of_hardware.type, hardware_relation.serial
-                FROM
-                hardware 
-                LEFT JOIN 
-                hardware_relation
-                ON
-                hardware_relation.hardware_id = hardware.hardware_id
-                LEFT JOIN
-                type_of_hardware
-                ON 
-                hardware.type_id = type_of_hardware.type_id
-                WHERE
-                hardware.hardware_id = '${id}'`,
-                function(err, rows) {
-                    if (err) {
-                        console.error('Error: ' + err);
-                        res.json({ message: "Error in request" });
-                    } else {
-                        res.json({ data:rows });
-                    }
-                });
-    });
+var getHardwareById = function(req) {
+    return new Promise((resolve, reject) => {
+        const id = parseInt(req.params.id);
+        conn.query(`SELECT 
+                    hardware.hardware_id, name, type_of_hardware.type, hardware_relation.serial
+                    FROM
+                    hardware 
+                    LEFT JOIN 
+                    hardware_relation
+                    ON
+                    hardware_relation.hardware_id = hardware.hardware_id
+                    LEFT JOIN
+                    type_of_hardware
+                    ON 
+                    hardware.type_id = type_of_hardware.type_id
+                    WHERE
+                    hardware.hardware_id = '${id}'`,
+                    function(err, rows) {
+                        if (err) {
+                            reject(err);
+                            console.error('Error: ' + err);
+                        } else {
+                            console.log(rows);
+                            return resolve(rows); 
+                        }
+                    })
+    })                
+};
 
 //Add new hardware to hardware table and serial to hardware relation table
-//admin
-router.post('/hardware', function(req, res) {
+var addHardware = function(req, res) {
     const { name, type, serial } = req.body;
     if (name && type && serial) { //Check if all required data is inputted
         try {
@@ -126,15 +134,14 @@ router.post('/hardware', function(req, res) {
                         })    
             res.status(201).send({ msg: 'Added Hardware to database'});
         } catch (err) {
-            console.log(err);
-            res.json({ message: "Error in request" });
+            reject(err);
+            console.error('Error: ' + err);
         }
     }
-});
+};
 
 //Update hardware info based on inputted id
-//admin
-router.patch('/hardware/:id', function(req, res) {
+var updateHardware = function(req, res) {
     const { name, type, serial} = req.body;
     const id = parseInt(req.params.id);
     try { //Update each attribute seperately incase certain attributes are not inputted
@@ -178,25 +185,35 @@ router.patch('/hardware/:id', function(req, res) {
         res.status(200).send({ msg: 'Updated Hardware details'});
     } catch (err) {
         console.log(err);
-        res.json({ message: "Error in request" });
+        res.render({ message: "Error in request" });
     }
-});
+};
 
 //Delete hardware row based on inputted id
-//admin
-router.delete('/hardware/:id', function(req, res) {
+var deleteHardware = function(req, res) {
     const id = parseInt(req.params.id);
     try {
         conn.query(`DELETE
                     FROM 
-                    hardware
+                    hardware_relation
                     WHERE
-                    hardware_id = '${id}'`);
+                    hardware_id = '${id}'`,
+                    function (err, rows) {
+                        if (err) {
+                            console.error('Error: ' + err);
+                        } else {
+                            conn.query(`DELETE
+                            FROM 
+                            hardware
+                            WHERE
+                            hardware_id = '${id}'`);
+                        }
+                    })
         res.status(200).send({ msg: 'Deleted Hardware details'});
     } catch (err) {
         console.log(err);
-        res.json({ message: "Error in request" });
+        res.render({ message: "Error in request" });
     }
-});
+};
 
-module.exports = router;
+module.exports = {getAllHardware, getHardwareTypes, getHardwareById, addHardware, updateHardware, deleteHardware};
