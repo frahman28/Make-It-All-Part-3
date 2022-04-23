@@ -46,32 +46,32 @@ router.post('/addOS', async function(req, res) {
 });
 
 //Post route specific to updating hardware, calls updateHardware function
-router.patch('/updateHardware', async function(req, res) {
+router.patch('/updateHardware/:id', async function(req, res) {
     await updateHardware(req, res);
 });
 
 //Post route specific to updating software, calls updateSoftware function
-router.patch('/updateSoftware', async function(req, res) {
+router.patch('/updateSoftware/:id', async function(req, res) {
     await updateSoftware(req, res);
 });
 
 //Post route specific to updating os, calls updateOS function
-router.patch('/updateOS', async function(req, res) {
+router.patch('/updateOS/:id', async function(req, res) {
     await updateOS(req, res);
 });
 
 //Post route specific to deleting hardware, calls deleteHardware function
-router.delete('/deleteHardware', async function(req, res) {
+router.delete('/deleteHardware/:id', async function(req, res) {
     await deleteHardware(req, res);
 });
 
 //Post route specific to deleting software, calls deleteSoftware function
-router.delete('/deleteSoftware', async function(req, res) {
+router.delete('/deleteSoftware/:id', async function(req, res) {
     await deleteSoftware(req, res);
 });
 
 //Post route specific to deleting os, calls deleteOS function
-router.delete('/deleteOS', async function(req, res) {
+router.delete('/deleteOS/:id', async function(req, res) {
     await deleteOS(req, res);
 });
 
