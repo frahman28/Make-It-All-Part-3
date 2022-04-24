@@ -82,7 +82,6 @@
                 </tr>
             </thead>
             <tbody id="view-hardware-table">
-                <!-- Dummy data, remove when taking data from database -->
                 <% for (var i = 0; i < hardware.length; i++ ) {%> 
                 <tr class="visible-row accordion" data-bs-toggle="collapse">
                     <td>#<%= hardware[i]["hardware_id"] %> </td>
@@ -94,73 +93,82 @@
                     <td class="hidden-data" colspan="4">
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Update</th>
-                                    <td name="id_update">#<%= hardware[i]["hardware_id"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>Name:</td>
-                                    <td><input type="text" id="update-name" name="update-name" class="form-control" placeholder="<%= hardware[i]["name"] %>"></td>
-                                </tr>
-                                <tr>
-                                    <td>Type:</td>
-                                    <td>
-                                        <select id="update-type" name="update-type" class="form-select">
-                                            <option selected>Types</option>
-                                            <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
-                                            <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>
-                                            <% } %>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Submit:</td>
-                                    <td><input type="submit" id= "update" name="update" value="Update"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
-                                </tr>
-                            </table>
+                            <form action="/updateHardware/<%= hardware[i]["hardware_id"] %>?_method=PATCH" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Update</th>
+                                        <td name="id">#<%= hardware[i]["hardware_id"] %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= hardware[i]["name"] %>"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Type:</td>
+                                        <td>
+                                            <select id="update-type" name="type" class="form-select">
+                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
+                                                    <% if (hardwareTypes[j]["type"] == hardware[i]["type"] ) {%>
+                                                        <option selected><%= hardwareTypes[j]["type"] %></option>
+                                                    <% } else { %>  
+                                                        <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>   
+                                                    <% } %>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Delete #<%= hardware[i]["hardware_id"] %></th>
-                                </tr>
-                                <tr>
-                                    <td><input type="submit" id= "delete" name="delete" value="Delete"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
-                                </tr>
-                            </table>
+                            <form action="deleteHardware/<%= hardware[i]["hardware_id"] %>?_method=DELETE" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Delete #<%= hardware[i]["hardware_id"] %></th>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="submit" id= "delete" name="delete" value="Delete"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Add New</th>
-                                    <td>Enter Fields:</td>
-                                </tr>
-                                <tr>
-                                    <td>Name:</td>
-                                    <td><input type="text" id="new-name" name="new-name" class="form-control" ></td>
-                                </tr>
-                                <tr>
-                                    <td>Type:</td>
-                                    <td>
-                                        <select id="new-type" name="new-type" class="form-select">
-                                            <option selected>Types</option>
-                                            <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
-                                            <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>
-                                            <% } %>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Serial Number:</td>
-                                    <td><input type="text" id="new-serial" name="new-serial" class="form-control" ></td>
-                                </tr>
-                                <tr>
-                                    <td>Submit:</td>
-                                    <td><input type="submit" id= "new_hardware" name="new_hardware" value="Add"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Hardware"></td>
-                                </tr>
-                            </table>
+                            <form action="/addHardware" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Add New</th>
+                                        <td>Enter Fields:</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td><input type="text" id="new-name" name="name" class="form-control" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Type:</td>
+                                        <td>
+                                            <select id="new-type" name="type" class="form-select">
+                                                <option selected>Types</option>
+                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
+                                                <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Serial Number:</td>
+                                        <td><input type="text" id="new-serial" name="serial" class="form-control" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "new_hardware" name="new_hardware" value="Add"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Hardware"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
                         </div>
                     </td>
@@ -181,7 +189,6 @@
                 </tr>
             </thead>
             <tbody id="view-software-table">
-                <!-- Dummy data, remove when taking data from database -->
                 <% for (var i = 0; i < software.length; i++ ) {%> 
                 <tr class="visible-row accordion" data-bs-toggle="collapse">
                     <td>#<%= software[i]["software_id"] %> </td>
@@ -193,73 +200,82 @@
                     <td class="hidden-data" colspan="4">
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Update</th>
-                                    <td name="id_update">#<%= software[i]["software_id"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>Name:</td>
-                                    <td><input type="text" id="update-name" name="update-name" class="form-control" placeholder="<%= software[i]["name"] %>"></td>
-                                </tr>
-                                <tr>
-                                    <td>Type:</td>
-                                    <td>
-                                        <select id="update-type" name="update-type" class="form-select">
-                                            <option selected>Types</option>
-                                            <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
-                                            <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>
-                                            <% } %>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Submit:</td>
-                                    <td><input type="submit" id= "update" name="update" value="Update"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
-                                </tr>
-                            </table>
+                            <form action="/updateSoftware/<%= software[i]["software_id"] %>?_method=PATCH" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Update</th>
+                                        <td name="id">#<%= software[i]["software_id"] %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= hardware[i]["name"] %>"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Type:</td>
+                                        <td>
+                                            <select id="update-type" name="type" class="form-select">
+                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
+                                                    <% if (softwareTypes[j]["type"] == software[i]["type"] ) {%>
+                                                        <option selected><%= softwareTypes[j]["type"] %></option>
+                                                    <% } else { %>  
+                                                        <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>   
+                                                    <% } %>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Delete #<%= software[i]["software_id"] %></th>
-                                </tr>
-                                <tr>
-                                    <td><input type="submit" id= "delete" name="delete" value="Delete"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
-                                </tr>
-                            </table>
+                            <form action="/deleteSoftware/<%= software[i]["software_id"] %>?_method=DELETE" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Delete #<%= software[i]["software_id"] %></th>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="submit" id= "delete" name="delete" value="Delete"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Add New</th>
-                                    <td>Enter Fields:</td>
-                                </tr>
-                                <tr>
-                                    <td>Name:</td>
-                                    <td><input type="text" id="new-name" name="new-name" class="form-control" ></td>
-                                </tr>
-                                <tr>
-                                    <td>Type:</td>
-                                    <td>
-                                        <select id="new-type" name="new-type" class="form-select">
-                                            <option selected>Types</option>
-                                            <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
-                                            <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>
-                                            <% } %>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>License Number:</td>
-                                    <td><input type="text" id="new-license" name="new-license" class="form-control" ></td>
-                                </tr>
-                                <tr>
-                                    <td>Submit:</td>
-                                    <td><input type="submit" id= "new_software" name="new_software" value="Add"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Software"></td>
-                                </tr>
-                            </table>
+                            <form action="/addSoftware" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Add New</th>
+                                        <td>Enter Fields:</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td><input type="text" id="new-name" name="name" class="form-control" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Type:</td>
+                                        <td>
+                                            <select id="new-type" name="type" class="form-select">
+                                                <option selected>Types</option>
+                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
+                                                <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>License Number:</td>
+                                        <td><input type="text" id="new-serial" name="license" class="form-control" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "new_software" name="new_software" value="Add"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Software"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
                         </div>
                     </td>
@@ -278,7 +294,6 @@
                 </tr>
             </thead>
             <tbody id="view-os-table">
-                <!-- Dummy data, remove when taking data from database -->
                 <% for (var i = 0; i < os.length; i++ ) {%> 
                 <tr class="visible-row accordion" data-bs-toggle="collapse">
                     <td>#<%= os[i]["os_id"] %> </td>
@@ -288,47 +303,53 @@
                     <td class="hidden-data" colspan="4">
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Update</th>
-                                    <td name="id_update">#<%= os[i]["os_id"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>Name:</td>
-                                    <td><input type="text" id="update-name" name="update-name" class="form-control" placeholder="<%= os[i]["name"] %>"></td>
-                                </tr>
-                                <tr>
-                                    <td>Submit:</td>
-                                    <td><input type="submit" id= "update" name="update" value="Update"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
-                                </tr>
-                            </table>
+                            <form action="/updateOS/<%= os[i]["os_id"] %>?_method=PATCH" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Update</th>
+                                        <td name="id_update">#<%= os[i]["os_id"] %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td><input type="text" id="update-name" name="update-name" class="form-control" placeholder="<%= os[i]["name"] %>"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Delete #<%= os[i]["os_id"] %></th>
-                                </tr>
-                                <tr>
-                                    <td><input type="submit" id= "delete" name="delete" value="Delete"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
-                                </tr>
-                            </table>
+                            <form action="/deleteOS/<%= os[i]["os_id"] %>?_method=DELETE" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Delete #<%= os[i]["os_id"] %></th>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="submit" id= "delete" name="delete" value="Delete"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <th>Add New</th>
-                                    <td>Enter Fields:</td>
-                                </tr>
-                                <tr>
-                                    <td>Name:</td>
-                                    <td><input type="text" id="new-name" name="new-name" class="form-control" ></td>
-                                </tr>
-                                <tr>
-                                    <td>Submit:</td>
-                                    <td><input type="submit" id= "new_os" name="new_os" value="Add"
-                                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New OS"></td>
-                                </tr>
-                            </table>
+                            <form action="/addOS" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Add New</th>
+                                        <td>Enter Fields:</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td><input type="text" id="new-name" name="new-name" class="form-control" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "new_os" name="new_os" value="Add"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New OS"></td>
+                                    </tr>
+                                </table>
+                            </form>
                             <br>
                         </div>
                     </td>
