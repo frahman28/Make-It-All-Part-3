@@ -4,9 +4,9 @@ var router = express.Router();
 var conn = require('../config');
 
 //Import all functions from hardware, software, os files to interact with database
-var {getAllHardware, getHardwareTypes, getHardwareById, addHardware, updateHardware, deleteHardware} = require('./hware');
-var {getAllSoftware, getSoftwareTypes, getSoftwareById, addSoftware, updateSoftware, deleteSoftware} = require('./sware');
-var {getAllOS, getOSById, addOS, updateOS, deleteOS} = require('./osys');
+var {getAllHardware, getHardwareTypes, getHardwareById, addHardware, updateHardware, deleteHardware} = require('./hardware');
+var {getAllSoftware, getSoftwareTypes, getSoftwareById, addSoftware, updateSoftware, deleteSoftware} = require('./software');
+var {getAllOS, getOSById, addOS, updateOS, deleteOS} = require('./os');
 
 
 //Single get route calls functions from all files to display results on single page
@@ -34,7 +34,7 @@ router.get('/viewEquipment/:id', async function(req, res) {
 
 //Post route specific to adding hardware, calls addHardware function
 router.post('/addHardware', async function(req, res) {
-    await addHardware(req, res);  
+    await addHardware(req, res);
 });
 
 //Post route specific to adding Software, calls addSoftware function
