@@ -90,6 +90,7 @@
                     <td><%= hardware[i]["serial"] %> </td>
                 </tr> 
                 <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                    <% if (role == "admin") { %>
                     <td class="hidden-data" colspan="4">
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
@@ -172,6 +173,7 @@
                             <br>
                         </div>
                     </td>
+                    <% } %> 
                 </tr>
                 <% } %>
             </tbody>
@@ -197,6 +199,7 @@
                     <td><%= software[i]["license"] %> </td>
                 </tr> 
                 <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                    <% if (role == "admin") { %>
                     <td class="hidden-data" colspan="4">
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
@@ -279,6 +282,7 @@
                             <br>
                         </div>
                     </td>
+                    <% } %> 
                 </tr>
                 <% } %>
             </tbody>
@@ -300,6 +304,7 @@
                     <td><%= os[i]["name"] %></td>
                 </tr>
                 <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                    <% if (role == "admin") { %>
                     <td class="hidden-data" colspan="4">
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
@@ -353,6 +358,7 @@
                             <br>
                         </div>
                     </td>
+                    <% } %> 
                 </tr>
                 <% } %>
             </tbody>
