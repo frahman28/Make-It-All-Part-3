@@ -91,7 +91,7 @@
                 </tr> 
                 <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                     <% if (role == "admin") { %>
-                    <td class="hidden-data" colspan="4">
+                    <td class="hidden-data" colspan="4"> 
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
                             <form action="/updateHardware/<%= hardware[i]["hardware_id"] %>?_method=PATCH" method="POST">
@@ -102,7 +102,7 @@
                                     </tr>
                                     <tr>
                                         <td>Name:</td>
-                                        <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= hardware[i]["name"] %>"></td>
+                                        <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= hardware[i]["name"] %>" value="<%= hardware[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
                                         <td>Type:</td>
@@ -118,6 +118,10 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr hidden = "hidden">
+                                        <td>Serial Number:</td>
+                                        <td><input type="text" id="new-serial" name="serial" class="form-control" placeholder="<%= hardware[i]["serial"] %>" value="<%= hardware[i]["serial"] %>"></td>
+                                    </tr>
                                     <tr>
                                         <td>Submit:</td>
                                         <td><input type="submit" id= "update" name="update" value="Update"
@@ -130,6 +134,28 @@
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
                                         <th>Delete #<%= hardware[i]["hardware_id"] %></th>
+                                    </tr>
+                                    <tr hidden = "hidden">
+                                        <td>Name:</td>
+                                        <td><input type="text" id="update-name" name="name" class="form-control" value="<%= hardware[i]["name"] %>"></td>
+                                    </tr>
+                                    <tr hidden = "hidden">
+                                        <td>Type:</td>
+                                        <td>
+                                            <select id="update-type" name="type" class="form-select">
+                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
+                                                    <% if (hardwareTypes[j]["type"] == hardware[i]["type"] ) {%>
+                                                        <option selected><%= hardwareTypes[j]["type"] %></option>
+                                                    <% } else { %>  
+                                                        <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>   
+                                                    <% } %>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr hidden = "hidden">
+                                        <td>Serial Number:</td>
+                                        <td><input type="text" id="update-serial" name="serial" class="form-control" value="<%= hardware[i]["serial"] %>" ></td>
                                     </tr>
                                     <tr>
                                         <td><input type="submit" id= "delete" name="delete" value="Delete"
@@ -152,7 +178,6 @@
                                         <td>Type:</td>
                                         <td>
                                             <select id="new-type" name="type" class="form-select">
-                                                <option selected>Types</option>
                                                 <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
                                                 <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>
                                                 <% } %>
@@ -173,7 +198,7 @@
                             <br>
                         </div>
                     </td>
-                    <% } %> 
+                    <% } %>
                 </tr>
                 <% } %>
             </tbody>
@@ -211,7 +236,7 @@
                                     </tr>
                                     <tr>
                                         <td>Name:</td>
-                                        <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= hardware[i]["name"] %>"></td>
+                                        <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= software[i]["name"] %>" value="<%= software[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
                                         <td>Type:</td>
@@ -227,6 +252,10 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr hidden = "hidden">
+                                        <td>License Number:</td>
+                                        <td><input type="text" id="update-serial" name="license" class="form-control" value="<%= software[i]["license"] %>"></td>
+                                    </tr>
                                     <tr>
                                         <td>Submit:</td>
                                         <td><input type="submit" id= "update" name="update" value="Update"
@@ -239,6 +268,28 @@
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
                                         <th>Delete #<%= software[i]["software_id"] %></th>
+                                    </tr>
+                                    <tr hidden = "hidden">
+                                        <td>Name:</td>
+                                        <td><input type="text" id="delete-name" name="name" class="form-control" value="<%= software[i]["name"] %>"></td>
+                                    </tr>
+                                    <tr hidden = "hidden">
+                                        <td>Type:</td>
+                                        <td>
+                                            <select id="delete-type" name="type" class="form-select">
+                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
+                                                    <% if (softwareTypes[j]["type"] == software[i]["type"] ) {%>
+                                                        <option selected><%= softwareTypes[j]["type"] %></option>
+                                                    <% } else { %>  
+                                                        <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>   
+                                                    <% } %>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr hidden = "hidden">
+                                        <td>License Number:</td>
+                                        <td><input type="text" id="delete-serial" name="license" class="form-control" value="<%= software[i]["license"] %>"></td>
                                     </tr>
                                     <tr>
                                         <td><input type="submit" id= "delete" name="delete" value="Delete"
@@ -261,7 +312,6 @@
                                         <td>Type:</td>
                                         <td>
                                             <select id="new-type" name="type" class="form-select">
-                                                <option selected>Types</option>
                                                 <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
                                                 <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>
                                                 <% } %>
@@ -282,7 +332,7 @@
                             <br>
                         </div>
                     </td>
-                    <% } %> 
+                    <% } %>
                 </tr>
                 <% } %>
             </tbody>
@@ -316,7 +366,7 @@
                                     </tr>
                                     <tr>
                                         <td>Name:</td>
-                                        <td><input type="text" id="update-name" name="update-name" class="form-control" placeholder="<%= os[i]["name"] %>"></td>
+                                        <td><input type="text" id="update-name" name="name" class="form-control" value="<%= os[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
                                         <td>Submit:</td>
@@ -330,6 +380,10 @@
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
                                         <th>Delete #<%= os[i]["os_id"] %></th>
+                                    </tr>
+                                    <tr hidden = "hidden">
+                                        <td>Name:</td>
+                                        <td><input type="text" id="delete-name" name="name" class="form-control" value="<%= os[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
                                         <td><input type="submit" id= "delete" name="delete" value="Delete"
@@ -346,7 +400,7 @@
                                     </tr>
                                     <tr>
                                         <td>Name:</td>
-                                        <td><input type="text" id="new-name" name="new-name" class="form-control" ></td>
+                                        <td><input type="text" id="new-name" name="name" class="form-control" ></td>
                                     </tr>
                                     <tr>
                                         <td>Submit:</td>
@@ -358,7 +412,7 @@
                             <br>
                         </div>
                     </td>
-                    <% } %> 
+                    <% } %>
                 </tr>
                 <% } %>
             </tbody>
