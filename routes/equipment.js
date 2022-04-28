@@ -20,7 +20,7 @@ router.get('/viewEquipment', checkRoles("admin", "specialist", "employee"), asyn
     var swareTypes = await getSoftwareTypes();
     var osys = await getAllOS();
 
-    res.render("viewEquipment", { hardware: hware, hardwareTypes: hwareTypes, software: sware, softwareTypes: swareTypes, os: osys });
+    res.render("viewEquipment", { userName: req.session.userName, hardware: hware, hardwareTypes: hwareTypes, software: sware, softwareTypes: swareTypes, os: osys });
 });
 
 //Single get route calls functions from all files to display results on single page
@@ -32,7 +32,7 @@ router.get('/viewEquipment/:id', checkRoles("admin", "specialist", "employee"), 
     var swareTypes = await getSoftwareTypes();
     var osys = await getOSById(req);
 
-    res.render("viewEquipment", { hardware: hware, hardwareTypes: hwareTypes, software: sware, softwareTypes: swareTypes, os: osys });
+    res.render("viewEquipment", { userName: req.session.userName, hardware: hware, hardwareTypes: hwareTypes, software: sware, softwareTypes: swareTypes, os: osys });
 });
 
 //Post route specific to adding hardware, calls addHardware function
