@@ -39,54 +39,81 @@ router.get('/viewEquipment/:id', checkRoles("admin", "specialist", "employee"), 
 //Admin
 router.post('/addHardware', checkRoles("admin"), async function(req, res) {
     await addHardware(req, res);
+    var columns = ["Name", "Type", "Serial"];
+    var data = [req.body.name, req.body.type, req.body.serial];
+    res.render("submitEquipment", {userName: req.session.userName, message: "Hardware Added:", columns: columns, data: data});
 });
 
 //Post route specific to adding Software, calls addSoftware function
 //Admin
 router.post('/addSoftware', checkRoles("admin"), async function(req, res) {
     await addSoftware(req, res);
+    var columns = ["Name", "Type", "License"];
+    var data = [req.body.name, req.body.type, req.body.license];
+    res.render("submitEquipment", {userName: req.session.userName, message: "Software Added:", columns: columns, data: data});
 });
 
 //Post route specific to adding os, calls addOS function
 //Admin
 router.post('/addOS', checkRoles("admin"), async function(req, res) {
     await addOS(req, res);
+    var columns = ["Name"];
+    var data = [req.body.name];
+    res.render("submitEquipment", {userName: req.session.userName, message: "OS Added:", columns: columns, data: data});
 });
 
 //Post route specific to updating hardware, calls updateHardware function
 //Admin
 router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res) {
     await updateHardware(req, res);
+    var columns = ["Name", "Type", "Serial"];
+    var data = [req.body.name, req.body.type, req.body.serial];
+    res.render("submitEquipment", {userName: req.session.userName, message: "Hardware Updated:", columns: columns, data: data});
 });
 
 //Post route specific to updating software, calls updateSoftware function
 //Admin
 router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res) {
     await updateSoftware(req, res);
+    var columns = ["Name", "Type", "License"];
+    var data = [req.body.name, req.body.type, req.body.license];
+    res.render("submitEquipment", {userName: req.session.userName, message: "Software Updated:", columns: columns, data: data});
 });
 
 //Post route specific to updating os, calls updateOS function
 //Admin
 router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
     await updateOS(req, res);
+    var columns = ["Name"];
+    var data = [req.body.name];
+    res.render("submitEquipment", {userName: req.session.userName, message: "OS Updated:", columns: columns, data: data});
 });
 
 //Post route specific to deleting hardware, calls deleteHardware function
 //Admin
 router.delete('/deleteHardware/:id', checkRoles("admin"), async function(req, res) {
     await deleteHardware(req, res);
+    var columns = ["Name", "Type", "Serial"];
+    var data = [req.body.name, req.body.type, req.body.serial];
+    res.render("submitEquipment", {userName: req.session.userName, message: "Hardware Deleted:", columns: columns, data: data});
 });
 
 //Post route specific to deleting software, calls deleteSoftware function
 //Admin
 router.delete('/deleteSoftware/:id', checkRoles("admin"), async function(req, res) {
     await deleteSoftware(req, res);
+    var columns = ["Name", "Type", "License"];
+    var data = [req.body.name, req.body.type, req.body.license];
+    res.render("submitEquipment", {userName: req.session.userName, message: "Software Deleted:", columns: columns, data: data});
 });
 
 //Post route specific to deleting os, calls deleteOS function
 //Admin
 router.delete('/deleteOS/:id', checkRoles("admin"), async function(req, res) {
     await deleteOS(req, res);
+    var columns = ["Name"];
+    var data = [req.body.name];
+    res.render("submitEquipment", {userName: req.session.userName, message: "OS Deleted:", columns: columns, data: data});
 });
 
 module.exports = router;
