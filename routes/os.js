@@ -57,7 +57,7 @@ var addOS = function(req, res) {
                         (name)
                         Values
                         ('${name}')`);
-            res.status(201).send({ msg: 'Added Operating System to database'});
+            res.status(201);
         } catch (err) {
             console.log(err);
             res.render({ message: "Error in request" });
@@ -77,7 +77,7 @@ var updateOS = function(req, res) {
                         name = '${name}'
                         WHERE
                         os_id = '${id}'`);
-            res.status(200).send({ msg: 'Updated Operating System details'});
+            res.status(200);
         } catch (err) {
             console.log(err);
             res.render({ message: "Error in request" });
@@ -94,7 +94,7 @@ var deleteOS = function(req, res) {
                     os
                     WHERE
                     os_id = '${id}'`);
-        res.status(200).send({ msg: 'Deleted Operating System details'});
+        res.status(200);
     } catch (err) {
         console.log(err);
         res.render({ message: "Error in request" });

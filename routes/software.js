@@ -133,7 +133,7 @@ var addSoftware = function(req, res) {
                                             });
                             }
                         })    
-            res.status(201).send({ msg: 'Added Software to database'});
+            res.status(201);
         } catch (err) {
             console.log(err);
             res.render({ message: "Error in request" });
@@ -175,7 +175,7 @@ var updateSoftware = function(req, res) {
                             }
                         })
         }
-        res.status(200).send({ msg: 'Updated Software details'});
+        res.status(200);
     } catch (err) {
         console.log(err);
         res.render({ message: "Error in request" });
@@ -201,7 +201,7 @@ var deleteSoftware = function(req, res) {
                                         software_id = '${id}'`);
                         }
                     })
-        res.status(200).send({ msg: 'Deleted Software details'});
+        res.status(200);
     } catch (err) {
         console.log(err);
         res.render({ message: "Error in request" });

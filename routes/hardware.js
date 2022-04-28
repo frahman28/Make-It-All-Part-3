@@ -83,7 +83,7 @@ var getHardwareById = function(req) {
 };
 
 //Add new hardware to hardware table and serial to hardware relation table
-var addHardware = function(req, res) {
+var addHardware = function(req, res, next) {
     const { name, type, serial } = req.body;
     if (name && type && serial) { //Check if all required data is inputted
         try {
@@ -132,10 +132,10 @@ var addHardware = function(req, res) {
                                             });
                             }
                         })    
-            res.status(201).send({ msg: 'Added Hardware to database'});
+            res.status(201);
         } catch (err) {
-            reject(err);
             console.error('Error: ' + err);
+            reject(err);
         }
     }
 };
@@ -174,7 +174,7 @@ var updateHardware = function(req, res) {
                             }
                         })
         }
-        res.status(200).send({ msg: 'Updated Hardware details'});
+        res.status(200);
     } catch (err) {
         console.log(err);
         res.render({ message: "Error in request" });
@@ -201,7 +201,7 @@ var deleteHardware = function(req, res) {
                             hardware_id = '${id}'`);
                         }
                     })
-        res.status(200).send({ msg: 'Deleted Hardware details'});
+        res.status(200);
     } catch (err) {
         console.log(err);
         res.render({ message: "Error in request" });
