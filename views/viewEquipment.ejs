@@ -82,7 +82,7 @@
                 </tr>
             </thead>
             <tbody id="view-hardware-table">
-                <% for (var i = 0; i < hardware.length; i++ ) {%> 
+                <% for (var i = 0; i < hardware.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
                 <tr class="visible-row accordion" data-bs-toggle="collapse">
                     <td>#<%= hardware[i]["hardware_id"] %> </td>
                     <td><%= hardware[i]["name"] %></td>
@@ -90,25 +90,25 @@
                     <td><%= hardware[i]["serial"] %> </td>
                 </tr> 
                 <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
-                    <% if (role == "admin") { %>
+                    <% if (role == "admin") { %> <!-- Only allow dropdown functions if user is an admin -->
                     <td class="hidden-data" colspan="4"> 
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
                             <form action="/updateHardware/<%= hardware[i]["hardware_id"] %>?_method=PATCH" method="POST">
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
-                                        <th>Update</th>
-                                        <td name="id">#<%= hardware[i]["hardware_id"] %></td>
+                                        <th>Update</th> 
+                                        <td name="id">#<%= hardware[i]["hardware_id"] %></td> <!-- Display id of selected row -->
                                     </tr>
                                     <tr>
-                                        <td>Name:</td>
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                         <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= hardware[i]["name"] %>" value="<%= hardware[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
                                         <td>Type:</td>
-                                        <td>
+                                        <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-type" name="type" class="form-select">
-                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
+                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                     <% if (hardwareTypes[j]["type"] == hardware[i]["type"] ) {%>
                                                         <option selected><%= hardwareTypes[j]["type"] %></option>
                                                     <% } else { %>  
@@ -118,8 +118,8 @@
                                             </select>
                                         </td>
                                     </tr>
-                                    <tr hidden = "hidden">
-                                        <td>Serial Number:</td>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>Serial Number:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                         <td><input type="text" id="new-serial" name="serial" class="form-control" placeholder="<%= hardware[i]["serial"] %>" value="<%= hardware[i]["serial"] %>"></td>
                                     </tr>
                                     <tr>
@@ -133,17 +133,17 @@
                             <form action="deleteHardware/<%= hardware[i]["hardware_id"] %>?_method=DELETE" method="POST">
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
-                                        <th>Delete #<%= hardware[i]["hardware_id"] %></th>
+                                        <th>Delete #<%= hardware[i]["hardware_id"] %></th> <!-- Display id of selected row -->
                                     </tr>
-                                    <tr hidden = "hidden">
-                                        <td>Name:</td>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                         <td><input type="text" id="update-name" name="name" class="form-control" value="<%= hardware[i]["name"] %>"></td>
                                     </tr>
-                                    <tr hidden = "hidden">
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
                                         <td>Type:</td>
-                                        <td>
+                                        <td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                             <select id="update-type" name="type" class="form-select">
-                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
+                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%>  <!-- Loop through types and automatically set selected row's type -->
                                                     <% if (hardwareTypes[j]["type"] == hardware[i]["type"] ) {%>
                                                         <option selected><%= hardwareTypes[j]["type"] %></option>
                                                     <% } else { %>  
@@ -153,8 +153,8 @@
                                             </select>
                                         </td>
                                     </tr>
-                                    <tr hidden = "hidden">
-                                        <td>Serial Number:</td>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>Serial Number:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                         <td><input type="text" id="update-serial" name="serial" class="form-control" value="<%= hardware[i]["serial"] %>" ></td>
                                     </tr>
                                     <tr>
@@ -216,7 +216,7 @@
                 </tr>
             </thead>
             <tbody id="view-software-table">
-                <% for (var i = 0; i < software.length; i++ ) {%> 
+                <% for (var i = 0; i < software.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
                 <tr class="visible-row accordion" data-bs-toggle="collapse">
                     <td>#<%= software[i]["software_id"] %> </td>
                     <td><%= software[i]["name"] %></td>
@@ -224,7 +224,7 @@
                     <td><%= software[i]["license"] %> </td>
                 </tr> 
                 <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
-                    <% if (role == "admin") { %>
+                    <% if (role == "admin") { %> <!-- Only allow dropdown functions if user is an admin -->
                     <td class="hidden-data" colspan="4">
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
@@ -232,17 +232,17 @@
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
                                         <th>Update</th>
-                                        <td name="id">#<%= software[i]["software_id"] %></td>
+                                        <td name="id">#<%= software[i]["software_id"] %></td> <!-- Display id of selected row -->
                                     </tr>
                                     <tr>
-                                        <td>Name:</td>
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                         <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= software[i]["name"] %>" value="<%= software[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
                                         <td>Type:</td>
-                                        <td>
+                                        <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-type" name="type" class="form-select">
-                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
+                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                     <% if (softwareTypes[j]["type"] == software[i]["type"] ) {%>
                                                         <option selected><%= softwareTypes[j]["type"] %></option>
                                                     <% } else { %>  
@@ -252,8 +252,8 @@
                                             </select>
                                         </td>
                                     </tr>
-                                    <tr hidden = "hidden">
-                                        <td>License Number:</td>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>License Number:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                         <td><input type="text" id="update-serial" name="license" class="form-control" value="<%= software[i]["license"] %>"></td>
                                     </tr>
                                     <tr>
@@ -267,17 +267,17 @@
                             <form action="/deleteSoftware/<%= software[i]["software_id"] %>?_method=DELETE" method="POST">
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
-                                        <th>Delete #<%= software[i]["software_id"] %></th>
+                                        <th>Delete #<%= software[i]["software_id"] %></th> <!-- Display id of selected row -->
                                     </tr>
-                                    <tr hidden = "hidden">
-                                        <td>Name:</td>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                         <td><input type="text" id="delete-name" name="name" class="form-control" value="<%= software[i]["name"] %>"></td>
                                     </tr>
-                                    <tr hidden = "hidden">
-                                        <td>Type:</td>
-                                        <td>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>Type:</td> 
+                                        <td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                             <select id="delete-type" name="type" class="form-select">
-                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
+                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> <!-- Loop through types and automatically set selected row's type -->
                                                     <% if (softwareTypes[j]["type"] == software[i]["type"] ) {%>
                                                         <option selected><%= softwareTypes[j]["type"] %></option>
                                                     <% } else { %>  
@@ -287,8 +287,8 @@
                                             </select>
                                         </td>
                                     </tr>
-                                    <tr hidden = "hidden">
-                                        <td>License Number:</td>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>License Number:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                         <td><input type="text" id="delete-serial" name="license" class="form-control" value="<%= software[i]["license"] %>"></td>
                                     </tr>
                                     <tr>
@@ -348,13 +348,13 @@
                 </tr>
             </thead>
             <tbody id="view-os-table">
-                <% for (var i = 0; i < os.length; i++ ) {%> 
+                <% for (var i = 0; i < os.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
                 <tr class="visible-row accordion" data-bs-toggle="collapse">
                     <td>#<%= os[i]["os_id"] %> </td>
                     <td><%= os[i]["name"] %></td>
                 </tr>
                 <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
-                    <% if (role == "admin") { %>
+                    <% if (role == "admin") { %> <!-- Only allow dropdown functions if user is an admin -->
                     <td class="hidden-data" colspan="4">
                         <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
                             <br>
@@ -362,10 +362,10 @@
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
                                         <th>Update</th>
-                                        <td name="id_update">#<%= os[i]["os_id"] %></td>
+                                        <td name="id_update">#<%= os[i]["os_id"] %></td> <!-- Display id of selected row -->
                                     </tr>
                                     <tr>
-                                        <td>Name:</td>
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                         <td><input type="text" id="update-name" name="name" class="form-control" value="<%= os[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
@@ -379,10 +379,10 @@
                             <form action="/deleteOS/<%= os[i]["os_id"] %>?_method=DELETE" method="POST">
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
-                                        <th>Delete #<%= os[i]["os_id"] %></th>
+                                        <th>Delete #<%= os[i]["os_id"] %></th> <!-- Display id of selected row -->
                                     </tr>
-                                    <tr hidden = "hidden">
-                                        <td>Name:</td>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
                                         <td><input type="text" id="delete-name" name="name" class="form-control" value="<%= os[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
