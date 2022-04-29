@@ -3,11 +3,6 @@ const router = express.Router();
 
 var conn = require("../dbconfig");
 
-/* GET users listing. */
-router.get("/dashboard", (req, res, next) => {
-  res.send("respond with a resource");
-});
-
 const getSQLForJoinEmployee = (whereClause = "") => {
   // This function is used to return the sql for joining the employee table
   // with other tables realted to employee information
