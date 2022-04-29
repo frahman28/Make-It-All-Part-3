@@ -79,14 +79,12 @@
     <br>
 <!-- contains the different graphs shown in the individual side of the page-->
     <div style= "display:block; background-color: white; width: 100%; border-radius:15px; height: 100%; box-shadow: 5px 10px 10px #979696;" id = "individualGraph2">
-        <canvas id="lineChart"></canvas>
+        <canvas id="bar-chart-problemPerSpecilist"></canvas>
     </div>
     <div style= "display:none; background-color: white; width: 100%; border-radius:15px; height: 100%;box-shadow: 5px 10px 10px #979696;" id = "individualGraph1">
-         <canvas id="lineChart"></canvas>       
+         <canvas id="bar-chart-time-fix"></canvas>       
     </div>
-    <div style= "display:none; background-color: white; width: 100%; border-radius:15px; height: 100%; box-shadow: 5px 10px 10px #979696;" id = "individualGraph3">     
-      <canvas id="barIndSpecial"></canvas>
-    </div>
+    
   
 <!-- The selection of graphs using the dropdown button-->
     <script>
@@ -400,10 +398,10 @@
        <canvas id="softwareAndHardware"></canvas>
     </div>
     <div style= "display:none; background-color: white; width: 100%; border-radius:15px; height: 100%; box-shadow: 5px 10px 10px #979696;" id = "companyGraph2">
-      <canvas id="pieCoSolved"></canvas>
+      <canvas id="bar-chart-faultyEquipment"></canvas>
     </div>
     <div style= "display:none; background-color: white; width: 100%; border-radius:15px; height: 100%; box-shadow: 5px 10px 10px #979696;" id = "companyGraph3">    
-    <canvas id="pieCoTypes"></canvas>
+    <canvas id="pie-chart-problemType"></canvas>
     </div>
      
      
@@ -454,7 +452,7 @@
 </section>
 
 
-<!--------Creation of Graphs-------->
+<!--------Creation of Graphs with dummy data-------->
 <script>
 
     var ctxL = document.getElementById("softwareAndHardware").getContext('2d');
@@ -490,7 +488,93 @@
             responsive: true
           }
         });
-  </script>
+
+
+
+
+    new Chart(document.getElementById("bar-chart-time-fix"), {
+        type: 'bar',
+        data: {
+          labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+          datasets: [
+            {
+              label: "Population (millions)",
+              backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+              data: [2478,5267,734,784,433]
+            }
+          ]
+        },
+        options: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Predicted world population (millions) in 2050'
+          }
+        }
+    });
+
+
+    new Chart(document.getElementById("pie-chart-problemType"), {
+        type: 'pie',
+        data: {
+          labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+          datasets: [{
+            label: "Population (millions)",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+            data: [2478,5267,734,784,433]
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Predicted world population (millions) in 2050'
+          }
+        }
+    });
+  
+
+  new Chart(document.getElementById("bar-chart-faultyEquipment"), {
+    type: 'bar',
+    data: {
+      labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+          data: [2478,5267,734,784,433]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Predicted world population (millions) in 2050'
+      }
+    }
+
+
+    new Chart(document.getElementById("bar-chart-problemPerSpecilist"), {
+    type: 'bar',
+    data: {
+      labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+          data: [2478,5267,734,784,433]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Predicted world population (millions) in 2050'
+      }
+    }
+
+    </script>
 
 <footer>
 </footer>
@@ -498,6 +582,105 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
+
+
+<!--------Code Needed to automate Graphs------->
+<script type = "text/javascript">
+
+        function showData(header,yValues,labels) {
+        var data = {
+          labels: labels,
+          datasets: [{
+            label: header,
+            backgroundColor:  [
+                        'rgba(204, 204, 255, 0.4)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(64, 128, 191, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 204, 102,0.5)',
+                        'rgba(204, 255, 255,0.8)',
+                        'rgba(255, 255, 102, 0.3)',
+                        'rgba(255, 159, 64, 0.2)'
+              
+                    ],
+         
+            data: yValues,
+          }]
+        };
+        return data;
+    }
+
+        function config(yValues,barType,title) {
+            var config = {
+            type: barType,
+            data: yValues,
+            options: { title: {
+      display: true,
+      text: title} }};
+         return config;
+        }
+  <!--Specific configuration funstion for bar charts -->
+    function configBar(yValues,barType,title) {
+      var configBar = {
+            type: barType,
+            data: yValues,
+            options: { title: {
+      display: true,
+      text: title},
+      scales:{
+        yAxes: [{ticks: {min: 0, max: 16}}],
+    },
+           }}; 
+      return configBar;
+    }
+    
+    
+<!--Implememtation of data into graphs using JSON, also setting the graph labels and other components-->
+    var dataP = JSON.parse('<?php echo json_encode($problems) ?>');
+    var dataLabels = JSON.parse('<?php echo json_encode($month) ?>');
+    var barChart = new Chart(
+        document.getElementById('barCoProblems'),
+        configBar(showData("Problems", dataP, dataLabels),'bar',"Number of Problems Per Month")
+    );
+      
+    var calls = JSON.parse('<?php echo json_encode($noCall) ?>');
+    var callLabels = JSON.parse('<?php echo json_encode($months2) ?>');
+    var barChart = new Chart(
+        document.getElementById('barIndProblems'),
+        configBar(showData('Calls',calls,callLabels),'bar',"Number of Calls Per Month")
+    );
+
+   
+    var unsolved = JSON.parse('<?php echo json_encode($unsolved) ?>');
+    var solved = JSON.parse('<?php echo json_encode($solved) ?>');
+    var pieChart = new Chart(
+        document.getElementById('pieCoSolved'),
+        config(showData('Solved and unsolved',[(unsolved-solved),solved],["Unsolved","Solved"]),'doughnut', "Current Number of Problems")
+    );
+
+    var noProblems = JSON.parse('<?php echo json_encode($noTypes) ?>');
+    var problemType = JSON.parse('<?php echo json_encode($problemType) ?>');
+    var pieChart = new Chart(
+        document.getElementById('pieCoTypes'),
+        config(showData('Number of each Problem Type',noProblems,problemType),'doughnut', "Current Amount of Each Problem Type")
+    );
+    
+    var noCalls = JSON.parse('<?php echo json_encode($noCalls) ?>');
+    var names = JSON.parse('<?php echo json_encode($name) ?>');
+    var barChart = new Chart(
+        document.getElementById('barIndnoProblems'),
+        configBar(showData('Calls',noCalls,names),'line',"Number of Calls ")
+    );
+      
+      
+   var nameSpecialist = JSON.parse('<?php echo json_encode($nameSpecialist) ?>');
+   var current = JSON.parse('<?php echo json_encode($current) ?>');
+   var barChart = new Chart(
+        document.getElementById('barIndSpecial'),
+        configBar(showData('Problems',current,nameSpecialist),'bar',"Number of Problems ")
+    );
+  </script>
 
 </body>
 </html>
