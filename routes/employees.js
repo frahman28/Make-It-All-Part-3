@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { verifySession, checkRoles } = require("./auth.middleware");
 
 var conn = require("../dbconfig");
 
@@ -22,7 +23,7 @@ const getSQLForJoinEmployee = (whereClause = "") => {
   return sql;
 };
 
-router.get("/api", (req, res) => {
+router.get("/api", verifySession, (req, res) => {
   // This default /api will get all of the employees from the database
   conn.query(getSQLForJoinEmployee(), function (err, results) {
     if (err) throw err;
@@ -30,7 +31,7 @@ router.get("/api", (req, res) => {
   });
 });
 
-router.get("/api/:employee_id", (req, res) => {
+router.get("/api/:employee_id", verifySession, (req, res) => {
   // This api request will get a specific employee based their id from the database
   // The employee id is in the request parameter
   const employeeID = req.params.employee_id;
@@ -57,7 +58,7 @@ router.get("/api/:employee_id", (req, res) => {
   }
 });
 
-router.put("/api/:employee_id", (req, res) => {
+router.put("/api/:employee_id", checkRoles("admin"), (req, res) => {
   // This api call is for updating an employees information
   // All updated fields are optional and do not have to be supplied
   // We look for the name, extension, external, available in the request body as these are what can be
@@ -111,21 +112,7 @@ router.put("/api/:employee_id", (req, res) => {
   }
 });
 
-// router.delete("/api/:employee_id", (req, res) => {
-//   const employeeID = req.params.employee_id;
-//   if (employeeID) {
-//     conn.query(
-//       "DELETE FROM employees WHERE employee_id = ?",
-//       employeeID,
-//       function (err) {
-//         if (err) throw err;
-//         return res.json({ success: true, msg: "Employee deleted" });
-//       }
-//     );
-//   }
-// });
-
-router.put("/api/:employee_id/role", (req, res) => {
+router.put("/api/:employee_id/role", checkRoles("admin"), (req, res) => {
   // This api call is used for updating an employees role in the company
   const employeeID = req.params.employee_id;
   // The role is located in the body
@@ -169,7 +156,7 @@ router.put("/api/:employee_id/role", (req, res) => {
   );
 });
 
-router.put("/api/:employee_id/department", (req, res) => {
+router.put("/api/:employee_id/department", checkRoles("admin"), (req, res) => {
   // Works similarly to the role api call, instead updates an employees department
   // But first checks the department exists in the database before updating
   const employeeID = req.params.employee_id;
@@ -212,7 +199,7 @@ router.put("/api/:employee_id/department", (req, res) => {
   );
 });
 
-router.put("/api/:employee_id/title", (req, res) => {
+router.put("/api/:employee_id/title", checkRoles("admin"), (req, res) => {
   // Works similarly to the role api call, instead updates an employees title
   // But first checks the title exists in the database before updating
   const employeeID = req.params.employee_id;
