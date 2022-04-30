@@ -182,9 +182,10 @@ var updateSoftware = function(req, res) {
     }
 };
 
-var deleteSoftware = function(req, res) {
-    const id = parseInt(req.params.id);
-    try {
+//Delete software based on inputted id
+var deleteSoftware = function(req) {
+    return new Promise((resolve, reject) => {
+        const id = parseInt(req.params.id);
         conn.query(`DELETE
                     FROM 
                     software_relation
@@ -193,19 +194,25 @@ var deleteSoftware = function(req, res) {
                     function(err, rows) {
                         if (err) {
                             console.error('Error: ' + err);
-                        } else {
+                            return resolve(err);
+                        } else { //Delete from relation table first so avoid foreign key errors
                             conn.query(`DELETE
                                         FROM 
                                         software
                                         WHERE
-                                        software_id = '${id}'`);
+                                        software_id = '${id}'`,
+                                        function(err, rows) {
+                                            if (err) {
+                                                console.error('Error: ' + err);
+                                                return resolve(err);
+                                            } else {
+                                                console.log(rows);
+                                                return resolve(rows)
+                                            }
+                                        });
                         }
                     })
-        res.status(200);
-    } catch (err) {
-        console.log(err);
-        res.render({ message: "Error in request" });
-    }
+    })
 };
 
 module.exports = {getAllSoftware, getSoftwareTypes, getSoftwareById, addSoftware, updateSoftware, deleteSoftware};

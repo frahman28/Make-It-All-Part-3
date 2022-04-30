@@ -87,18 +87,23 @@ var updateOS = function(req, res) {
 
 //Delete os row based on inputted id
 var deleteOS = function(req, res) {
-    const id = parseInt(req.params.id);
-    try {
+    return new Promise((resolve, reject) => {
+        const id = parseInt(req.params.id);
         conn.query(`DELETE
                     FROM 
                     os
                     WHERE
-                    os_id = '${id}'`);
-        res.status(200);
-    } catch (err) {
-        console.log(err);
-        res.render({ message: "Error in request" });
-    }
+                    os_id = '${id}'`,
+                    function(err, rows) {
+                        if (err) {
+                            console.error('Error: ' + err);
+                            return resolve(err);
+                        } else {
+                            console.log(rows);
+                            return resolve(rows)
+                        }
+                    })
+    })    
 };
 
 module.exports = {getAllOS, getOSById, addOS, updateOS, deleteOS};

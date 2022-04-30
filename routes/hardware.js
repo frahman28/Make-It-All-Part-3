@@ -183,29 +183,35 @@ var updateHardware = function(req, res) {
 
 //Delete hardware row based on inputted id
 var deleteHardware = function(req, res) {
-    const id = parseInt(req.params.id);
-    try {
+    return new Promise((resolve, reject) => {
+        const id = parseInt(req.params.id);
         conn.query(`DELETE
                     FROM 
                     hardware_relation
                     WHERE
-                    hardware_id = '${id}'`,
-                    function (err, rows) {
+                    hardware_id = '${id}'`, 
+                    function(err, rows) {
                         if (err) {
                             console.error('Error: ' + err);
-                        } else {
+                            return resolve(err);
+                        } else { //Delete from relation table first so avoid foreign key errors
                             conn.query(`DELETE
-                            FROM 
-                            hardware
-                            WHERE
-                            hardware_id = '${id}'`);
+                                        FROM 
+                                        hardware
+                                        WHERE
+                                        hardware_id = '${id}'`,
+                                        function(err, rows) {
+                                            if (err) {
+                                                console.error('Error: ' + err);
+                                                return resolve(err);
+                                            } else {
+                                                console.log(rows);
+                                                return resolve(rows)
+                                            }
+                                        });
                         }
                     })
-        res.status(200);
-    } catch (err) {
-        console.log(err);
-        res.render({ message: "Error in request" });
-    }
+    })
 };
 
 module.exports = {getAllHardware, getHardwareTypes, getHardwareById, addHardware, updateHardware, deleteHardware};

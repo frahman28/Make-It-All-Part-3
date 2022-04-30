@@ -38,6 +38,7 @@ router.get('/viewEquipment/:id', checkRoles("admin", "specialist", "employee"), 
 });
 
 //Post route specific to adding hardware, calls addHardware function
+//Display submitted data on submitEquipment page
 //Admin
 router.post('/addHardware', checkRoles("admin"), async function(req, res) {
     await addHardware(req, res);
@@ -49,6 +50,7 @@ router.post('/addHardware', checkRoles("admin"), async function(req, res) {
 });
 
 //Post route specific to adding Software, calls addSoftware function
+//Display submitted data on submitEquipment page
 //Admin
 router.post('/addSoftware', checkRoles("admin"), async function(req, res) {
     await addSoftware(req, res);
@@ -60,6 +62,7 @@ router.post('/addSoftware', checkRoles("admin"), async function(req, res) {
 });
 
 //Post route specific to adding os, calls addOS function
+//Display submitted data on submitEquipment page
 //Admin
 router.post('/addOS', checkRoles("admin"), async function(req, res) {
     await addOS(req, res);
@@ -71,6 +74,7 @@ router.post('/addOS', checkRoles("admin"), async function(req, res) {
 });
 
 //Post route specific to updating hardware, calls updateHardware function
+//Display submitted data on submitEquipment page
 //Admin
 router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res) {
     await updateHardware(req, res);
@@ -82,6 +86,7 @@ router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res
 });
 
 //Post route specific to updating software, calls updateSoftware function
+//Display submitted data on submitEquipment page
 //Admin
 router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res) {
     await updateSoftware(req, res);
@@ -93,6 +98,7 @@ router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res
 });
 
 //Post route specific to updating os, calls updateOS function
+//Display submitted data on submitEquipment page
 //Admin
 router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
     await updateOS(req, res);
@@ -104,6 +110,7 @@ router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
 });
 
 //Post route specific to deleting hardware, calls deleteHardware function
+//If error redirect back to view equipment page
 //Admin
 router.delete('/deleteHardware/:id', checkRoles("admin"), async function(req, res) {
     await deleteHardware(req, res);
@@ -115,6 +122,7 @@ router.delete('/deleteHardware/:id', checkRoles("admin"), async function(req, re
 });
 
 //Post route specific to deleting software, calls deleteSoftware function
+//If error redirect back to view equipment page
 //Admin
 router.delete('/deleteSoftware/:id', checkRoles("admin"), async function(req, res) {
     await deleteSoftware(req, res);
@@ -126,6 +134,7 @@ router.delete('/deleteSoftware/:id', checkRoles("admin"), async function(req, re
 });
 
 //Post route specific to deleting os, calls deleteOS function
+//If error redirect back to view equipment page
 //Admin
 router.delete('/deleteOS/:id', checkRoles("admin"), async function(req, res) {
     await deleteOS(req, res);
