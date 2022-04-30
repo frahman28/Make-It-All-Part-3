@@ -5,6 +5,7 @@ body {
 .logo {
     max-width: 100%;
     height: auto;
+    width: 500px;
   }
 
 .image-div {
@@ -26,4 +27,24 @@ body {
     text-align: center;
     vertical-align: middle;
     background-color: white;
+}
+
+.hidden-table td {
+    text-align: left;
+    vertical-align: middle;
+    background-color: white;
+}
+
+.hidden-table {
+    margin: 0;
+}
+
+.hidden-data {
+    padding: 0 !important;
+}
+
+.accordion-collapse div {
+    text-align: left;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
