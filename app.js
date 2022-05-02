@@ -1,3 +1,4 @@
+
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -16,6 +17,7 @@ const { secretKey, salt } = require("./constants");
 var indexRouter = require("./routes/auth");
 var problemsRouter = require("./routes/problems");
 var usersRouter = require("./routes/employees");
+var equipmentRouter = require("./routes/equipment");
 
 // Initialize the app.
 var app = express();
@@ -58,9 +60,11 @@ app.use(cookieParser());
 // Set up static files path.
 app.use(express.static(path.join(__dirname, "public")));
 
+
 // Add routes.
 app.use("/", indexRouter);
 app.use("/", problemsRouter);
+app.use('/', equipmentRouter);
 app.use("/employee", usersRouter);
 
 // Catch 404 and forward to error handler.
