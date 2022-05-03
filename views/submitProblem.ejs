@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/formatClean.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+
+    rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/employee_styles.css">
+    <script src="../js/problems.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Submit Problem</title>
+</head>
+<body>
+    <div class="text-center image-div">
+        <img class="text-center logo" src="../images/logo.png" alt="make-it-all">
+    </div>
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-links">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="main-links">
+                <ul class="navbar-nav">
+                    <li class="nav-item px-4"><a href="myProblems" class="nav-link">Home</a></li>
+                    <li class="nav-item px-4"><a href="submitProblem" class="nav-link">Submit a Problem</a></li>
+                    <li class="nav-item px-4"><a href="allProblems" class="nav-link">All Problems</a></li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown  px-4">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <!-- Render user's username -->
+                          <%= userName %>
+                        </a>
+                        <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+                          <li><a class="dropdown-item" href="../settings">Settings</a></li>
+                          <li><a class="dropdown-item" href="../logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br><br>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+<section class = "container-fluid">
+<div class = "row">
+  <article class = "col-sm-6".col-sm-6>
+    <h2>Problem Details</h2>
+  <br>
+
+    <button class="accordion">New Problem</button>
+      <div class="panel">
+        <h1> New problem </h1>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="problemType">Problem Type: </label>
+          </div>
+          <div class = "rightCol">
+            <input type="text" id = "problemType" name="problemType">
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="serialNumber">Serial Number: </label>
+          </div>
+          <div class = "rightCol">
+            <input list="serialNumbers" id = "serialNumber" name="serialNumber">
+            <datalist id="serialNumbers">
+
+              <% for(var i=0; i<software.length; i++) {%>
+                  <option value="<%= software[i]["license"] %>">
+                    <%= software[i]["name"] %></option>
+              <% } %>
+  
+              <% for(var i=0; i<hardware.length; i++) {%>
+                <option value="<%= hardware[i]["serial"] %>">
+                  <%= hardware[i]["name"] %>
+                </option>
+            <% } %>
+
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="operatingSystem">OS: </label>
+          </div>
+          <div class = "rightCol">
+            <input list="operatingSystems" id = "operatingSystem" name="operatingSystem">
+            <datalist id="operatingSystems">
+
+              <% for(var i=0; i<os.length; i++) {%>
+                <option value="<%= os[i]["name"] %>">
+                  <%= os[i]["name"] %>
+                </option>
+            <% } %>
+
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="software">Software: </label>
+          </div>
+          <div class = "rightCol">
+            <input list="softwares" id = "software" name="software">
+            <datalist id="softwares">
+
+              <% for(var i=0; i<software.length; i++) {%>
+                <option value="<%= software[i]["name"] %>">
+                  <%= software[i]["name"] %>
+                </option>
+            <% } %>
+
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="hardware">Hardware: </label>
+          </div>
+          <div class = "rightCol">
+            <input list="hardwares" id = "hardware" name="hardware">
+            <datalist id="hardwares">
+
+              <% for(var i=0; i<hardware.length; i++) {%>
+                <option value="<%= hardware[i]["name"] %>">
+                  <%= hardware[i]["name"] %>
+                </option>
+            <% } %>
+
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="problemDesription">Problem Description: </label>
+          </div>
+          <div class = "rightCol">
+            <textarea name="problemDesription" id="problemDesription" rows="5" cols="40"></textarea>
+          </div>
+        </div>
+        <input type="submit" class = "smallSubmit">
+        <br>
+        <br>
+        <br>
+        
+
+
+
+  
+        
+        <script>
+
+        function displayUP2(option) {
+          var a2 = document.getElementById("findSolutions1");
+          var b2 = document.getElementById("AssignSpecilist");
+
+
+          if (option == 'findSolutions'){
+            a2.style.display = "block";
+            b2.style.display = "none";
+          }
+
+          if (option == 'AssignSpecilist'){
+            a2.style.display = "none";
+            b2.style.display = "block";
+          }
+        }
+
+        </script>
+
+
+
+
+      </div>
+
+    <button class="accordion">Solution</button>
+      <div class="panel">
+        <h1> Solution </h1>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="solution">Solution: </label>
+          </div>
+          <div class = "rightCol">
+            <input type="text" id = "solution" name="solution">          
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="solutionNotes">Solution Notes: </label>
+          </div>
+          <div class = "rightCol">
+            <textarea name="solutionNotes" id="solutionNotes" rows="5" cols="40"></textarea>
+          </div>
+        </div>
+
+        <input type="submit" class = "smallSubmit">
+        <br>
+        <br>
+        <br>
+
+      </div>
+
+      <br>
+
+     <input type="submit" name="largeSubmit" value="Submit" form = "mainForm" class = "largeSubmit">
+
+
+  </article>
+
+  
+
+
+
+
+
+
+
+
+  <article class = "col-sm-6" .col-sm-6>
+    <h2>Tables</h2>
+    <br>
+<button class="accordion">Solutions</button>
+
+<div class="panel">
+
+  <br>
+
+  <div class="row">
+    <div class = "leftCol">
+      <select name="Filter" id="solutionColoumn">
+          <option value="1">Solution</option>
+          <option value="2">Name</option>
+          <option value="3">Time Solved</option>
+        </select>
+    </div>
+    <div class = "rightCol">
+      <input type="text" id = "solutionSearch" name="callReason" onkeyup="solutiuonsFunction()">
+    </div>
+  </div>
+
+  <br>
+
+    <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Firstname</th>
+        <th>Lastname</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>John</td>
+        <td>Doe</td>
+        <td>john@example.com</td>
+      </tr>
+      <tr>
+        <td>Mary</td>
+        <td>Moe</td>
+        <td>mary@example.com</td>
+      </tr>
+      <tr>
+        <td>July</td>
+        <td>Dooley</td>
+        <td>july@example.com</td>
+      </tr>
+    </tbody>
+  </table>
+
+<script>
+function solutiuonsFunction() {
+  var input, filter, table, tr, td, i, txtValue;
+  var coloumnSelect = document.getElementById("solutionColoumn").value;
+  var newcoloumnSelect = parseInt(coloumnSelect);
+  input = document.getElementById("solutionSearch");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("solutionTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[newcoloumnSelect];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }       
+  }
+}
+</script>
+<br>
+</div>
+
+
+<button class="accordion">Equipment</button>
+<div class="panel">
+
+  <br>
+
+  <div class="row">
+    <div class = "leftCol">
+      <select name="Filter" id="equipmentColoumn">
+          <option value="0">Equipment Id</option>
+          <option value="1">Software Name</option>
+          <option value="2">Serial Number / License</option>
+        </select>
+    </div>
+    <div class = "rightCol">
+      <input type="text" id = "equipmentSearch" name="callReason" onkeyup="equipmentFunction()">
+    </div>
+  </div>
+
+  <br>
+  <table id = "equipmentTable"  class="table table-bordered">
+    <thead>
+      <th> Serial Number </th>
+      <th> Equipment Type </th>
+      <th> Equipment Make </th>
+    </thead>
+    <tbody>
+    <% for(var i=0; i<software.length; i++) {%>
+      <tr>
+          <td>#<%= software[i]["software_id"] %></td>
+          <td><%= software[i]["name"] %></td>
+          <td><%= software[i]["license"] %></td>
+
+      </tr>
+  <% } %>
+
+  <% for(var j=0; j<hardware.length; j++) {%>
+    <tr>
+        <td>#<%= hardware[j]["hardware_id"]+i %></td>
+        <td><%= hardware[j]["name"] %></td>
+        <td><%= hardware[j]["serial"] %></td>
+
+    </tr>
+<% } %>
+</tbody>
+</table>
+
+<script>
+function equipmentFunction() {
+  var input, filter, table, tr, td, i, txtValue;
+  var coloumnSelect = document.getElementById("equipmentColoumn").value;
+  var newcoloumnSelect = parseInt(coloumnSelect);
+  input = document.getElementById("equipmentSearch");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("equipmentTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[newcoloumnSelect];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }       
+  }
+}
+</script>
+<br>
+</div>
+
+<script>
+var acc = document.getElementsByClassName("accordion");
+var i;
+
+for (i = 0; i < acc.length; i++) {
+  acc[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var panel = this.nextElementSibling;
+    if (panel.style.maxHeight) {
+      panel.style.maxHeight = null;
+    } else {
+      panel.style.maxHeight = panel.scrollHeight + "px";
+    } 
+  });
+}</script>
+  </article>
+</div>
+</section>
+
+<footer>
+</footer>
+
+</body>
+</html>
+
