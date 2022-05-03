@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var conn = require('../config');
+var conn = require('../dbconfig');
 
 //All queries stored as functions to be called in corresponding get route in equipment.js
 //Use of promise to pass rows returned outside of functions
