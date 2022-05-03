@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var conn = require('../config')
+var conn = require('../dbconfig')
 var {verifySession, checkRoles} = require("./auth.middleware")
 
 //Import all functions from hardware, software, os files to interact with database
