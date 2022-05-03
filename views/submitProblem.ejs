@@ -65,7 +65,14 @@
             <label for="problemType">Problem Type: </label>
           </div>
           <div class = "rightCol">
-            <input type="text" id = "problemType" name="problemType">
+            <input list="problemTypes" id = "problemType" name="problemType">
+            <datalist id="problemTypes">
+
+            <% for(var i=0; i<problemTypes.length; i++) {%>
+                <option value="<%= problemTypes[i]["problem_type"] %>"><%= problemTypes[i]["problem_type"] %></option>
+            <% } %>
+            </datalist>
+
           </div>
         </div>
 
@@ -272,7 +279,6 @@
             <td><%= solution[i]["problemName"] %></td>
             <td><%= solution[i]["problemType"] %></td>
             <td><%= solution[i]["solution"] %></td>
-    
         </tr>
     <% } %>
     </tbody>
@@ -334,7 +340,6 @@ function solutiuonsFunction() {
           <td>#<%= software[i]["software_id"] %></td>
           <td><%= software[i]["name"] %></td>
           <td><%= software[i]["license"] %></td>
-
       </tr>
   <% } %>
 
@@ -343,7 +348,6 @@ function solutiuonsFunction() {
         <td>#<%= hardware[j]["hardware_id"]+i %></td>
         <td><%= hardware[j]["name"] %></td>
         <td><%= hardware[j]["serial"] %></td>
-
     </tr>
 <% } %>
 </tbody>
