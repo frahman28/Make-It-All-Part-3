@@ -37,10 +37,6 @@ app.use(
   })
 );
 
-// Add middleware
-app.use("/", indexRouter);
-app.use("/problem-type", problemTypeRouter);
-app.use("/analysis", analysisRouter);
 // Use flash messages in the app.
 app.use(flash());
 
@@ -70,6 +66,8 @@ app.use("/", indexRouter);
 app.use("/", problemsRouter);
 app.use("/", equipmentRouter);
 app.use("/employee", usersRouter);
+app.use("/problem-type", problemTypeRouter);
+app.use("/analysis", analysisRouter);
 
 // Catch 404 and forward to error handler.
 app.use(function (req, res, next) {
