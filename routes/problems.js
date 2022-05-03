@@ -11,6 +11,7 @@ var {verifySession, checkRoles} = require("./auth.middleware");
 var software = require("./software");
 var hardware = require("./hardware");
 var os = require("./os");
+var solution = require("./solution");
 
 
 // route:  GET /
@@ -156,11 +157,14 @@ app.get("/submitProblem", checkRoles("employee", "specialist"), async function (
     var allSoftware = await software.getAllSoftware();
     var allHardware = await hardware.getAllHardware();
     var allOS = await os.getAllOS();
+    var allSolutions = await solution.getAllSolutions();
 
     res.render('submitProblem', {userName: req.session.userName,
                                 software: allSoftware,
                                 hardware: allHardware,
-                                os: allOS});
+                                os: allOS,
+                                solution: allSolutions
+                            });
 });
 
 app.post("/submitProblem", checkRoles("employee", "specialist"), function (req, res, next) {

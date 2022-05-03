@@ -248,12 +248,11 @@
     <div class = "leftCol">
       <select name="Filter" id="solutionColoumn">
           <option value="1">Solution</option>
-          <option value="2">Name</option>
-          <option value="3">Time Solved</option>
+          <option value="2">Problem Type</option>
         </select>
     </div>
     <div class = "rightCol">
-      <input type="text" id = "solutionSearch" name="callReason" onkeyup="solutiuonsFunction()">
+      <input list="solutions" id = "solutionSearch" name="callReason" onkeyup="solutiuonsFunction()">
     </div>
   </div>
 
@@ -262,27 +261,20 @@
     <table class="table table-bordered">
     <thead>
       <tr>
-        <th>Firstname</th>
-        <th>Lastname</th>
-        <th>Email</th>
+        <th>Problem Name</th>
+        <th>Problem Type</th>
+        <th>Solution</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>John</td>
-        <td>Doe</td>
-        <td>john@example.com</td>
-      </tr>
-      <tr>
-        <td>Mary</td>
-        <td>Moe</td>
-        <td>mary@example.com</td>
-      </tr>
-      <tr>
-        <td>July</td>
-        <td>Dooley</td>
-        <td>july@example.com</td>
-      </tr>
+      <% for(var i=0; i<solution.length; i++) {%>
+        <tr>
+            <td><%= solution[i]["problemName"] %></td>
+            <td><%= solution[i]["problemType"] %></td>
+            <td><%= solution[i]["solution"] %></td>
+    
+        </tr>
+    <% } %>
     </tbody>
   </table>
 
@@ -320,7 +312,6 @@ function solutiuonsFunction() {
   <div class="row">
     <div class = "leftCol">
       <select name="Filter" id="equipmentColoumn">
-          <option value="0">Equipment Id</option>
           <option value="1">Software Name</option>
           <option value="2">Serial Number / License</option>
         </select>
