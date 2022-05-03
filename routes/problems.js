@@ -149,4 +149,12 @@ app.all('/allProblems', checkRoles("specialist", "employee"), function (req, res
     });
 });
 
+app.get("submitProblem", checkRoles("employee"), function (req, res, next) {
+
+});
+
+app.post("submitProblem", checkRoles("employee"), function (req, res, next) {
+
+});
+
 module.exports = app;
