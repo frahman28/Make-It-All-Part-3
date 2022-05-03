@@ -8,6 +8,9 @@ var app     = express.Router();
 var conn    = require('../dbconfig');
 var moment  = require('moment');
 var {verifySession, checkRoles} = require("./auth.middleware");
+var software = require("./software");
+var hardware = require("./hardware");
+var os = require("./os");
 
 
 // route:  GET /
@@ -149,12 +152,19 @@ app.all('/allProblems', checkRoles("specialist", "employee"), function (req, res
     });
 });
 
-app.get("submitProblem", checkRoles("employee"), function (req, res, next) {
+app.get("/submitProblem", checkRoles("employee", "specialist"), async function (req, res, next) {
+    var allSoftware = await software.getAllSoftware();
+    var allHardware = await hardware.getAllHardware();
+    var allOS = await os.getAllOS();
 
+    res.render('submitProblem', {userName: req.session.userName,
+                                software: allSoftware,
+                                hardware: allHardware,
+                                os: allOS});
 });
 
-app.post("submitProblem", checkRoles("employee"), function (req, res, next) {
-
+app.post("/submitProblem", checkRoles("employee", "specialist"), function (req, res, next) {
+    
 });
 
 module.exports = app;
