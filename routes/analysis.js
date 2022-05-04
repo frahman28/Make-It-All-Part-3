@@ -113,18 +113,26 @@ router.get(
   }
 );
 
+var getNumOfOpenProblems = function () {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "SELECT COUNT(problem_type_id) AS numberOfOpenProblems FROM problems WHERE closed = 0",
+      (err, results) => {
+        if (err) throw err;
+        resolve(results[0]);
+      }
+    );
+  });
+};
+
 router.get(
   "/api/open-problems",
   checkRoles("advisor", "admin", "specialist"),
   (req, res) => {
     // Use SQL to count the number of open problems in the database and return this is as a json response
-    conn.query(
-      "SELECT COUNT(problem_type_id) AS numberOfOpenProblems FROM problems WHERE closed = 0",
-      (err, results) => {
-        if (err) throw err;
-        return res.json({ success: true, data: results[0] });
-      }
-    );
+    getNumOfOpenProblems().then((results) => {
+      return res.json({ success: true, data: results });
+    });
   }
 );
 
