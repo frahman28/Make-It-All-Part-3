@@ -71,7 +71,7 @@
     <div class="dropdown-content">
      
       <a onclick = "displayUP1('individualGraph2')" >Problems Per Specialist</a>
-      <a onclick = "displayUP1('individualGraph3')" >Average Time To Fix A Problem</a>
+      <a onclick = "displayUP1('individualGraph1')" >Average Time To Fix A Problem</a>
       <!--<a onclick = "displayUP1('individualGraph1')" >Graph 1</a>-->
     </div>
   </div>
@@ -114,7 +114,7 @@
   </script>
   <br>
   <br>
-<!-- Filter Table for employees-->
+<!-- Filter Table for employees so analyst cant find more information about employee-->
  <div class="container">
         <form action="">
             <div class="row">
@@ -124,10 +124,10 @@
                 <div class="col-4">
                     <select id="search-by" name="search-by" class="form-select">
                         <option selected>Search By</option>
-                        <option value="first">Serial Number</option>
-                        <option value="second">Equpiment Make</option>
-                        <option value="td:third">Equpiment Type</option>
-                        <option value="td:fourth">Software Running</option>
+                        <option value="first">Employee ID</option>
+                        <option value="second">Employee Name</option>
+                        <option value="td:third">Job Title</option>
+                        <option value="td:fourth">Jobs currently</option>
                     </select>
                 </div>
                 
@@ -461,7 +461,7 @@
           data: {
             labels: ["January", "February", "March", "April", "May", "June", "July"],
             datasets: [{
-              label: "Software Issues",
+              label: "Software And Hardware Issues",
               data: [65, 59, 80, 81, 56, 55, 40],
               backgroundColor: [
                 'rgba(105, 0, 132, .2)',
@@ -492,34 +492,12 @@
 
 
 
-    new Chart(document.getElementById("bar-chart-time-fix"), {
-        type: 'bar',
-        data: {
-          labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
-          datasets: [
-            {
-              label: "Population (millions)",
-              backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-              data: [2478,5267,734,784,433]
-            }
-          ]
-        },
-        options: {
-          legend: { display: false },
-          title: {
-            display: true,
-            text: 'Predicted world population (millions) in 2050'
-          }
-        }
-    });
-
-
     new Chart(document.getElementById("pie-chart-problemType"), {
         type: 'pie',
         data: {
           labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
           datasets: [{
-            label: "Population (millions)",
+            label: "Problem Type",
             backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
             data: [2478,5267,734,784,433]
           }]
@@ -531,48 +509,137 @@
           }
         }
     });
+
+
+    </script>
+    <script type="text/javascript">
+
+
+
+    var ctx = document.getElementById("bar-chart-time-fix").getContext('2d');
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+          datasets: [{
+            label: 'Average time to fix',
+            data: [12, 19, 3, 5, 2, 3],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+              'rgba(255,99,132,1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+
+
+
+
+
+
   
 
-  new Chart(document.getElementById("bar-chart-faultyEquipment"), {
+
+    var ctx = document.getElementById("bar-chart-faultyEquipment").getContext('2d');
+  var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
-      datasets: [
-        {
-          label: "Population (millions)",
-          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-          data: [2478,5267,734,784,433]
-        }
-      ]
+      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+      datasets: [{
+        label: 'Faulty Equipment',
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255,99,132,1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+      }]
     },
     options: {
-      legend: { display: false },
-      title: {
-        display: true,
-        text: 'Predicted world population (millions) in 2050'
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
       }
     }
+  });
 
 
-    new Chart(document.getElementById("bar-chart-problemPerSpecilist"), {
+
+
+     var ctx = document.getElementById("bar-chart-problemPerSpecilist").getContext('2d');
+  var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
-      datasets: [
-        {
-          label: "Population (millions)",
-          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-          data: [2478,5267,734,784,433]
-        }
-      ]
+      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+      datasets: [{
+        label: 'Problem Per Specilist',
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255,99,132,1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+      }]
     },
     options: {
-      legend: { display: false },
-      title: {
-        display: true,
-        text: 'Predicted world population (millions) in 2050'
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
       }
     }
+  });
 
     </script>
 
