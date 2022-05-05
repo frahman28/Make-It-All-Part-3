@@ -1,4 +1,3 @@
-
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -15,6 +14,8 @@ const { secretKey, salt } = require("./constants");
 // const c          = require("./dbcreate");
 
 var indexRouter = require("./routes/auth");
+var problemTypeRouter = require("./routes/problem-type");
+var analysisRouter = require("./routes/analysis");
 var problemsRouter = require("./routes/problems");
 var usersRouter = require("./routes/employees");
 var equipmentRouter = require("./routes/equipment");
@@ -60,12 +61,13 @@ app.use(cookieParser());
 // Set up static files path.
 app.use(express.static(path.join(__dirname, "public")));
 
-
 // Add routes.
 app.use("/", indexRouter);
 app.use("/", problemsRouter);
-app.use('/', equipmentRouter);
+app.use("/", equipmentRouter);
 app.use("/employee", usersRouter);
+app.use("/problem-type", problemTypeRouter);
+app.use("/analysis", analysisRouter);
 
 // Catch 404 and forward to error handler.
 app.use(function (req, res, next) {
