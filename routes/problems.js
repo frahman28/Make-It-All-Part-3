@@ -12,7 +12,7 @@ var software = require("./software");
 var hardware = require("./hardware");
 var os = require("./os");
 var solution = require("./solution");
-var problemTypes = require("./problem-type-fun");
+var problemTypes = require("./problem-type-functions");
 
 // route:  GET /
 // access: ALL NOT LOGGED IN
