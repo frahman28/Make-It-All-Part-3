@@ -71,6 +71,12 @@
               });
             });
 
+            var checkUrl = window.location.href;
+
+            if (checkUrl.substring(checkUrl.length-12, checkUrl.length) == 'CannotDelete') {
+                alert("Cannot Delete the Row");
+                window.location = '/viewEquipment';
+            }
 
             
         </script>
