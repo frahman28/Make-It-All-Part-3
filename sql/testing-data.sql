@@ -3,14 +3,14 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 20, 2022 at 08:52 PM
+-- Generation Time: May 08, 2022 at 09:47 PM
 -- Server version: 5.5.68-MariaDB
--- PHP Version: 8.0.17
+-- PHP Version: 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS = 1;
 
 --
 -- Database: `teamb015`
@@ -58,7 +58,8 @@ INSERT INTO `employees` (`employee_id`, `name`, `role_id`, `extension`, `externa
 (400393, 'Terry Perry', 2, '104', 0, 1),
 (573827, 'Dave Davidson', 2, '105', 0, 1),
 (609093, 'Lisa Poole', 3, '106', 0, 1),
-(737277, 'Johnny Ipkiss', 3, '107', 0, 1);
+(737277, 'Johnny Ipkiss', 3, '107', 0, 1),
+(768799, 'Miles Upshur', 1, '127', 0, 1);
 
 --
 -- Dumping data for table `employee_problem_type_relation`
@@ -67,13 +68,13 @@ INSERT INTO `employees` (`employee_id`, `name`, `role_id`, `extension`, `externa
 INSERT INTO `employee_problem_type_relation` (`employee_id`, `problem_type_id`) VALUES
 (126711, 1),
 (126711, 4),
+(126711, 5),
 (126711, 6),
 (126711, 7),
-(126711, 9),
 (228787, 2),
-(228787, 3),
-(228787, 8),
-(329922, 3);
+(228787, 9),
+(329922, 3),
+(329922, 8);
 
 --
 -- Dumping data for table `hardware`
@@ -126,7 +127,8 @@ INSERT INTO `job_info` (`employee_id`, `title_id`, `department_id`) VALUES
 (400393, 4, 2),
 (573827, 4, 2),
 (609093, 1, 1),
-(737277, 1, 1);
+(737277, 1, 1),
+(768799, 6, 3);
 
 --
 -- Dumping data for table `job_title`
@@ -134,6 +136,7 @@ INSERT INTO `job_info` (`employee_id`, `title_id`, `department_id`) VALUES
 
 INSERT INTO `job_title` (`title_id`, `title`) VALUES
 (1, 'Employee'),
+(6, 'General Administrator'),
 (2, 'Operations Manager'),
 (3, 'Senior Manager'),
 (4, 'Technical Adviser'),
@@ -150,7 +153,8 @@ INSERT INTO `login_info` (`employee_id`, `password`, `username`) VALUES
 (400393, '$2a$15$VMv21TgBN76umEcpEYzrRupXKENrT2.NKmxaj6i5O4Zz9/QEOKi96', 'tperry'),
 (573827, '$2a$15$VMv21TgBN76umEcpEYzrRupXKENrT2.NKmxaj6i5O4Zz9/QEOKi96', 'bigddavidson'),
 (609093, '$2a$15$sbT60XaES9wqX1kW6T0gPufmX1UJ8gokcNvcEKmdJYTS1U49ddfZK', 'lpoole'),
-(737277, '$2a$15$sbT60XaES9wqX1kW6T0gPufmX1UJ8gokcNvcEKmdJYTS1U49ddfZK', 'jipkiss');
+(737277, '$2a$15$sbT60XaES9wqX1kW6T0gPufmX1UJ8gokcNvcEKmdJYTS1U49ddfZK', 'jipkiss'),
+(768799, '$2a$15$XnaFVh9xQZ84cltiYBciu.gMJdtQAhd04Z/C6fHrs5U0uWaXBPtKy', 'mupshur');
 
 --
 -- Dumping data for table `os`
@@ -209,6 +213,7 @@ INSERT INTO `problem_types` (`problem_type_id`, `problem_type`, `child_of`) VALU
 (7, 'Keyboard', 1),
 (8, 'Internet', 3),
 (9, 'Word', 2);
+
 --
 -- Dumping data for table `software`
 --
@@ -260,5 +265,6 @@ INSERT INTO `type_of_software` (`type_id`, `type`) VALUES
 (2, 'Driver'),
 (3, 'Firmware'),
 (4, 'Operating System');
+
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
