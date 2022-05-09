@@ -43,7 +43,7 @@ app.get('/dashboard', checkRoles("admin", "adviser"), function (req, res, next) 
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, next) {
+app.get('/myProblems', checkRoles("specialist", "employee"), async function(req, res, next) {
     // Change query sytax depending on current user's role.
     let query  = req.session.userRole === 'specialist' ? 'assigned_to' : 'employee';
     let userId = req.session.userId;
@@ -57,12 +57,16 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                 problems.name as problemName,
+                problems.problem_type_id as problemTypeId,
+                problems.software_id as problemSoftwareId,
+                problems.hardware_id as problemHardwareId,
                 employee as reportedById,
                 assigned_to as specialistId,
                 employees.name as reportedByName,
                 specialists.name as specialistName,
                 opened_on as dateOpened,
                 closed_on as dateClosed,
+                problems.os_id as problemOSId,
                 status
                 FROM problems
                 LEFT JOIN employees 
