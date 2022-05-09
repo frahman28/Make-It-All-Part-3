@@ -9,6 +9,7 @@ var ejs = require("ejs");
 const session = require("express-session");
 var flash = require("connect-flash");
 const { secretKey, salt } = require("./constants");
+const methodOverride = require("method-override");
 
 // Uncomment to populate the database with testing data.
 // const c          = require("./dbcreate");
@@ -54,6 +55,9 @@ app.use(
 app.use(cors());
 
 app.use(express.urlencoded({ extended: false }));
+
+// Include module for PATCH and DELETE routes
+app.use(methodOverride("_method"));
 
 // Enable cookies.
 app.use(cookieParser());
