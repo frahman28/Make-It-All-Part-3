@@ -11,8 +11,9 @@ var {verifySession, checkRoles} = require("./auth.middleware");
 var software = require("./software");
 var hardware = require("./hardware");
 var os = require("./os");
-var solution = require("./solution");
+var solutionUtils = require("./solution");
 var problemTypes = require("./problem-type-functions");
+var problemUtils = require("./problems-functions");
 
 // route:  GET /
 // access: ALL NOT LOGGED IN
@@ -159,7 +160,7 @@ app.get("/submitProblem", checkRoles("employee", "specialist"), async function (
     var allSoftware = await software.getAllSoftware();
     var allHardware = await hardware.getAllHardware();
     var allOS = await os.getAllOS();
-    var allSolutions = await solution.getAllSolutions();
+    var allSolutions = await solutionUtils.getAllSolutions();
     var allProblemTypes = await problemTypes.getAllProblemTypes();
 
     res.render('submitProblem', {userName: req.session.userName,
@@ -171,8 +172,75 @@ app.get("/submitProblem", checkRoles("employee", "specialist"), async function (
                                 role: req.session.userRole});
 });
 
+
 app.post("/submitProblem", checkRoles("employee", "specialist"), function (req, res, next) {
-    
+    let problemName = req.body.problemName;
+    let problemType = req.body.problemType;
+    let serialNumber = req.body.serialNumber;
+    let operatingSystem = req.body.operatingSystem;
+    let software = req.body.software;
+    let hardware = req.body.hardware;
+    let problemDesription = req.body.problemDesription;
+
+    let solution = req.body.solution;
+    let solutionNotes = req.body.solutionNotes;
+
+
+    // If no username or password provided, 
+    // if (!username || !password) {
+    //     return res.render('login', {
+    //         errorMessage: 'Please provide both your username and password.'
+    //     });
+    // }
 });
+
+
+
+app.get("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin"), async function (req, res, next) {
+    let problemId = req.params["problemId"];
+    let problem = await problemUtils.getProblemById(problemId);
+
+    console.log(problem);
+
+    console.log(req.session.userId);
+    console.log(problem["assigned_to"]);
+    console.log(problem["employee"]);
+
+    if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId && req.session.userRole != "admin") {
+        // Prohibit enter.
+        return res.sendStatus(401);
+    }
+
+    var allSoftware = await software.getAllSoftware();
+    var allHardware = await hardware.getAllHardware();
+    var allOS = await os.getAllOS();
+    var allSolutions = await solutionUtils.getAllSolutions();
+    var allProblemTypes = await problemTypes.getAllProblemTypes();
+
+    res.render('submitProblem', {userName: req.session.userName,
+                                problem: problem,
+                                software: allSoftware,
+                                hardware: allHardware,
+                                os: allOS,
+                                solution: allSolutions,
+                                problemTypes: allProblemTypes,
+                                role: req.session.userRole});
+});
+
+
+app.post("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin"), async function (req, res, next) {
+    let problemId = req.params["problemId"];
+    let author = req.session.userId;
+    let solution = req.body.solution;
+    let solutionNotes = req.body.solutionNotes;
+
+    await solutionUtils.addComments(problemId, author, solutionNotes);
+    let newSolution = await solutionUtils.addComments(problemId, author, solution);
+    await solutionUtils.linkProblemToSolution(problemId, newSolution["comment_id"]);
+
+    await problemUtils.updateProblem(problemId);
+    res.redirect('/myProblems');
+});
+
 
 module.exports = app;
