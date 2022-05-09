@@ -108,6 +108,10 @@
                                         <td><input type="text" id="update-name" name="name" class="form-control" value="<%= problems[i]["problemName"] %>"></td>
                                     </tr>
                                     <tr>
+                                        <td>Problem Description:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td><textarea id="update-desc" name="desc" class="form-control" cols="40" rows="5"><%= problems[i]["problemDesc"] %></textarea></td>
+                                    </tr>
+                                    <tr>
                                         <td>Problem Type:</td>
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-type" name="type" class="form-select">
@@ -126,7 +130,9 @@
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-software" name="software" class="form-select">
                                                 <% if (problems[i]["problemSoftwareId"] == null) { %> <!-- Display N/A if problem was submitted with no hardware -->
-                                                    <option selected>N/A</option>
+                                                    <option value="NULL" selected>None</option>
+                                                <% } else { %> 
+                                                    <option value="NULL">None</option>
                                                 <% } %> 
                                                 <% for (var j = 0; j < software.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                     <% if (software[j]["software_id"] == problems[i]["problemSoftwareId"] ) {%>
@@ -135,7 +141,6 @@
                                                         <option value="<%= software[j]["software_id"] %>"><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %></option>   
                                                     <% } %>    
                                                 <% } %>
-                                                <option value="NULL">None</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -144,7 +149,9 @@
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-hardware" name="hardware" class="form-select">
                                                 <% if (problems[i]["problemHardwareId"] == null) { %> <!-- Display N/A if problem was submitted with no software --> 
-                                                    <option selected>N/A</option>
+                                                    <option value="NULL" selected>None</option>
+                                                <% } else { %> 
+                                                    <option value="NULL">None</option>
                                                 <% } %> 
                                                 <% for (var j = 0; j < hardware.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                     <% if (hardware[j]["hardware_id"] == problems[i]["problemHardwareId"] ) {%>
@@ -153,7 +160,6 @@
                                                         <option value="<%= hardware[j]["hardware_id"] %>"><%= hardware[j]["hardware_id"] %> - <%= hardware[j]["name"] %> - <%= hardware[j]["serial"] %></option>   
                                                     <% } %>
                                                 <% } %>
-                                                <option value="NULL">None</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -162,7 +168,9 @@
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-os" name="os" class="form-select">
                                                 <% if (problems[i]["problemOSId"] == null) { %> <!-- Display N/A if problem was submitted with no os -->
-                                                    <option selected>N/A</option>
+                                                    <option value="NULL" selected>None</option>
+                                                <% } else { %> 
+                                                    <option value="NULL">None</option>
                                                 <% } %> 
                                                 <% for (var j = 0; j < os.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                     <% if (os[j]["os_id"] == problems[i]["problemOSId"] ) {%>
@@ -171,7 +179,6 @@
                                                         <option value="<%= os[j]["os_id"] %>"><%= os[j]["os_id"] %> - <%= os[j]["name"] %></option>   
                                                     <% } %>
                                                 <% } %>
-                                                <option value="NULL">None</option>
                                             </select>
                                         </td>
                                     </tr>
