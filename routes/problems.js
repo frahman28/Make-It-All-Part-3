@@ -198,13 +198,9 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), function (req, 
 
 app.get("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin"), async function (req, res, next) {
     let problemId = req.params["problemId"];
+    if (isNaN(problemId)) return res.redirect("../myProblems");
+
     let problem = await problemUtils.getProblemById(problemId);
-
-    console.log(problem);
-
-    console.log(req.session.userId);
-    console.log(problem["assigned_to"]);
-    console.log(problem["employee"]);
 
     if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId && req.session.userRole != "admin") {
         // Prohibit enter.
