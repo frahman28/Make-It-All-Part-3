@@ -48,6 +48,12 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
     let query  = req.session.userRole === 'specialist' ? 'assigned_to' : 'employee';
     let userId = req.session.userId;
 
+    //Get all hardware, software, os, problem types to display in update tables as options
+    var allSoftware = await software.getAllSoftware(req, res);
+    var allHardware = await hardware.getAllHardware(req, res);
+    var allOS = await os.getAllOS(req, res);
+    var allProblemTypes = await problemTypes.getAllProblemTypes();
+
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                 problems.name as problemName,
@@ -82,8 +88,11 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
             res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
                                             moment: moment,                         // used for date formatting.
                                             problems: rows,                         // array of problems.
-                                            role: req.session.userRole});           // used for dynamic rendering (decides which column 
-                                                                                    // should be displayed).
+                                            role: req.session.userRole,             // used for dynamic rendering (decides which column should be displayed).
+                                            hardware: allHardware,
+                                            software: allSoftware,
+                                            os: allOS,
+                                            problemTypes: allProblemTypes});                                            
         }
     });
 });
@@ -238,5 +247,100 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist", "admi
     res.redirect('/myProblems');
 });
 
+
+app.patch('/myProblems/:id', checkRoles("employee", "adviser"), function (req, res) {
+    const { name, type, hardware, software, os } = req.body;
+    const id = parseInt(req.params.id);
+
+    try { //Update each attribute seperately incase certain attributes are not inputted
+        if (name) { 
+            conn.query(`UPDATE 
+                        problems
+                        SET
+                        name = '${name}'
+                        WHERE
+                        problem_id = '${id}'`);
+        }
+        if (type) {
+            conn.query(`SELECT 
+                        *
+                        FROM 
+                        problem_types
+                        WHERE
+                        problem_type = '${type}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                const type_id = rows[0]["problem_type_id"]
+                                conn.query(`UPDATE 
+                                            problems
+                                            SET
+                                            problem_type_id = '${type_id}'
+                                            WHERE
+                                            problem_id = '${id}'`);
+                            }
+                        })
+        }
+        if (hardware) {
+            conn.query(`SELECT 
+                        *
+                        FROM 
+                        hardware_relation
+                        WHERE
+                        hardware_id = '${hardware}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                const serial = rows[0]["serial"]
+                                conn.query(`UPDATE 
+                                            problems
+                                            SET
+                                            hardware_id = '${hardware}',
+                                            serial = '${serial}'
+                                            WHERE
+                                            problem_id = '${id}'`);
+                            }
+                        })
+        }
+        if (software != 'N/A') {
+            console.log(software);
+            conn.query(`SELECT 
+                        *
+                        FROM 
+                        software_relation
+                        WHERE
+                        software_id = '${software}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                const license = rows[0]["license"]
+                                conn.query(`UPDATE 
+                                            problems
+                                            SET
+                                            software_id = '${software}',
+                                            license = '${license}'
+                                            WHERE
+                                            problem_id = '${id}'`);
+                            }
+                        })
+        }
+        if (os) {
+            conn.query(`UPDATE
+                        problems
+                        SET
+                        os_id = '${os}'
+                        WHERE
+                        problem_id = '${id}'`);
+        }
+        res.status(200);
+        res.render({ message: "Success" });
+    } catch (err) {
+        console.log(err);
+        res.render({ message: "Error in request" });
+    }
+})
 
 module.exports = app;
