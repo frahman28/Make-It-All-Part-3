@@ -133,8 +133,9 @@
                                                         <option selected><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %></option>
                                                     <% } else { %>  
                                                         <option value="<%= software[j]["software_id"] %>"><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %></option>   
-                                                    <% } %>
+                                                    <% } %>    
                                                 <% } %>
+                                                <option value="NULL">None</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -152,6 +153,7 @@
                                                         <option value="<%= hardware[j]["hardware_id"] %>"><%= hardware[j]["hardware_id"] %> - <%= hardware[j]["name"] %> - <%= hardware[j]["serial"] %></option>   
                                                     <% } %>
                                                 <% } %>
+                                                <option value="NULL">None</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -169,6 +171,7 @@
                                                         <option value="<%= os[j]["os_id"] %>"><%= os[j]["os_id"] %> - <%= os[j]["name"] %></option>   
                                                     <% } %>
                                                 <% } %>
+                                                <option value="NULL">None</option>
                                             </select>
                                         </td>
                                     </tr>
