@@ -110,39 +110,56 @@ router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
 });
 
 //Post route specific to deleting hardware, calls deleteHardware function
-//If error redirect back to view equipment page
+//If error direct to submit equipment with error message
 //Admin
 router.delete('/deleteHardware/:id', checkRoles("admin"), async function(req, res) {
-    await deleteHardware(req, res);
-    var columns = ["Name", "Type", "Serial"];
-    var data = [req.body.name, req.body.type, req.body.serial];
-    //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "Hardware Deleted:", columns: columns, data: data});
-    //Pass user information from session to display and determine functions
+    var result = await deleteHardware(req, res);
+    if (result.constructor.name == 'OkPacket') {
+        var columns = ["Name", "Type", "Serial"];
+        var data = [req.body.name, req.body.type, req.body.serial];
+        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
+        res.render("submitEquipment", {userName: req.session.userName, message: "Hardware Deleted:", columns: columns, data: data});
+        //Pass user information from session to display and determine functions
+    } else {
+        res.redirect('/EquipmentCannotDelete');
+    }
 });
 
 //Post route specific to deleting software, calls deleteSoftware function
-//If error redirect back to view equipment page
+//If error direct to submit equipment with error message
 //Admin
 router.delete('/deleteSoftware/:id', checkRoles("admin"), async function(req, res) {
-    await deleteSoftware(req, res);
-    var columns = ["Name", "Type", "License"];
-    var data = [req.body.name, req.body.type, req.body.license];
-    //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "Software Deleted:", columns: columns, data: data});
-    //Pass user information from session to display and determine functions
+    var result = await deleteSoftware(req, res);
+    if (result.constructor.name == 'OkPacket') {
+        var columns = ["Name", "Type", "License"];
+        var data = [req.body.name, req.body.type, req.body.license];
+        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
+        res.render("submitEquipment", {userName: req.session.userName, message: "Software Deleted:", columns: columns, data: data});
+        //Pass user information from session to display and determine functions
+    } else {
+        res.redirect('/EquipmentCannotDelete');
+    }
 });
 
 //Post route specific to deleting os, calls deleteOS function
-//If error redirect back to view equipment page
+//If error direct to submit equipment with error message
 //Admin
 router.delete('/deleteOS/:id', checkRoles("admin"), async function(req, res) {
-    await deleteOS(req, res);
-    var columns = ["Name"];
-    var data = [req.body.name];
-    //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "OS Deleted:", columns: columns, data: data});
-    //Pass user information from session to display and determine functions
+    var result = await deleteOS(req, res);
+    if (result.constructor.name == 'OkPacket') {
+        var columns = ["Name"];
+        var data = [req.body.name];
+        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
+        res.render("submitEquipment", {userName: req.session.userName, message: "OS Deleted:", columns: columns, data: data});
+        //Pass user information from session to display and determine functions
+    } else {
+        res.redirect('/EquipmentCannotDelete');
+    }
+});
+
+//Single get route direct to submit equipment and let user know of delete failue
+router.get('/EquipmentCannotDelete', async function(req, res) {
+    res.render("submitEquipment", {userName: req.session.userName, message: "Cannot Delete", columns: "Null", data: "null"});
 });
 
 module.exports = router;

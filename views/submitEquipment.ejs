@@ -27,9 +27,9 @@
                     <li class="nav-item px-4"><a href="myProblems" class="nav-link">Home</a></li>
                     <li class="nav-item px-4"><a href="submitProblem" class="nav-link">Submit a Problem</a></li>
                     <li class="nav-item px-4"><a href="allProblems" class="nav-link">All Problems</a></li>
-                    <% if (role == "admin" || role == "specialist" || role == "employee") { %> 
+                    <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
                         <li class="nav-item px-4"><a href="viewEquipment" class="nav-link">Equipment</a></li>
-                    <% } %> 
+                    <% } %>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown  px-4">
@@ -74,6 +74,12 @@
               });
             });
 
+            var checkUrl = window.location.href;
+
+            if (checkUrl.substring(checkUrl.length-12, checkUrl.length) == 'CannotDelete') {
+                alert("Cannot Delete the Row");
+                window.location = '/viewEquipment';
+            }
 
             
         </script>
