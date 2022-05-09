@@ -30,4 +30,36 @@ var getAllSolutions = function() {
     })            
 };
 
-module.exports = {getAllSolutions};
+var addComments = function(problemId, author, comment) {
+    return new Promise((resolve, reject) => {
+        conn.query(`INSERT INTO comments (problem_id, author, comment)
+                    VALUES (${problemId}, ${author}, ${comment});`,
+                function(err, rows) { 
+                    if (err) {
+                        reject(err);
+                        console.error('Error: ' + err);
+                    } else {
+                        console.log(rows);
+                        return resolve(rows); 
+                    } 
+                });
+    })            
+};
+
+var linkProblemToSolution  = function(problemId, commentId) {
+    return new Promise((resolve, reject) => {
+        conn.query(`INSERT INTO solutions (problem_id, comment_id)
+                    VALUES (${problemId}, ${commentId});`,
+                function(err, rows) { 
+                    if (err) {
+                        reject(err);
+                        console.error('Error: ' + err);
+                    } else {
+                        console.log(rows);
+                        return resolve(rows); 
+                    } 
+                });
+    });
+};
+
+module.exports = {getAllSolutions, addComments, linkProblemToSolution};
