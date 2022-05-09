@@ -22,7 +22,9 @@
             <div class="collapse navbar-collapse" id="main-links">
                 <ul class="navbar-nav">
                     <li class="nav-item px-4"><a href="myProblems" class="nav-link">Home</a></li>
-                    <li class="nav-item px-4"><a href="submitProblem" class="nav-link">Submit a Problem</a></li>
+                    <% if (role == 'specialist' || role == 'employee') { %>
+                        <li class="nav-item px-4"><a href="submitProblem" class="nav-link">Submit a Problem</a></li>
+                    <% } %>
                     <li class="nav-item px-4"><a href="allProblems" class="nav-link">All Problems</a></li>
                     <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
                         <li class="nav-item px-4"><a href="viewEquipment" class="nav-link">Equipment</a></li>
@@ -62,6 +64,7 @@
                 <% } %>       
 
                 <th>Status</th>
+                <th></th>
             </tr>
             <!-- Loop through all user's problems and render their details. -->
             <% for(var i=0; i<problems.length; i++) {%>
@@ -90,6 +93,16 @@
                                 <%= problems[i]["status"] %>
                             <% } %>
                         </div>
+                    </td>
+
+                    <td>
+
+                    <% if (role == 'employee') { %>
+                        <a class="btn btn-success" href="submitProblem/<%= problems[i]["problemId"] %>">Edit</a>
+                    <% } else { %>
+                        <a class="btn btn-success" href="submitProblem/<%= problems[i]["problemId"] %>">Resolve</a>
+                    <% } %>
+                        
                     </td>
                 </tr>
             <% } %>

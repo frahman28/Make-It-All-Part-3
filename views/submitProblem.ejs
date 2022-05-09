@@ -68,7 +68,11 @@
             <label for="problemName">Problem Name: </label>
           </div>
           <div class = "rightCol">
-            <input type="text" id = "problemName" name="problemName">
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id = "problemName" name="problemName"  disabled="disabled" value="<%= problem[0]["problemName"] %>">
+            <% } else{ %>  
+              <input type="text" id = "problemName" name="problemName">
+           <% } %>
           </div>
         </div>
 
@@ -77,9 +81,13 @@
             <label for="problemType">Problem Type: </label>
           </div>
           <div class = "rightCol">
-            <input list="problemTypes" id = "problemType" name="problemType">
-            <datalist id="problemTypes">
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id = "problemType" name="problemType" disabled="disabled" value="<%= problem[0]["problemType"] %>">
+            <% } else{ %>  
+              <input list="problemTypes" id = "problemType" name="problemType">
+           <% } %>
 
+            <datalist id="problemTypes">
             <% for(var i=0; i<problemTypes.length; i++) {%>
                 <option value="<%= problemTypes[i]["problem_type"] %>"><%= problemTypes[i]["problem_type"] %></option>
             <% } %>
@@ -94,14 +102,14 @@
             <label for="serialNumber">Serial Number: </label>
           </div>
           <div class = "rightCol">
-            <input list="serialNumbers" id = "serialNumber" name="serialNumber">
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id = "serialNumber" name="serialNumber" disabled="disabled" value="<%= problem[0]["serial"] %>">
+            <% } else{ %>  
+              <input list="serialNumbers" id = "serialNumber" name="serialNumber">
+           <% } %>
+            
             <datalist id="serialNumbers">
 
-              <% for(var i=0; i<software.length; i++) {%>
-                  <option value="<%= software[i]["license"] %>">
-                    <%= software[i]["name"] %></option>
-              <% } %>
-  
               <% for(var i=0; i<hardware.length; i++) {%>
                 <option value="<%= hardware[i]["serial"] %>">
                   <%= hardware[i]["name"] %>
@@ -114,12 +122,38 @@
 
         <div class="row">
           <div class = "leftCol">
+            <label for="license">License: </label>
+          </div>
+          <div class = "rightCol">
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id="license" name="license" disabled="disabled" value="<%= problem[0]["license"] %>">
+            <% } else{ %>  
+              <input list="licenseList" id = "license" name="license">
+           <% } %>
+            
+            <datalist id="licenseList">
+              <% for(var i=0; i<software.length; i++) {%>
+                  <option value="<%= software[i]["license"] %>">
+                    <%= software[i]["name"] %></option>
+              <% } %>
+
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
             <label for="operatingSystem">OS: </label>
           </div>
           <div class = "rightCol">
-            <input list="operatingSystems" id = "operatingSystem" name="operatingSystem">
-            <datalist id="operatingSystems">
 
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id="operatingSystem" name="operatingSystem" disabled="disabled" value="<%= problem[0]["OSName"] %>">
+            <% } else{ %>  
+              <input list="operatingSystems" id = "operatingSystem" name="operatingSystem">
+           <% } %>
+            
+           <datalist id="operatingSystems">
               <% for(var i=0; i<os.length; i++) {%>
                 <option value="<%= os[i]["name"] %>">
                   <%= os[i]["name"] %>
@@ -135,9 +169,15 @@
             <label for="software">Software: </label>
           </div>
           <div class = "rightCol">
-            <input list="softwares" id = "software" name="software">
-            <datalist id="softwares">
+            
 
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id="software" name="software" disabled="disabled" value="<%= problem[0]["softwareName"] %>">
+            <% } else{ %>  
+              <input list="softwares" id = "software" name="software">
+           <% } %>
+
+            <datalist id="softwares">
               <% for(var i=0; i<software.length; i++) {%>
                 <option value="<%= software[i]["name"] %>">
                   <%= software[i]["name"] %>
@@ -153,9 +193,14 @@
             <label for="hardware">Hardware: </label>
           </div>
           <div class = "rightCol">
-            <input list="hardwares" id = "hardware" name="hardware">
-            <datalist id="hardwares">
 
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id="hardware" name="hardware" disabled="disabled" value="<%= problem[0]["hardwareName"] %>">
+            <% } else{ %>  
+              <input list="hardwares" id = "hardware" name="hardware">
+           <% } %>
+
+            <datalist id="hardwares">
               <% for(var i=0; i<hardware.length; i++) {%>
                 <option value="<%= hardware[i]["name"] %>">
                   <%= hardware[i]["name"] %>
@@ -171,11 +216,15 @@
             <label for="problemDesription">Problem Description: </label>
           </div>
           <div class = "rightCol">
-            <textarea name="problemDesription" id="problemDesription" rows="5" cols="40"></textarea>
+            
+            <% if (typeof problem != 'undefined'){ %>
+              <textarea name="problemDesription"  disabled="disabled" id="problemDesription" rows="5" cols="40"><%= problem[0]["problemDescription"] %></textarea>
+            <% } else{ %>  
+              <textarea name="problemDesription" id="problemDesription" rows="5" cols="40"></textarea>
+           <% } %>
+            
           </div>
         </div>
-        <input type="submit" class = "smallSubmit">
-        <br>
         <br>
         <br>
         
@@ -231,10 +280,7 @@
           </div>
         </div>
 
-        <input type="submit" class = "smallSubmit">
-        <br>
-        <br>
-        <br>
+        <button class = "mb-4 mt-2 smallSubmit btn btn-success" > Mark as Resolved </button>
 
       </div>
 
@@ -265,14 +311,14 @@
 
   <div class="row">
     <div class = "leftCol">
-      <select name="Filter" id="solutionColoumn">
+      <select name="Filter" id="solutionColumn">
           <option value="0">Problem Name</option>
           <option value="1">Solution</option>
           <option value="2">Problem Type</option>
         </select>
     </div>
     <div class = "rightCol">
-      <input list="solutions" id = "solutionSearch" name="callReason" onkeyup="solutiuonsFunction()">
+      <input list="solutions" id = "solutionSearch" name="solutionSearch" onkeyup="solutionsFunction()">
     </div>
   </div>
 
@@ -298,9 +344,9 @@
   </table>
 
 <script>
-function solutiuonsFunction() {
+function solutionsFunction() {
   var input, filter, table, tr, td, i, txtValue;
-  var coloumnSelect = document.getElementById("solutionColoumn").value;
+  var coloumnSelect = document.getElementById("solutionColumn").value;
   var newcoloumnSelect = parseInt(coloumnSelect);
   input = document.getElementById("solutionSearch");
   filter = input.value.toUpperCase();
