@@ -93,7 +93,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.all('/allProblems', checkRoles("specialist", "employee"), function (req, res, next) {
+app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function (req, res, next) {
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,
@@ -144,11 +144,13 @@ app.all('/allProblems', checkRoles("specialist", "employee"), function (req, res
         // If error occured, return an empty array.
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
-                                                problems: []});                      // empty array of problems.
+                                                problems: [],
+                                                role: req.session.userRole});                      // empty array of problems.
         } else {
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
-                                                problems: rows});                    // array of problems.
+                                                problems: rows,
+                                                role: req.session.userRole});                    // array of problems.
         }
     });
 });
@@ -165,8 +167,8 @@ app.get("/submitProblem", checkRoles("employee", "specialist"), async function (
                                 hardware: allHardware,
                                 os: allOS,
                                 solution: allSolutions,
-                                problemTypes: allProblemTypes
-                            });
+                                problemTypes: allProblemTypes,
+                                role: req.session.userRole});
 });
 
 app.post("/submitProblem", checkRoles("employee", "specialist"), function (req, res, next) {
