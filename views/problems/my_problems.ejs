@@ -93,7 +93,7 @@
                     </td>
                 </tr>
                 <tr class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
-                    <% if (role == "employee") { %>
+                    <% if (role == "employee") { %> <!-- Allow employees to be able to edit their problems -->
                     <td class="hidden-data" colspan="5">
                         <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
                             <br>
@@ -125,7 +125,7 @@
                                         <td>Software Id:</td>
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-software" name="software" class="form-select">
-                                                <% if (problems[i]["problemSoftwareId"] == null) { %> 
+                                                <% if (problems[i]["problemSoftwareId"] == null) { %> <!-- Display N/A if problem was submitted with no hardware -->
                                                     <option selected>N/A</option>
                                                 <% } %> 
                                                 <% for (var j = 0; j < software.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
@@ -142,7 +142,7 @@
                                         <td>Hardware Id:</td>
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-hardware" name="hardware" class="form-select">
-                                                <% if (problems[i]["problemHardwareId"] == null) { %> 
+                                                <% if (problems[i]["problemHardwareId"] == null) { %> <!-- Display N/A if problem was submitted with no software --> 
                                                     <option selected>N/A</option>
                                                 <% } %> 
                                                 <% for (var j = 0; j < hardware.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
@@ -159,7 +159,7 @@
                                         <td>OS Id:</td>
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-os" name="os" class="form-select">
-                                                <% if (problems[i]["problemOSId"] == null) { %> 
+                                                <% if (problems[i]["problemOSId"] == null) { %> <!-- Display N/A if problem was submitted with no os -->
                                                     <option selected>N/A</option>
                                                 <% } %> 
                                                 <% for (var j = 0; j < os.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->

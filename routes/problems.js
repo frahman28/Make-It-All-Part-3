@@ -93,10 +93,10 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                                             moment: moment,                         // used for date formatting.
                                             problems: rows,                         // array of problems.
                                             role: req.session.userRole,             // used for dynamic rendering (decides which column should be displayed).
-                                            hardware: allHardware,
-                                            software: allSoftware,
-                                            os: allOS,
-                                            problemTypes: allProblemTypes});                                            
+                                            hardware: allHardware,                  // array of hardware to display as options.
+                                            software: allSoftware,                  // array of software to display as options.
+                                            os: allOS,                              // array of os to display as options.    
+                                            problemTypes: allProblemTypes});        // array of problem types to display as options.                                    
         }
     });
 });
@@ -251,13 +251,14 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist", "admi
     res.redirect('/myProblems');
 });
 
-
-app.patch('/myProblems/:id', checkRoles("employee", "adviser"), function (req, res) {
+//Patch route allows user to edit name, type, software, hardware, os of their problems
+//Access to employee users and specialist users
+app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req, res) {
     const { name, type, hardware, software, os } = req.body;
     const id = parseInt(req.params.id);
 
     try { //Update each attribute seperately incase certain attributes are not inputted
-        if (name) { 
+        if (name) { //If name value is inputted
             conn.query(`UPDATE 
                         problems
                         SET
@@ -265,14 +266,14 @@ app.patch('/myProblems/:id', checkRoles("employee", "adviser"), function (req, r
                         WHERE
                         problem_id = '${id}'`);
         }
-        if (type) {
+        if (type) { //If type value is inputted
             conn.query(`SELECT 
                         *
                         FROM 
                         problem_types
                         WHERE
                         problem_type = '${type}'`,
-                        function(err, rows) {
+                        function(err, rows) { //Get data from problem types to use to update problem type id
                             if (err) {
                                 console.error('Error: ' + err);
                             } else {
@@ -286,14 +287,14 @@ app.patch('/myProblems/:id', checkRoles("employee", "adviser"), function (req, r
                             }
                         })
         }
-        if (hardware) {
+        if (hardware != 'N/A') { //If hardware has valid value
             conn.query(`SELECT 
                         *
                         FROM 
                         hardware_relation
                         WHERE
                         hardware_id = '${hardware}'`,
-                        function(err, rows) {
+                        function(err, rows) { //Get serial number from relation table of submitted id then update problems table
                             if (err) {
                                 console.error('Error: ' + err);
                             } else {
@@ -308,7 +309,7 @@ app.patch('/myProblems/:id', checkRoles("employee", "adviser"), function (req, r
                             }
                         })
         }
-        if (software != 'N/A') {
+        if (software != 'N/A') { //If software has valid value
             console.log(software);
             conn.query(`SELECT 
                         *
@@ -316,7 +317,7 @@ app.patch('/myProblems/:id', checkRoles("employee", "adviser"), function (req, r
                         software_relation
                         WHERE
                         software_id = '${software}'`,
-                        function(err, rows) {
+                        function(err, rows) { //Get license number from relation table of submitted id then update problems table
                             if (err) {
                                 console.error('Error: ' + err);
                             } else {
@@ -331,7 +332,7 @@ app.patch('/myProblems/:id', checkRoles("employee", "adviser"), function (req, r
                             }
                         })
         }
-        if (os) {
+        if (os != 'N/A') { //If os has valid value
             conn.query(`UPDATE
                         problems
                         SET
@@ -340,7 +341,7 @@ app.patch('/myProblems/:id', checkRoles("employee", "adviser"), function (req, r
                         problem_id = '${id}'`);
         }
         res.status(200);
-        res.render({ message: "Success" });
+        res.redirect('/myProblems'); //Direct user back to dashboard with problems updated
     } catch (err) {
         console.log(err);
         res.render({ message: "Error in request" });
