@@ -8,7 +8,12 @@ var app     = express.Router();
 var conn    = require('../dbconfig');
 var moment  = require('moment');
 var {verifySession, checkRoles} = require("./auth.middleware");
-
+var software = require("./software");
+var hardware = require("./hardware");
+var os = require("./os");
+var solutionUtils = require("./solution");
+var problemTypes = require("./problem-type-functions");
+var problemUtils = require("./problems-functions");
 
 // route:  GET /
 // access: ALL NOT LOGGED IN
@@ -89,7 +94,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), function(req, res, 
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.all('/allProblems', checkRoles("specialist", "employee"), function (req, res, next) {
+app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function (req, res, next) {
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,
@@ -140,13 +145,98 @@ app.all('/allProblems', checkRoles("specialist", "employee"), function (req, res
         // If error occured, return an empty array.
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
-                                                problems: []});                      // empty array of problems.
+                                                problems: [],
+                                                role: req.session.userRole});                      // empty array of problems.
         } else {
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
-                                                problems: rows});                    // array of problems.
+                                                problems: rows,
+                                                role: req.session.userRole});                    // array of problems.
         }
     });
 });
+
+app.get("/submitProblem", checkRoles("employee", "specialist"), async function (req, res, next) {
+    var allSoftware = await software.getAllSoftware();
+    var allHardware = await hardware.getAllHardware();
+    var allOS = await os.getAllOS();
+    var allSolutions = await solutionUtils.getAllSolutions();
+    var allProblemTypes = await problemTypes.getAllProblemTypes();
+
+    res.render('submitProblem', {userName: req.session.userName,
+                                software: allSoftware,
+                                hardware: allHardware,
+                                os: allOS,
+                                solution: allSolutions,
+                                problemTypes: allProblemTypes,
+                                role: req.session.userRole});
+});
+
+
+app.post("/submitProblem", checkRoles("employee", "specialist"), function (req, res, next) {
+    let problemName = req.body.problemName;
+    let problemType = req.body.problemType;
+    let serialNumber = req.body.serialNumber;
+    let operatingSystem = req.body.operatingSystem;
+    let software = req.body.software;
+    let hardware = req.body.hardware;
+    let problemDesription = req.body.problemDesription;
+
+    let solution = req.body.solution;
+    let solutionNotes = req.body.solutionNotes;
+
+
+    // If no username or password provided, 
+    // if (!username || !password) {
+    //     return res.render('login', {
+    //         errorMessage: 'Please provide both your username and password.'
+    //     });
+    // }
+});
+
+
+
+app.get("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin"), async function (req, res, next) {
+    let problemId = req.params["problemId"];
+    if (isNaN(problemId)) return res.redirect("../myProblems");
+
+    let problem = await problemUtils.getProblemById(problemId);
+
+    if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId && req.session.userRole != "admin") {
+        // Prohibit enter.
+        return res.sendStatus(401);
+    }
+
+    var allSoftware = await software.getAllSoftware();
+    var allHardware = await hardware.getAllHardware();
+    var allOS = await os.getAllOS();
+    var allSolutions = await solutionUtils.getAllSolutions();
+    var allProblemTypes = await problemTypes.getAllProblemTypes();
+
+    res.render('submitProblem', {userName: req.session.userName,
+                                problem: problem,
+                                software: allSoftware,
+                                hardware: allHardware,
+                                os: allOS,
+                                solution: allSolutions,
+                                problemTypes: allProblemTypes,
+                                role: req.session.userRole});
+});
+
+
+app.post("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin"), async function (req, res, next) {
+    let problemId = req.params["problemId"];
+    let author = req.session.userId;
+    let solution = req.body.solution;
+    let solutionNotes = req.body.solutionNotes;
+
+    await solutionUtils.addComments(problemId, author, solutionNotes);
+    let newSolution = await solutionUtils.addComments(problemId, author, solution);
+    await solutionUtils.linkProblemToSolution(problemId, newSolution["comment_id"]);
+
+    await problemUtils.updateProblem(problemId);
+    res.redirect('/myProblems');
+});
+
 
 module.exports = app;

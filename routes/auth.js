@@ -110,7 +110,7 @@ app.post('/login', (req, res) => {
 // access: ALL LOGGED IN
 // Renders the page for password change.
 app.get('/settings', verifySession, function(req, res) {
-    res.render("settings", {userName: req.session.userName});
+    res.render("settings", {userName: req.session.userName, role: req.session.userRole});
 });
 
 
@@ -127,6 +127,7 @@ app.post('/settings', verifySession, function(req, res, next) {
         return res.render('settings', {
                             userName: req.session.userName,
                             messageType: "danger",
+                            role: req.session.userRole,
                             message: 'Ensure that your passwords are the same.'
         });
     }
@@ -137,6 +138,7 @@ app.post('/settings', verifySession, function(req, res, next) {
         if (err) {
             return res.render("settings", {
                 userName: req.session.userName,
+                role: req.session.userRole,
                 messageType: "danger",
                 message: "Something went wrong."
             });
@@ -154,6 +156,7 @@ app.post('/settings', verifySession, function(req, res, next) {
                 res.render("settings", {
                     userName: req.session.userName,
                     messageType: "danger",
+                    role: req.session.userRole,
                     message: "Something went wrong."
                 });
             } else {
@@ -161,6 +164,7 @@ app.post('/settings', verifySession, function(req, res, next) {
                 res.render("settings", {
                     userName: req.session.userName,
                     messageType: "success",
+                    role: req.session.userRole,
                     message: "Password updated successfully!"
                 });
             }
