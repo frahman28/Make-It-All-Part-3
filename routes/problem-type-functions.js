@@ -35,12 +35,13 @@ var getListOfSpecialistForProblemType = function (
       availableQuery = "";
     }
     const sqlQuery = `
-    SELECT employees.employee_id, employees.name, COUNT(problems.problem_id) AS numberOfAssignedProblems
+    SELECT employees.employee_id as specialistId, employees.name, COUNT(problems.problem_id) AS numberOfAssignedProblems
     FROM employees 
     LEFT JOIN employee_problem_type_relation ON employee_problem_type_relation.employee_id = employees.employee_id
     LEFT JOIN problems ON problems.assigned_to = employees.employee_id
-    WHERE employees.role_id = 5 AND employee_problem_type_relation.problem_type_id = ? ${availableQuery}
-    GROUP BY problems.assigned_to;`;
+    WHERE employees.role_id = 5 AND employee_problem_type_relation.problem_type_id = ${problemTypeID} 
+    ${availableQuery}
+    GROUP BY problems.assigned_to DESC;`;
     conn.query(sqlQuery, problemTypeID, (err, results) => {
       if (err) throw err;
       resolve(results);
