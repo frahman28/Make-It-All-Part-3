@@ -33,13 +33,13 @@ var getAllSolutions = function() {
 var addComments = function(problemId, author, comment) {
     return new Promise((resolve, reject) => {
         conn.query(`INSERT INTO comments (problem_id, author, comment)
-                    VALUES (${problemId}, ${author}, ${comment});`,
+                    VALUES (${problemId}, ${author}, "${comment}");
+                    SELECT COUNT(*) AS last_id FROM comments;`,
                 function(err, rows) { 
                     if (err) {
                         reject(err);
                         console.error('Error: ' + err);
                     } else {
-                        console.log(rows);
                         return resolve(rows); 
                     } 
                 });
@@ -49,7 +49,9 @@ var addComments = function(problemId, author, comment) {
 var linkProblemToSolution  = function(problemId, commentId) {
     return new Promise((resolve, reject) => {
         conn.query(`INSERT INTO solutions (problem_id, comment_id)
-                    VALUES (${problemId}, ${commentId});`,
+                    VALUES (${problemId}, ${commentId})
+                    ON DUPLICATE KEY UPDATE    
+                    comment_id=${commentId};`,
                 function(err, rows) { 
                     if (err) {
                         reject(err);

@@ -79,7 +79,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                     ON problem_status_relation.status_id = problem_status.status_id
                 WHERE closed <> 1
                 AND ${query} = ${userId}
-                ORDER BY problems.problem_id ASC;`,  function (err, rows) {
+                ORDER BY problems.problem_id ASC, solved DESC;`,  function (err, rows) {
         if (err){
             // If error occured, return an empty array.
             res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
@@ -153,7 +153,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
                 LEFT JOIN comments 
                     ON comments.problem_id = problems.problem_id 
                     AND comments.comment_id NOT IN (select comment_id FROM solutions)
-                ORDER BY problems.problem_id ASC;`, function (err, rows) {
+                ORDER BY solved DESC, problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
@@ -215,10 +215,21 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin
 
     let problem = await problemUtils.getProblemById(problemId);
 
+    if (problem.length < 1) {
+        return res.redirect("../myProblems");
+    }
+
     if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId && req.session.userRole != "admin") {
         // Prohibit enter.
         return res.sendStatus(401);
     }
+
+    // change problem status
+
+    if (problem[0].lastReviewedBy != req.session.userId) {
+        await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
+    }
+    await problemUtils.updateProblemStatus(problemId, 2);
 
     var allSoftware = await software.getAllSoftware();
     var allHardware = await hardware.getAllHardware();
@@ -243,12 +254,18 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist", "admi
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
 
-    await solutionUtils.addComments(problemId, author, solutionNotes);
+    if (solution.length < 1) return res.redirect("/submitProblem/" + problemId);
+    
     let newSolution = await solutionUtils.addComments(problemId, author, solution);
-    await solutionUtils.linkProblemToSolution(problemId, newSolution["comment_id"]);
+    await solutionUtils.linkProblemToSolution(problemId, newSolution[1][0].last_id);
 
-    await problemUtils.updateProblem(problemId);
-    res.redirect('/myProblems');
+    if (solution.length < 1) {
+        await solutionUtils.addComments(problemId, author, solutionNotes);
+    }
+    
+    await problemUtils.updateProblemStatus(problemId, 3);
+    // await problemUtils.updateProblem(problemId);
+    return res.redirect('/myProblems');
 });
 
 

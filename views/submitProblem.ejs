@@ -241,6 +241,7 @@
 
 <button class="accordion">Solution</button>
       <div class="panel">
+        <form method="post">
         <br>
         <h3> Solution </h3>
 
@@ -262,8 +263,12 @@
           </div>
         </div>
 
-        <button class = "mb-4 mt-2 smallSubmit btn btn-success" > Mark as Resolved </button>
+        <% if (role == "employee") { %> 
+          <button class = "mb-4 mt-2 btn-lg w-100 btn btn-success resolve-problem-button"> Mark as Resolved </button>
+        <% } %> 
 
+        <input type="submit" name="largeSubmit" value="Submit" class="my-4" style="margin-bottom: 60px">
+      </form>
       </div>
 
 
@@ -308,8 +313,11 @@
 <br>
 </div>
 
-<input type="submit" name="largeSubmit" value="Submit" form = "mainForm" class = "my-4 largeSubmit" style="margin-bottom: 60px">
+
 <br><br><br><br><br><br>
+
+
+
 <script>
 var acc = document.getElementsByClassName("accordion");
 var i;
@@ -325,6 +333,8 @@ for (i = 0; i < acc.length; i++) {
     } 
   });
 }</script>
+
+
   </article>
 </div>
 </section>

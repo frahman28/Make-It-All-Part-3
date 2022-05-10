@@ -34,4 +34,11 @@ $(document).ready(function () {
         $(this).next("tr").collapse("toggle");
         $(this).next().find("div").collapse("toggle");
     });
+
+    $(".resolve-problem-button").click(function() {
+        $(this).text() == "Resolved!" ? $(this).text("Click to Resolve.") : $(this).text("Resolved!");
+        $(this).toggleClass("btn-outline-success");
+        $(this).toggleClass("resolved");
+        $(this).toggleClass("btn-success");
+    })
 });

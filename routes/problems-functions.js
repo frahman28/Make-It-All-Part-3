@@ -21,7 +21,8 @@ var getProblemById = function (problemId) {
                     serial, 
                     license,
                     employee as reportedBy,
-                    assigned_to as assignedSpecialist
+                    assigned_to as assignedSpecialist,
+                    last_reviewed_by as lastReviewedBy
                   FROM problems 
                   LEFT JOIN software
                     ON problems.software_id = software.software_id 
@@ -87,6 +88,31 @@ var updateProblemStatus = function (problemId, statusId) {
     });
 };
 
+var setProblemClosed = function (problemId) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems
+      SET solved = 1, closed = 1
+      WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
+var setProblemSolved = function (problemId) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems
+      SET solved = 1, closed = 0
+      WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
 
 var createProblem = function (name, 
     problem_description,  problem_type_id, software_id, 
@@ -104,12 +130,29 @@ var createProblem = function (name,
     });
   };
 
+  var updateProblemLastViewedBy = function (problemId, lastReviewedBy) {
+    return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems
+      SET last_reviewed_by = ${lastReviewedBy}
+      WHERE problem_id = ${problemId}`,
+      problemId,
+      (err, results) => {
+        if (err) throw err;
+        resolve(results);
+      });
+    });
+  };
+
   module.exports = {
     getAllProblems,
     getProblemById,
     deleteProblemById,
     updateProblem,
     updateViewed,
+    setProblemClosed,
+    setProblemSolved,
     updateProblemStatus,
+    updateProblemLastViewedBy,
     createProblem,
   };
