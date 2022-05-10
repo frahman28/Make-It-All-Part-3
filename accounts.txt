@@ -1,0 +1,7 @@
+bthompson	: 	specialist
+chart 		: 	specialisst
+njefferson	: 	specialisst
+tperry		:	adviser
+bigddavidson	:	adviser
+lpoole		: 	employee
+jipkiss		:	employee
