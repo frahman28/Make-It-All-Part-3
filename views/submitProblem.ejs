@@ -54,9 +54,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
 <section class = "container-fluid">
+  <form method="post">
+
 <div class = "row">
+
   <article class = "col-sm-6 mb-4">
-    <button class="accordion">Problem Details</button>
+    <div class="accordion">Problem Details</div>
       <div class="panel">
         <br>
         <h3> Problem Details </h3>
@@ -82,15 +85,12 @@
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id = "problemType" name="problemType" disabled="disabled" value="<%= problem[0]["problemType"] %>">
             <% } else{ %>  
-              <input list="problemTypes" id = "problemType" name="problemType">
+              <select id = "problemType" name="problemType">
+                <% for(var i=0; i<problemTypes.length; i++) {%>
+                    <option value="<%= problemTypes[i]["problem_type_id"] %>"><%= problemTypes[i]["problem_type"] %></option>
+                <% } %>
+                </select>
            <% } %>
-
-            <datalist id="problemTypes">
-            <% for(var i=0; i<problemTypes.length; i++) {%>
-                <option value="<%= problemTypes[i]["problem_type"] %>"><%= problemTypes[i]["problem_type"] %></option>
-            <% } %>
-            </datalist>
-
           </div>
         </div>
 
@@ -148,17 +148,15 @@
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="operatingSystem" name="operatingSystem" disabled="disabled" value="<%= problem[0]["OSName"] %>">
             <% } else{ %>  
-              <input list="operatingSystems" id = "operatingSystem" name="operatingSystem">
+              <select id="operatingSystem" name="operatingSystem">
+                <% for(var i=0; i<os.length; i++) {%>
+                  <option value="<%= os[i]["os_id"] %>">
+                    <%= os[i]["name"] %>
+                  </option>
+              <% } %>
+              </select>
            <% } %>
             
-           <datalist id="operatingSystems">
-              <% for(var i=0; i<os.length; i++) {%>
-                <option value="<%= os[i]["name"] %>">
-                  <%= os[i]["name"] %>
-                </option>
-            <% } %>
-
-            </datalist>
           </div>
         </div>
 
@@ -239,9 +237,8 @@
 
   <article class = "col-sm-6">
 
-<button class="accordion">Solution</button>
+<div class="accordion">Solution</div>
       <div class="panel">
-        <form method="post">
         <br>
         <h3> Solution </h3>
 
@@ -264,15 +261,22 @@
         </div>
 
         <% if (role == "employee") { %> 
-          <button class = "mb-4 mt-2 btn-lg w-100 btn btn-success resolve-problem-button"> Mark as Resolved </button>
+          <% if (typeof problem != 'undefined') { %> 
+            <div class="row">
+              <div class=" d-flex justify-content-end">
+                <button class = "mb-4 mt-2 btn-lg btn btn-success mx-2"> Mark as Resolved </button>
+                <button class = "mb-4 mt-2 btn-lg btn btn-secondary"> Didn't work </button>
+              </div>
+            </div>
+          <% } %> 
+        <% } else { %> 
+          <input type="submit" name="largeSubmit" class = "mb-4 mt-2 btn-lg w-100"> Submit </input>
         <% } %> 
-
-        <input type="submit" name="largeSubmit" value="Submit" class="my-4" style="margin-bottom: 60px">
-      </form>
+      
       </div>
 
 
-      <button class="accordion">Look up Previous Solutions</button>
+      <div class="accordion">Look up Previous Solutions</div>
 <div class="panel">
 
   <br>
@@ -313,30 +317,18 @@
 <br>
 </div>
 
+<% if (role == "employee" && typeof problem == 'undefined') { %>
+  <input type="submit" name="largeSubmit" class = "mb-4 mt-2 btn-lg w-100">
+  <% } %>
 
 <br><br><br><br><br><br>
 
 
-
-<script>
-var acc = document.getElementsByClassName("accordion");
-var i;
-
-for (i = 0; i < acc.length; i++) {
-  acc[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var panel = this.nextElementSibling;
-    if (panel.style.maxHeight) {
-      panel.style.maxHeight = null;
-    } else {
-      panel.style.maxHeight = panel.scrollHeight + "px";
-    } 
-  });
-}</script>
-
-
   </article>
+
 </div>
+</form>
+
 </section>
 
 <footer class="mt-4" style="position: absolute; left: 0; bottom: 0; width: 100vw; overflow: hidden;"></footer>
