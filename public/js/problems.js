@@ -40,5 +40,14 @@ $(document).ready(function () {
         $(this).toggleClass("btn-outline-success");
         $(this).toggleClass("resolved");
         $(this).toggleClass("btn-success");
-    })
+    });
+
+    $(".accordion").click(function() {
+        var panel = this.nextElementSibling;
+          if (panel.style.maxHeight) {
+            panel.style.maxHeight = null;
+          } else {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+          } 
+      });
 });
