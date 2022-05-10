@@ -14,6 +14,7 @@ var os = require("./os");
 var solutionUtils = require("./solution");
 var problemTypes = require("./problem-type-functions");
 var problemUtils = require("./problems-functions");
+const e = require('connect-flash');
 
 // route:  GET /
 // access: ALL NOT LOGGED IN
@@ -56,18 +57,18 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
-                problems.name as problemName,
-                problems.problem_type_id as problemTypeId,
-                problems.software_id as problemSoftwareId,
-                problems.hardware_id as problemHardwareId,
-                employee as reportedById,
-                assigned_to as specialistId,
-                employees.name as reportedByName,
-                specialists.name as specialistName,
-                opened_on as dateOpened,
-                closed_on as dateClosed,
-                problems.os_id as problemOSId,
-                status
+                    problems.name as problemName,
+                    problems.problem_type_id as problemTypeId,
+                    problems.software_id as problemSoftwareId,
+                    problems.hardware_id as problemHardwareId,
+                    employee as reportedById,
+                    assigned_to as specialistId,
+                    employees.name as reportedByName,
+                    specialists.name as specialistName,
+                    opened_on as dateOpened,
+                    closed_on as dateClosed,
+                    problems.os_id as problemOSId,
+                    status
                 FROM problems
                 LEFT JOIN employees 
                     ON employees.employee_id = employee
@@ -79,7 +80,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                     ON problem_status_relation.status_id = problem_status.status_id
                 WHERE closed <> 1
                 AND ${query} = ${userId}
-                ORDER BY problems.problem_id ASC, solved DESC;`,  function (err, rows) {
+                ORDER BY problems.problem_id ASC, solved ASC;`,  function (err, rows) {
         if (err){
             // If error occured, return an empty array.
             res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
@@ -111,14 +112,13 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,
+                    problem_description as problemDescription,
                     employee as reportedById,
                     employees.name as reportedByName,
                     specialists.name as specialistName,
                     opened_on as dateOpened,
                     closed_on as dateClosed,
                     status,
-                    solut.comment as solution,
-                    comments.comment,
                     os.name as OS,
                     software.name as softwareName,
                     type_of_software.type as softwareType,
@@ -146,14 +146,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
                     ON problems.problem_id = problem_status_relation.problem_id
                 LEFT JOIN problem_status
                     ON problem_status_relation.status_id = problem_status.status_id
-                LEFT JOIN solutions 
-                    ON solutions.problem_id = problems.problem_id
-                LEFT JOIN comments AS solut 
-                    ON solut.comment_id = solutions.comment_id
-                LEFT JOIN comments 
-                    ON comments.problem_id = problems.problem_id 
-                    AND comments.comment_id NOT IN (select comment_id FROM solutions)
-                ORDER BY solved DESC, problems.problem_id ASC;`, function (err, rows) {
+                ORDER BY solved ASC, problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
@@ -186,19 +179,57 @@ app.get("/submitProblem", checkRoles("employee", "specialist"), async function (
 });
 
 
-app.post("/submitProblem", checkRoles("employee", "specialist"), function (req, res, next) {
+app.post("/submitProblem", checkRoles("employee", "specialist"), async function (req, res, next) {
     let problemName = req.body.problemName;
     let problemType = req.body.problemType;
     let serialNumber = req.body.serialNumber;
     let operatingSystem = req.body.operatingSystem;
     let software = req.body.software;
     let hardware = req.body.hardware;
+    let license = req.body.license;
     let problemDesription = req.body.problemDesription;
+
+    console.log(req.body);
+    
+    let openedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    let asssignedSpecialist;
+
+    if (problemName.length < 1 || problemType.length < 1 || software.length < 1 || hardware.length < 1) {
+        return res.redirect("/submitProblem");
+    }
+
+    console.log(req.body);
+
+    let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemType, true);
+
+    if (specialistsForProblemType.length < 1) {
+        let problemParent = await getChildNodeID(problemType);
+        let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemParent, true);
+
+        if (specialistsForProblemType.length < 1) {
+            let allSpecialists = await problemUtils.getAllSpecialists();
+            asssignedSpecialist = allSpecialists[0].specialistId;
+            console.log("A: ", asssignedSpecialist);
+
+        } else {
+            asssignedSpecialist = specialistsForProblemType[0].specialistId;
+            console.log("B: ", asssignedSpecialist);
+        }
+    } else {
+        asssignedSpecialist = specialistsForProblemType[0].specialistId;
+    }
+
+
+
+    await problemUtils.createProblem(problemName, problemDesription, problemType, 
+        software, hardware, license,
+        serialNumber, req.session.userId, asssignedSpecialist, 
+        openedOn, operatingSystem);
 
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
 
-
+    return res.redirect("/myProblems");
     // If no username or password provided, 
     // if (!username || !password) {
     //     return res.render('login', {
