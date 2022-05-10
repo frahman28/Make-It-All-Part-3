@@ -75,6 +75,27 @@ var updateViewed = function (problemId, reviewedBy) {
     });
 };
 
+var getAllSpecialists = function (problemId, reviewedBy) {
+    return new Promise((resolve, reject) => {
+        conn.query(`
+        SELECT 
+          employees.employee_id as specialistId,
+          employees.name as specialistName, 
+          COUNT(problems.problem_id) AS numberOfAssignedProblems 
+        FROM employees 
+        LEFT JOIN employee_problem_type_relation 
+          ON employee_problem_type_relation.employee_id = employees.employee_id 
+        LEFT JOIN problems 
+          ON problems.assigned_to = employees.employee_id 
+        WHERE employees.role_id = 5 
+        GROUP BY problems.assigned_to DESC;`,
+        (err, results) => {
+            if (err) throw err;
+            resolve(results);
+        });
+    });
+};
+
 var updateProblemStatus = function (problemId, statusId) {
     return new Promise((resolve, reject) => {
         conn.query(`
@@ -114,15 +135,18 @@ var setProblemSolved = function (problemId) {
   });
 };
 
-var createProblem = function (name, 
-    problem_description,  problem_type_id, software_id, 
-    hardware_id, software_id, licenses, 
-    serial, employee, opened_on, os_id) {
+var createProblem = function (problemName, 
+    problemDescription,  problemType, software, 
+    hardware, license, serial, employee, assignedTo, 
+    openedOn, os) {
     return new Promise((resolve, reject) => {
       conn.query(`
-      INSERT INTO ()
-      VALUES ()`,
-      problemId,
+      INSERT INTO problems (name, problem_description, problem_type_id,
+                          software_id, hardware_id, license, serial,
+                          employee, assigned_to, opened_on, os_id)
+      VALUES ("${problemName}", "${problemDescription}", ${problemType},
+              ${software}, ${hardware}, ${license}, ${serial}, ${employee}, 
+              ${assignedTo}, ${conn.escape(openedOn)}, ${os})`,
       (err, results) => {
         if (err) throw err;
         resolve(results);
@@ -152,6 +176,7 @@ var createProblem = function (name,
     updateViewed,
     setProblemClosed,
     setProblemSolved,
+    getAllSpecialists,
     updateProblemStatus,
     updateProblemLastViewedBy,
     createProblem,
