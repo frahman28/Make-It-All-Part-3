@@ -251,130 +251,6 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist", "admi
     res.redirect('/myProblems');
 });
 
-//Patch route allows user to edit name, type, software, hardware, os of their problems
-//Access to employee users and specialist users
-app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req, res) {
-    const { name, type, hardware, software, os } = req.body;
-    const id = parseInt(req.params.id);
-
-    try { //Update each attribute seperately incase certain attributes are not inputted
-        if (name) { //If name value is inputted
-            conn.query(`UPDATE 
-                        problems
-                        SET
-                        name = '${name}'
-                        WHERE
-                        problem_id = '${id}'`);
-        }
-        if (type) { //If type value is inputted
-            conn.query(`SELECT 
-                        *
-                        FROM 
-                        problem_types
-                        WHERE
-                        problem_type = '${type}'`,
-                        function(err, rows) { //Get data from problem types to use to update problem type id
-                            if (err) {
-                                console.error('Error: ' + err);
-                            } else {
-                                const type_id = rows[0]["problem_type_id"]
-                                conn.query(`UPDATE 
-                                            problems
-                                            SET
-                                            problem_type_id = '${type_id}'
-                                            WHERE
-                                            problem_id = '${id}'`);
-                            }
-                        })
-        }
-        if (hardware != 'N/A') { //If hardware has valid input
-            if (hardware == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            hardware_id = NULL,
-                            serial = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else { 
-                conn.query(`SELECT 
-                            *
-                            FROM 
-                            hardware_relation
-                            WHERE
-                            hardware_id = '${hardware}'`,
-                            function(err, rows) { //Get serial number from relation table of submitted id then update problems table
-                                if (err) {
-                                    console.error('Error: ' + err);
-                                } else {
-                                    const serial = rows[0]["serial"]
-                                    conn.query(`UPDATE 
-                                                problems
-                                                SET
-                                                hardware_id = '${hardware}',
-                                                serial = '${serial}'
-                                                WHERE
-                                                problem_id = '${id}'`);
-                                }
-                            })
-            }
-        }
-        if (software != 'N/A') { //If software has valid input
-            if (software == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            software_id = NULL,
-                            license = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else {
-                conn.query(`SELECT 
-                            *
-                            FROM 
-                            software_relation
-                            WHERE
-                            software_id = '${software}'`,
-                            function(err, rows) { //Get license number from relation table of submitted id then update problems table
-                                if (err) {
-                                    console.error('Error: ' + err);
-                                } else {
-                                    const license = rows[0]["license"]
-                                    conn.query(`UPDATE 
-                                                problems
-                                                SET
-                                                software_id = '${software}',
-                                                license = '${license}'
-                                                WHERE
-                                                problem_id = '${id}'`);
-                                }
-                            })
-            }                
-        }
-        if (os != 'N/A') { //If os has valid input
-            if (os == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            os_id = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else { 
-                conn.query(`UPDATE
-                            problems
-                            SET
-                            os_id = '${os}'
-                            WHERE
-                            problem_id = '${id}'`);
-            }
-        }
-        res.status(200);
-        res.redirect('/myProblems'); //Direct user back to dashboard with problems updated
-    } catch (err) {
-        console.log(err);
-        res.render({ message: "Error in request" });
-    }
-})
 
 //Patch route allows user to edit name, type, software, hardware, os of their problems
 //Access to employee users and specialist users
@@ -514,6 +390,6 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
         console.log(err);
         res.render({ message: "Error in request" });
     }
-})
+});
 
 module.exports = app;
