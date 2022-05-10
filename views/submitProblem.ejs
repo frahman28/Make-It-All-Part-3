@@ -16,7 +16,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <title>Submit Problem</title>
 </head>
-<body>
+<body style="min-height: 100vh; position: relative; overflow-x: hidden;">
     <div class="text-center image-div">
         <img class="text-center logo" src="../images/logo.png" alt="make-it-all">
     </div>
@@ -55,14 +55,12 @@
 
 <section class = "container-fluid">
 <div class = "row">
-  <article class = "col-sm-6".col-sm-6>
-    <h2>Problem Details</h2>
-  <br>
-
-    <button class="accordion">New Problem</button>
+  <article class = "col-sm-6 mb-4">
+    <button class="accordion">Problem Details</button>
       <div class="panel">
-        <h1> New problem </h1>
-
+        <br>
+        <h3> Problem Details </h3>
+        
         <div class="row">
           <div class = "leftCol">
             <label for="problemName">Problem Name: </label>
@@ -229,38 +227,22 @@
         <br>
         
 
-
-
-  
-        
-        <script>
-
-        function displayUP2(option) {
-          var a2 = document.getElementById("findSolutions1");
-          var b2 = document.getElementById("AssignSpecilist");
-
-
-          if (option == 'findSolutions'){
-            a2.style.display = "block";
-            b2.style.display = "none";
-          }
-
-          if (option == 'AssignSpecilist'){
-            a2.style.display = "none";
-            b2.style.display = "block";
-          }
-        }
-
-        </script>
-
-
-
-
       </div>
 
-    <button class="accordion">Solution</button>
+      <br>
+
+     
+
+
+  </article>
+
+
+  <article class = "col-sm-6">
+
+<button class="accordion">Solution</button>
       <div class="panel">
-        <h1> Solution </h1>
+        <br>
+        <h3> Solution </h3>
 
         <div class="row">
           <div class = "leftCol">
@@ -284,27 +266,8 @@
 
       </div>
 
-      <br>
 
-     <input type="submit" name="largeSubmit" value="Submit" form = "mainForm" class = "largeSubmit">
-
-
-  </article>
-
-  
-
-
-
-
-
-
-
-
-  <article class = "col-sm-6" .col-sm-6>
-    <h2>Tables</h2>
-    <br>
-<button class="accordion">Solutions</button>
-
+      <button class="accordion">Look up Previous Solutions</button>
 <div class="panel">
 
   <br>
@@ -342,103 +305,11 @@
     <% } %>
     </tbody>
   </table>
-
-<script>
-function solutionsFunction() {
-  var input, filter, table, tr, td, i, txtValue;
-  var coloumnSelect = document.getElementById("solutionColumn").value;
-  var newcoloumnSelect = parseInt(coloumnSelect);
-  input = document.getElementById("solutionSearch");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("solutionTable");
-  tr = table.getElementsByTagName("tr");
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[newcoloumnSelect];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    }       
-  }
-}
-</script>
 <br>
 </div>
 
-
-<button class="accordion">Equipment</button>
-<div class="panel">
-
-  <br>
-
-  <div class="row">
-    <div class = "leftCol">
-      <select name="Filter" id="equipmentColoumn">
-          <option value="0">Hardware</option>
-          <option value="1">Software</option>
-          <option value="2">Equipment Name</option>
-          <option value="3">Serial Number / License</option>
-        </select>
-    </div>
-    <div class = "rightCol">
-      <input type="text" id = "equipmentSearch" name="callReason" onkeyup="equipmentFunction()">
-    </div>
-  </div>
-
-  <br>
-  <table id = "equipmentTable"  class="table table-bordered">
-    <thead>
-      <th> Equipment Id </th>
-      <th> Equipment Name </th>
-      <th> Serial Number / License </th>
-    </thead>
-    <tbody>
-    <% for(var i=0; i<software.length; i++) {%>
-      <tr>
-          <td>#<%= software[i]["software_id"] %></td>
-          <td><%= software[i]["name"] %></td>
-          <td><%= software[i]["license"] %></td>
-      </tr>
-  <% } %>
-
-  <% for(var j=0; j<hardware.length; j++) {%>
-    <tr>
-        <td>#<%= hardware[j]["hardware_id"]+i %></td>
-        <td><%= hardware[j]["name"] %></td>
-        <td><%= hardware[j]["serial"] %></td>
-    </tr>
-<% } %>
-</tbody>
-</table>
-
-<script>
-function equipmentFunction() {
-  var input, filter, table, tr, td, i, txtValue;
-  var coloumnSelect = document.getElementById("equipmentColoumn").value;
-  var newcoloumnSelect = parseInt(coloumnSelect);
-  input = document.getElementById("equipmentSearch");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("equipmentTable");
-  tr = table.getElementsByTagName("tr");
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[newcoloumnSelect];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    }       
-  }
-}
-</script>
-<br>
-</div>
-
+<input type="submit" name="largeSubmit" value="Submit" form = "mainForm" class = "my-4 largeSubmit" style="margin-bottom: 60px">
+<br><br><br><br><br><br>
 <script>
 var acc = document.getElementsByClassName("accordion");
 var i;
@@ -458,8 +329,7 @@ for (i = 0; i < acc.length; i++) {
 </div>
 </section>
 
-<footer>
-</footer>
+<footer class="mt-4" style="position: absolute; left: 0; bottom: 0; width: 100vw; overflow: hidden;"></footer>
 
 </body>
 </html>
