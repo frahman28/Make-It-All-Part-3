@@ -88,7 +88,6 @@ function refreshProblemTypes() {
   setProblemTypes("#problemTypeForCreate");
   setProblemTypes("#problemTypeViewSelect");
   // Also refresh the specialist checker (mainly for onload it will display a specialist)
-  getSpecialistForProblemType();
 }
 
 function createSelect(parentsList, identifier) {
@@ -167,6 +166,9 @@ var setProblemTypes = (identifier) => {
       if (response.success) {
         $(identifier).html("");
         createSelect(getParents(response.data), identifier);
+      }
+      if (identifier == "#problemTypeViewSelect") {
+        getSpecialistForProblemType();
       }
     },
     error: function (error) {
