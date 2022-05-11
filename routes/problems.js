@@ -80,7 +80,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                     ON problem_status_relation.status_id = problem_status.status_id
                 WHERE closed <> 1
                 AND ${query} = ${userId}
-                ORDER BY problems.problem_id ASC, solved ASC;`,  function (err, rows) {
+                ORDER BY solved DESC, problems.problem_id ASC;`,  function (err, rows) {
         if (err){
             // If error occured, return an empty array.
             res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
@@ -146,7 +146,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
                     ON problems.problem_id = problem_status_relation.problem_id
                 LEFT JOIN problem_status
                     ON problem_status_relation.status_id = problem_status.status_id
-                ORDER BY solved ASC, problems.problem_id ASC;`, function (err, rows) {
+                ORDER BY problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
