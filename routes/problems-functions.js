@@ -14,12 +14,14 @@ var getProblemById = function (problemId) {
       conn.query(`SELECT problem_id, 
                     problems.name as problemName, 
                     problem_description as problemDescription, 
+                    problems.problem_type_id as problemTypeId, 
                     problem_type as problemType, 
                     software.name as softwareName, 
                     hardware.name as hardwareName, 
                     os.name as OSName, 
                     serial, 
                     license,
+                    solved,
                     employee as reportedBy,
                     assigned_to as assignedSpecialist,
                     last_reviewed_by as lastReviewedBy
@@ -40,6 +42,20 @@ var getProblemById = function (problemId) {
     });
   };
 
+var reassignSpecialist = function (problemId, assignedSpecialist) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems
+      SET assigned_to = ${assignedSpecialist}
+      WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
+
 var deleteProblemById = function (problemId) {
     return new Promise((resolve, reject) => {
       conn.query("SELECT * FROM problems WHERE problem_id = ?",
@@ -51,16 +67,6 @@ var deleteProblemById = function (problemId) {
     });
   };
 
-var updateProblem = function (problemId) {
-    return new Promise((resolve, reject) => {
-      conn.query("PUT * FROM problems WHERE problem_id = ?",
-      problemId,
-      (err, results) => {
-        if (err) throw err;
-        resolve(results);
-      });
-    });
-  };
 
 var updateViewed = function (problemId, reviewedBy) {
     return new Promise((resolve, reject) => {
@@ -134,11 +140,11 @@ var setProblemClosed = function (problemId, closedOn) {
   });
 };
 
-var setProblemSolved = function (problemId) {
+var setProblemSolved = function (problemId, solved) {
   return new Promise((resolve, reject) => {
       conn.query(`
       UPDATE problems
-      SET solved = 1, closed = 0
+      SET solved = ${solved}, closed = 0
       WHERE problem_id = ${problemId};`,
       (err, results) => {
           if (err) throw err;
@@ -185,7 +191,7 @@ var createProblem = function (problemName,
     getAllProblems,
     getProblemById,
     deleteProblemById,
-    updateProblem,
+    reassignSpecialist,
     updateViewed,
     setProblemClosed,
     setProblemSolved,
