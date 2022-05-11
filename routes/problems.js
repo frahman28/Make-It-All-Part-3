@@ -57,6 +57,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                 problems.name as problemName,
+                problems.problem_description as problemDesc,
                 problems.problem_type_id as problemTypeId,
                 problems.software_id as problemSoftwareId,
                 problems.hardware_id as problemHardwareId,
@@ -107,7 +108,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function (req, res, next) {
+app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async function (req, res, next) {
 
     //Get all hardware, software, os, problem types and specialists to display in update tables as options
     var allSoftware = await software.getAllSoftware(req, res);
@@ -119,6 +120,8 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,
+                    problems.problem_description as problemDesc,
+                    problems.problem_type_id as problemTypeId,
                     employee as reportedById,
                     employees.name as reportedByName,
                     specialists.name as specialistName,
@@ -137,7 +140,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
                 FROM problems
                 JOIN employees as specialists 
                     ON specialists.employee_id = assigned_to
-                JOIN employees as lastSpecialists
+                LEFT JOIN employees as lastSpecialists
                     ON lastSpecialists.employee_id = last_reviewed_by
                 JOIN employees 
                     ON employees.employee_id = employee
@@ -189,7 +192,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
 var getAllSpecialists = function() {
     return new Promise((resolve, reject) => {
         conn.query(`SELECT 
-                employees.employee_id AS id, name, employees_extension AS ext, problem_types.problem_type AS specialty employees.available AS availability
+                employees.employee_id AS id, name, employees.extension AS ext, employee_problem_type_relation.problem_type_id AS specialty_id, problem_types.problem_type AS specialty, employees.available AS availability
                 FROM
                 employees
                 LEFT JOIN 
@@ -199,7 +202,9 @@ var getAllSpecialists = function() {
                 LEFT JOIN
                 problem_types
                 ON 
-                employee_problem_type_relation.problem_type_id = problem_types.problem_type_id`,
+                employee_problem_type_relation.problem_type_id = problem_types.problem_type_id
+                WHERE
+                employees.role_id = 5`,
                 function(err, rows) {
                     if (err) {
                         reject(err);
@@ -471,7 +476,7 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
                             }
                         })
         }
-        if (hardware != 'N/A') { //If hardware has valid input
+        if (hardware) { //If hardware has valid input
             if (hardware == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -503,7 +508,7 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
                             })
             }
         }
-        if (software != 'N/A') { //If software has valid input
+        if (software) { //If software has valid input
             if (software == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -535,7 +540,7 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
                             })
             }                
         }
-        if (os != 'N/A') { //If os has valid input
+        if (os) { //If os has valid input
             if (os == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -611,7 +616,7 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
                             }
                         })
         }
-        if (hardware != 'N/A') { //If hardware has valid input
+        if (hardware) { //If hardware has valid input
             if (hardware == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -643,7 +648,7 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
                             })
             }
         }
-        if (software != 'N/A') { //If software has valid input
+        if (software) { //If software has valid input
             if (software == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -675,7 +680,7 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
                             })
             }                
         }
-        if (os != 'N/A') { //If os has valid input
+        if (os) { //If os has valid input
             if (os == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -688,6 +693,40 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
                             problems
                             SET
                             os_id = '${os}'
+                            WHERE
+                            problem_id = '${id}'`);
+            }
+        }
+        if (specialist) {
+            if (specialist == 'NULL') {
+                conn.query(`UPDATE 
+                            problems
+                            SET
+                            assigned_to = NULL
+                            WHERE
+                            problem_id = '${id}'`);
+            } else { 
+                conn.query(`UPDATE
+                            problems
+                            SET
+                            assigned_to = '${specialist}'
+                            WHERE
+                            problem_id = '${id}'`);
+            }
+        }
+        if (lastSpecialist) {
+            if (lastSpecialist == 'NULL') {
+                conn.query(`UPDATE 
+                            problems
+                            SET
+                            assigned_to = NULL
+                            WHERE
+                            problem_id = '${id}'`);
+            } else { 
+                conn.query(`UPDATE
+                            problems
+                            SET
+                            assigned_to = '${lastSpecialist}'
                             WHERE
                             problem_id = '${id}'`);
             }

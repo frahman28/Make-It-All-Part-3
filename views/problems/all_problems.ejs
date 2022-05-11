@@ -158,12 +158,42 @@
                                             <% } %>
                                         </tr>
                                         <tr>
-                                            <td>Specialist Name:</td>
-                                            <% if (problems[i]["specialistName"] != undefined) { %>
-                                                <td><%= problems[i]["specialistName"] %></td>
-                                            <%} else { %>
-                                                <td>N/A</td>
-                                            <% } %>
+                                            <td>Last Specialist:</td>
+                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                                <select id="update-lastSpecialist" name="lastSpecialist" class="form-select">
+                                                    <% if (problems[i]["lastSpecialistName"] == null) { %> <!-- Display none if problem was submitted with no hardware -->
+                                                        <option value="NULL" selected>None</option>
+                                                    <% } else { %> 
+                                                        <option value="NULL">None</option>
+                                                    <% } %> 
+                                                    <% for (var j = 0; j < specialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if ((specialists[j]["name"] == problems[i]["lastSpecialistName"])) {%>
+                                                            <option selected><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %></option>
+                                                        <% } else { %>  
+                                                            <option value="<%= specialists[j]["id"] %>"><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %></option>   
+                                                        <% } %>    
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Current Specialist:</td>
+                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                                <select id="update-specialist" name="specialist" class="form-select">
+                                                    <% if (problems[i]["specialistName"] == null) { %> <!-- Display none if problem was submitted with no hardware -->
+                                                        <option value="NULL" selected>None</option>
+                                                    <% } else { %> 
+                                                        <option value="NULL">None</option>
+                                                    <% } %> 
+                                                    <% for (var j = 0; j < specialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if ((specialists[j]["specialty_id"] == problems[i]["problemTypeId"])) {%>
+                                                            <option selected><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %> - <%= specialists[j]["ext"] %> - <%= specialists[j]["specialty"] %></option>
+                                                        <% } else { %>  
+                                                            <option value="<%= specialists[j]["id"] %>"><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %> - <%= specialists[j]["ext"] %> - <%= specialists[j]["specialty"] %></option>   
+                                                        <% } %>    
+                                                    <% } %>
+                                                </select>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>Opened on:</td>
@@ -181,13 +211,13 @@
                                             <td>Operating System:</td>
                                             <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                                 <select id="update-os" name="os" class="form-select">
-                                                    <% if (problems[i]["problemOSId"] == null) { %> <!-- Display none if problem was submitted with no os -->
+                                                    <% if (problems[i]["OS"] == null) { %> <!-- Display none if problem was submitted with no os -->
                                                         <option value="NULL" selected>None</option>
                                                     <% } else { %> 
                                                         <option value="NULL">None</option>
                                                     <% } %> 
                                                     <% for (var j = 0; j < os.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if (os[j]["os_id"] == problems[i]["problemOSId"] ) {%>
+                                                        <% if (os[j]["name"] == problems[i]["OS"] ) {%>
                                                             <option selected><%= os[j]["os_id"] %> - <%= os[j]["name"] %></option>
                                                         <% } else { %>  
                                                             <option value="<%= os[j]["os_id"] %>"><%= os[j]["os_id"] %> - <%= os[j]["name"] %></option>   
@@ -200,13 +230,13 @@
                                             <td>Software:</td>
                                             <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                                 <select id="update-software" name="software" class="form-select">
-                                                    <% if (problems[i]["problemSoftwareId"] == null) { %> <!-- Display none if problem was submitted with no hardware -->
+                                                    <% if (problems[i]["softwareName"] == null) { %> <!-- Display none if problem was submitted with no hardware -->
                                                         <option value="NULL" selected>None</option>
                                                     <% } else { %> 
                                                         <option value="NULL">None</option>
                                                     <% } %> 
                                                     <% for (var j = 0; j < software.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if (software[j]["software_id"] == problems[i]["problemSoftwareId"] ) {%>
+                                                        <% if (software[j]["name"] == problems[i]["softwareName"] ) {%>
                                                             <option selected><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %></option>
                                                         <% } else { %>  
                                                             <option value="<%= software[j]["software_id"] %>"><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %> - <%= problems[i]["softwareType"] %></option>   
@@ -219,13 +249,13 @@
                                             <td>Hardware Id:</td>
                                             <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                                 <select id="update-hardware" name="hardware" class="form-select">
-                                                    <% if (problems[i]["problemHardwareId"] == null) { %> <!-- Display none if problem was submitted with no software --> 
+                                                    <% if (problems[i]["hardwareName"] == null) { %> <!-- Display none if problem was submitted with no software --> 
                                                         <option value="NULL" selected>None</option>
                                                     <% } else { %> 
                                                         <option value="NULL">None</option>
                                                     <% } %> 
                                                     <% for (var j = 0; j < hardware.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if (hardware[j]["hardware_id"] == problems[i]["problemHardwareId"] ) {%>
+                                                        <% if (hardware[j]["name"] == problems[i]["hardwareName"] ) {%>
                                                             <option selected><%= hardware[j]["hardware_id"] %> - <%= hardware[j]["name"] %> - <%= hardware[j]["serial"] %></option>
                                                         <% } else { %>  
                                                             <option value="<%= hardware[j]["hardware_id"] %>"><%= hardware[j]["hardware_id"] %> - <%= hardware[j]["name"] %> - <%= hardware[j]["serial"] %> - <%= problems[i]["hardwareType"] %></option>   
