@@ -182,11 +182,11 @@ app.get("/submitProblem", checkRoles("employee", "specialist"), async function (
 app.post("/submitProblem", checkRoles("employee", "specialist"), async function (req, res, next) {
     let problemName = req.body.problemName;
     let problemType = req.body.problemType;
-    let serialNumber = req.body.serialNumber;
-    let operatingSystem = req.body.operatingSystem;
-    let software = req.body.software;
-    let hardware = req.body.hardware;
-    let license = req.body.license;
+    let operatingSystem = req.body.operatingSystem.length > 0 ? req.body.operatingSystem : null;
+    let software = req.body.software.length > 0 ? req.body.software : null;
+    let hardware = req.body.hardware.length > 0 ? req.body.hardware : null;
+    let license = req.body.license.length > 0 ? req.body.license : null;
+    let serialNumber = req.body.serialNumber.length > 0 ? req.body.serialNumber : null;
     let problemDesription = req.body.problemDesription;
 
     console.log(req.body);
@@ -194,14 +194,12 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
     let openedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
     let asssignedSpecialist;
 
-    if (problemName.length < 1 || problemType.length < 1 || software.length < 1 || hardware.length < 1) {
+    if (problemName.length < 1 || problemType.length < 1 || (software == null && hardware == null)) {
         return res.redirect("/submitProblem");
     }
 
-    console.log(req.body);
-
     let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemType, true);
-
+    console.log("------------------------------");
     if (specialistsForProblemType.length < 1) {
         let problemParent = await getChildNodeID(problemType);
         let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemParent, true);
@@ -217,6 +215,7 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
         }
     } else {
         asssignedSpecialist = specialistsForProblemType[0].specialistId;
+        console.log("C: ", asssignedSpecialist);
     }
 
 
