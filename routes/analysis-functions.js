@@ -11,9 +11,6 @@ function getDateQuery(dateOne, dateTwo) {
       "-"
     )}' AND problems.closed_on <= '${dateTwo.replaceAll("/", "-")}'`;
   }
-  console.log("Date Query");
-  console.log(dateOne, dateTwo);
-  console.log(dateQuery);
   return dateQuery;
 }
 
