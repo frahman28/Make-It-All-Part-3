@@ -568,7 +568,7 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
 //Patch route allows user to edit name, type, software, hardware, os, assigned specialist, last specialist, if it is solved and and if it is closed for any problem
 //Access to admin users
 app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
-    const { name, desc, type, hardware, software, os, specialist, lastSpecialist, solved, closed } = req.body;
+    const { name, desc, type, hardware, software, os, specialist, lastSpecialist } = req.body;
     const id = parseInt(req.params.id);
 
     try { //Update each attribute seperately incase certain attributes are not inputted
@@ -697,7 +697,7 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
                             problem_id = '${id}'`);
             }
         }
-        if (specialist) {
+        if (specialist) { //If current specialist has valid input
             if (specialist == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -714,7 +714,7 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
                             problem_id = '${id}'`);
             }
         }
-        if (lastSpecialist) {
+        if (lastSpecialist) { //If last specialist has valid input
             if (lastSpecialist == 'NULL') {
                 conn.query(`UPDATE 
                             problems
