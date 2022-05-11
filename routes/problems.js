@@ -219,22 +219,18 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
     }
 
 
-
-    await problemUtils.createProblem(problemName, problemDesription, problemType, 
+    let newProblemId = await problemUtils.createProblem(problemName, problemDesription, problemType, 
         software, hardware, license,
         serialNumber, req.session.userId, asssignedSpecialist, 
         openedOn, operatingSystem);
+
+    console.log(newProblemId.insertId)
+    await problemUtils.createProblemStatus(newProblemId.insertId);
 
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
 
     return res.redirect("/myProblems");
-    // If no username or password provided, 
-    // if (!username || !password) {
-    //     return res.render('login', {
-    //         errorMessage: 'Please provide both your username and password.'
-    //     });
-    // }
 });
 
 

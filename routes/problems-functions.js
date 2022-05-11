@@ -96,6 +96,18 @@ var getAllSpecialists = function (problemId, reviewedBy) {
     });
 };
 
+var createProblemStatus = function (problemId) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      INSERT INTO problem_status_relation (problem_id, status_id)
+      VALUES (${problemId}, 1);`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
 var updateProblemStatus = function (problemId, statusId) {
     return new Promise((resolve, reject) => {
         conn.query(`
@@ -145,10 +157,11 @@ var createProblem = function (problemName,
                           software_id, hardware_id, license, serial,
                           employee, assigned_to, opened_on, os_id)
       VALUES ("${problemName}", "${problemDescription}", ${problemType},
-              ${software}, ${hardware}, ${license}, ${serial}, ${employee}, 
-              ${assignedTo}, ${conn.escape(openedOn)}, ${os})`,
+              ${software}, ${hardware}, "${license}", "${serial}", ${employee}, 
+              ${assignedTo}, ${conn.escape(openedOn)}, ${os});`,
       (err, results) => {
         if (err) throw err;
+        console.log(results);
         resolve(results);
       });
     });
@@ -177,6 +190,7 @@ var createProblem = function (problemName,
     setProblemClosed,
     setProblemSolved,
     getAllSpecialists,
+    createProblemStatus,
     updateProblemStatus,
     updateProblemLastViewedBy,
     createProblem,
