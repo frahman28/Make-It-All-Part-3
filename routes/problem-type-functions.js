@@ -49,6 +49,26 @@ var getListOfSpecialistForProblemType = function (
   });
 };
 
+var getListOfSpecialistForProblemTypeExcluding = function (
+  problemTypeID,
+  specialistId
+) {
+  return new Promise((resolve, reject) => {
+    const sqlQuery = `
+    SELECT employees.employee_id as specialistId, employees.name, COUNT(problems.problem_id) AS numberOfAssignedProblems
+    FROM employees 
+    LEFT JOIN employee_problem_type_relation ON employee_problem_type_relation.employee_id = employees.employee_id
+    LEFT JOIN problems ON problems.assigned_to = employees.employee_id
+    WHERE employees.role_id = 5 AND employee_problem_type_relation.problem_type_id = ${problemTypeID} 
+    AND employees.employee_id <> ${specialistId}
+    GROUP BY problems.assigned_to DESC;`;
+    conn.query(sqlQuery, problemTypeID, (err, results) => {
+      if (err) throw err;
+      resolve(results);
+    });
+  });
+};
+
 var checkIfProblemTypeCanBeRemoved = function (problemTypeID, specialistID) {
   return new Promise((resolve, reject) => {
     // Check if the problem type id is equal to that of Hardware, Network, Software
@@ -227,9 +247,9 @@ async function getChildNodeID(problemTypeID) {
       (err, results) => {
         if (err) throw err;
         // If there are no results or if the result is null then it is rejected
-        if (results.length === 0 || results[0].child_of === null) {
-          reject();
-        }
+        // if (results.length === 0 || results[0].child_of === null) {
+        //   reject();
+        // }
         resolve(results);
       }
     );
@@ -293,6 +313,7 @@ module.exports = {
   getListOfSpecialistForProblemType,
   checkIfProblemTypeCanBeRemoved,
   removeProblemTypeRelationForSingleSpecialist,
+  getListOfSpecialistForProblemTypeExcluding,
   isAccountSpecialist,
   problemTypeExists,
   createNewProblemType,
