@@ -33,8 +33,7 @@ var getAllSolutions = function() {
 var addComments = function(problemId, author, comment) {
     return new Promise((resolve, reject) => {
         conn.query(`INSERT INTO comments (problem_id, author, comment)
-                    VALUES (${problemId}, ${author}, "${comment}");
-                    SELECT COUNT(*) AS last_id FROM comments;`,
+                    VALUES (${problemId}, ${author}, "${comment}");`,
                 function(err, rows) { 
                     if (err) {
                         reject(err);

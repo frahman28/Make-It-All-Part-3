@@ -199,7 +199,6 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
     }
 
     let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemType, true);
-    console.log("------------------------------");
     if (specialistsForProblemType.length < 1) {
         let problemParent = await getChildNodeID(problemType);
         let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemParent, true);
@@ -207,15 +206,12 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
         if (specialistsForProblemType.length < 1) {
             let allSpecialists = await problemUtils.getAllSpecialists();
             asssignedSpecialist = allSpecialists[0].specialistId;
-            console.log("A: ", asssignedSpecialist);
 
         } else {
             asssignedSpecialist = specialistsForProblemType[0].specialistId;
-            console.log("B: ", asssignedSpecialist);
         }
     } else {
         asssignedSpecialist = specialistsForProblemType[0].specialistId;
-        console.log("C: ", asssignedSpecialist);
     }
 
 
@@ -230,6 +226,18 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
 
+    if (solution.length > 0) {
+        await problemUtils.updateProblemStatus(newProblemId.insertId, 3);
+        await problemUtils.setProblemClosed(newProblemId.insertId, openedOn);
+        
+        let problemSolution = await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solution);
+        await solutionUtils.linkProblemToSolution(newProblemId.insertId, problemSolution.insertId);
+
+        if (solutionNotes.length > 0) {
+            await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solutionNotes);
+        }
+    }
+    
     return res.redirect("/myProblems");
 });
 
@@ -283,7 +291,7 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist", "admi
     if (solution.length < 1) return res.redirect("/submitProblem/" + problemId);
     
     let newSolution = await solutionUtils.addComments(problemId, author, solution);
-    await solutionUtils.linkProblemToSolution(problemId, newSolution[1][0].last_id);
+    await solutionUtils.linkProblemToSolution(problemId, newSolution.insertId);
 
     if (solution.length < 1) {
         await solutionUtils.addComments(problemId, author, solutionNotes);

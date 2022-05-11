@@ -121,11 +121,11 @@ var updateProblemStatus = function (problemId, statusId) {
     });
 };
 
-var setProblemClosed = function (problemId) {
+var setProblemClosed = function (problemId, closedOn) {
   return new Promise((resolve, reject) => {
       conn.query(`
       UPDATE problems
-      SET solved = 1, closed = 1
+      SET solved = 1, closed = 1, closed_on = ${conn.escape(closedOn)}
       WHERE problem_id = ${problemId};`,
       (err, results) => {
           if (err) throw err;
