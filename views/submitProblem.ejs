@@ -73,10 +73,8 @@
             <label for="problemName">Problem Name: </label>
           </div>
           <div class = "rightCol">
-            <% if (typeof problem != 'undefined' && role == "specialist" || problem[0]["solved"] == 1){ %>
+            <% if (typeof problem != 'undefined'){ %>
               <input type="text" id = "problemName" name="problemName"  disabled="disabled" value="<%= problem[0]["problemName"] %>">
-            <% } else if (typeof problem != 'undefined' && role == "employee"){ %>
-              <input type="text" id = "problemName" name="problemName" required value="<%= problem[0]["problemName"] %>">
             <% } else{ %>  
               <input type="text" id = "problemName" name="problemName" required>
            <% } %>
@@ -88,18 +86,8 @@
             <label for="problemType">Problem Type: </label>
           </div>
           <div class = "rightCol">
-            <% if (typeof problem != 'undefined' && role == "specialist" || problem[0]["solved"] == 1){ %>
+            <% if (typeof problem != 'undefined'){ %>
               <input type="text" id = "problemType" name="problemType" disabled="disabled" value="<%= problem[0]["problemType"] %>">
-            <% } else if (typeof problem != 'undefined' && role == "employee"){ %>
-              <select id = "problemType" name="problemType" >
-                <% for(var i=0; i<problemTypes.length; i++) {%>
-                  <% if (problem[0]["problemType"] == problemTypes[i]["problem_type"]){ %>
-                      <option value="<%= problemTypes[i]["problem_type_id"] %>" selected><%= problemTypes[i]["problem_type"] %></option>
-                    <% } else { %> 
-                      <option value="<%= problemTypes[i]["problem_type_id"] %>" ><%= problemTypes[i]["problem_type"] %></option>
-                    <% } %>
-                <% } %>
-              </select>
             <% } else{ %>  
               <select id = "problemType" name="problemType" >
                 <% for(var i=0; i<problemTypes.length; i++) {%>
@@ -117,27 +105,8 @@
           </div>
           <div class = "rightCol">
 
-            <% if (typeof problem != 'undefined' && role == "specialist" || problem[0]["solved"] == 1){ %>
+            <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="operatingSystem" name="operatingSystem" disabled="disabled" value="<%= problem[0]["OSName"] %>">
-            <% } else if (typeof problem != 'undefined' && role == "employee"){ %>
-              
-              <select id="operatingSystem" name="operatingSystem">
-                <option value="">Select OS</option>
-
-                <% for(var i=0; i<os.length; i++) {%>
-                  <% if (problem[0]["OSName"] == os[i]["name"]){ %>
-                  <option value="<%= os[i]["os_id"] %>">
-                    <%= os[i]["name"] %>
-                  </option>
-                  <% } else { %> 
-                    <option value="<%= os[i]["os_id"] %>" selected>
-                      <%= os[i]["name"] %>
-                    </option>
-                  <% } %>
-                <% } %>
-                
-              </select>
-
             <% } else{ %>  
 
               <select id="operatingSystem" name="operatingSystem">
@@ -159,10 +128,8 @@
             <label for="license">License: </label>
           </div>
           <div class = "rightCol">
-            <% if (typeof problem != 'undefined' && role == "specialist" || problem[0]["solved"] == 1){ %>
+            <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="license" name="license" disabled="disabled" value="<%= problem[0]["license"] %>">
-            <% } else if (typeof problem != 'undefined' && role == "employee"){ %>
-              <input list="licenseList" id="license" name="license" placeholder="License" value="<%= problem[0]["license"] %>">
             <% } else{ %>  
               <input list="licenseList" id="license" name="license" placeholder="License">
               
@@ -185,11 +152,8 @@
           <div class = "rightCol">
             
 
-            <% if (typeof problem != 'undefined' && role == "specialist" || problem[0]["solved"] == 1){ %>
+            <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="software" name="software" disabled="disabled" value="<%= problem[0]["softwareName"] %>">
-            <% } else if (typeof problem != 'undefined' && role == "employee"){ %>
-              <input list="text" id = "software" value="<%= problem[0]["softwareName"] %>" readonly="readonly" placeholder="Provide a license first.">
-              <input type="hidden" name="software" id="softwareHidden">
             <% } else{ %>  
               <input list="text" id = "software" value="" readonly="readonly" placeholder="Provide a license first.">
               <input type="hidden" name="software" id="softwareHidden">
@@ -203,10 +167,8 @@
             <label for="serialNumber">Serial Number: </label>
           </div>
           <div class = "rightCol">
-            <% if (typeof problem != 'undefined' && role == "specialist" || problem[0]["solved"] == 1){ %>
+            <% if (typeof problem != 'undefined'){ %>
               <input type="text" id = "serialNumber" name="serialNumber" disabled="disabled" value="<%= problem[0]["serial"] %>">
-            <% } else if (typeof problem != 'undefined' && role == "employee"){ %>
-              <input type="text" id = "serialNumber" name="serialNumber" value="<%= problem[0]["serial"] %>">
             <% } else{ %>  
               <input list="serialNumbers" id="serialNumber" name="serialNumber" placeholder="Serial number">
            <% } %>
@@ -228,11 +190,8 @@
           </div>
           <div class = "rightCol">
 
-            <% if (typeof problem != 'undefined' && role == "specialist" || problem[0]["solved"] == 1){ %>
+            <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="hardware" name="hardware" disabled="disabled" value="<%= problem[0]["hardwareName"] %>">
-            <% } else if (typeof problem != 'undefined' && role == "employee"){ %>
-              <input type="text" id = "hardware" value="<%= problem[0]["hardwareName"] %>" readonly="readonly" placeholder="Provide a serial number first.">
-              <input type="hidden" name="hardware" id="hardwareHidden">
             <% } else{ %>  
               <input type="text" id = "hardware"  readonly="readonly" placeholder="Provide a serial number first.">
               <input type="hidden" name="hardware" id="hardwareHidden">
@@ -247,10 +206,8 @@
           </div>
           <div class = "rightCol">
             
-            <% if (typeof problem != 'undefined' && role == 'specialist' || problem[0]["solved"] == 1){ %>
+            <% if (typeof problem != 'undefined'){ %>
               <textarea name="problemDesription" disabled="disabled" id="problemDesription" rows="5" cols="40"><%= problem[0]["problemDescription"] %></textarea>
-            <% } else if (typeof problem != 'undefined' && role == 'employee'){ %>
-              <textarea name="problemDesription" id="problemDesription" rows="5" cols="40"><%= problem[0]["problemDescription"] %></textarea>
             <% } else{ %>  
               <textarea name="problemDesription" id="problemDesription" rows="5" cols="40"></textarea>
            <% } %>
@@ -307,8 +264,8 @@
         <% if (typeof problemSolution != 'undefined' && role == "employee") { %> 
           <div class="row">
             <div class=" d-flex justify-content-end">
-              <button class = "mb-4 mt-2 btn-lg btn btn-success mx-2"> Mark as Resolved </button>
-              <button class = "mb-4 mt-2 btn-lg btn btn-secondary"> Didn't work </button>
+              <a class = "mb-4 mt-2 btn-lg btn btn-success mx-2" href="../resolveProblem/<%= problem[0]["problem_id"] %>"> Mark as Resolved </a>
+              <a class = "mb-4 mt-2 btn-lg btn btn-secondary" href="../reassignProblem/<%= problem[0]["problem_id"] %>"> Didn't work </a>
             </div>
             </div>
         <% } else if (role == "specialist") { %> 
