@@ -6,10 +6,14 @@ function getDateQuery(dateOne, dateTwo) {
   // If the dates were supplied in the parameters then change the query to have in the SQL
   if (dateOne !== undefined && dateTwo !== undefined) {
     // convert the dates to ISO string and remove the time aspect of the string for SQL to work with them
-    dateQuery = `AND problems.closed_on >= '${
-      dateOne.toISOString().split("T")[0]
-    }' AND problems.closed_on <= '${dateTwo.toISOString().split("T")[0]}'`;
+    dateQuery = `AND problems.closed_on >= '${dateOne.replaceAll(
+      "/",
+      "-"
+    )}' AND problems.closed_on <= '${dateTwo.replaceAll("/", "-")}'`;
   }
+  console.log("Date Query");
+  console.log(dateOne, dateTwo);
+  console.log(dateQuery);
   return dateQuery;
 }
 
@@ -41,10 +45,10 @@ function checkTwoDates(dateOne, dateTwo) {
   // can be converted ot dates, if they can't be then the dates are ignored and undefined is returned
   // else two date objects are returned
   if (isNaN(Date.parse(dateOne)) || isNaN(Date.parse(dateTwo))) {
-    return [undefined, undefined];
+    return false;
+  } else {
+    return true;
   }
-  console.log("r");
-  return [new Date(dateOne), new Date(dateTwo)];
 }
 
 async function getClosedBySpecialistCount(dateOne, dateTwo) {

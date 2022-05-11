@@ -29,33 +29,30 @@ router.get(
   }
 );
 
-router.get(
-  "/api/specialist",
-  checkRoles("advisor", "admin", "specialist"),
-  (req, res) => {
-    // This API will get the number of problems each specialist has closed, assuming they've closed a problem
-    const dates = checkTwoDates(req.body.startDate, req.body.endDate);
-    getClosedBySpecialistCount(dates[0], dates[1])
-      .then((results) => {
-        // If the query is succesful then return the results
-        return res.json({ success: true, data: results });
-      })
-      .catch((err) => {
-        // Else throw an error
-        throw err;
-      });
+router.get("/api/specialist", (req, res) => {
+  // This API will get the number of problems each specialist has closed, assuming they've closed a problem
+  let dates = [req.query.startDate, req.query.endDate];
+  console.log(dates);
+  if (!checkTwoDates(req.query.startDate, req.query.endDate)) {
+    dates = [undefined, undefined];
   }
-);
-
-router.get(
-  "/api/open-problems",
-  checkRoles("advisor", "admin", "specialist"),
-  (req, res) => {
-    // Use SQL to count the number of open problems in the database and return this is as a json response
-    getNumOfOpenProblems().then((results) => {
+  console.log(dates);
+  getClosedBySpecialistCount(dates[0], dates[1])
+    .then((results) => {
+      // If the query is succesful then return the results
       return res.json({ success: true, data: results });
+    })
+    .catch((err) => {
+      // Else throw an error
+      throw err;
     });
-  }
-);
+});
+
+router.get("/api/open-problems", (req, res) => {
+  // Use SQL to count the number of open problems in the database and return this is as a json response
+  getNumOfOpenProblems().then((results) => {
+    return res.json({ success: true, data: results });
+  });
+});
 
 module.exports = router;
