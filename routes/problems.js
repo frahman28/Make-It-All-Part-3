@@ -565,7 +565,7 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
     }
 })
 
-//Patch route allows user to edit name, type, software, hardware, os, assigned specialist, last specialist, if it is solved and and if it is closed for any problem
+//Patch route allows user to edit name, type, software, hardware, os, assigned specialist, last specialist for any problem
 //Access to admin users
 app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
     const { name, desc, type, hardware, software, os, specialist, lastSpecialist } = req.body;
