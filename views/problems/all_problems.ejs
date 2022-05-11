@@ -161,16 +161,16 @@
                                             <td>Last Specialist:</td>
                                             <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                                 <select id="update-lastSpecialist" name="lastSpecialist" class="form-select">
-                                                    <% if (problems[i]["lastSpecialistName"] == null) { %> <!-- Display none if problem was submitted with no last specialist data -->
+                                                    <% if (problems[i]["lastSpecialistName"] == null) { %> <!-- Display none if problem was submitted with no last specialist -->
                                                         <option value="NULL" selected>None</option>
                                                     <% } else { %> 
                                                         <option value="NULL">None</option>
                                                     <% } %> 
-                                                    <% for (var j = 0; j < specialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows last specialist -->
-                                                        <% if ((specialists[j]["name"] == problems[i]["lastSpecialistName"])) {%>
-                                                            <option selected><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %></option>
+                                                    <% for (var j = 0; j < uniqueSpecialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if ((uniqueSpecialists[j]["name"] == problems[i]["lastSpecialistName"])) {%>
+                                                            <option selected><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %></option>
                                                         <% } else { %>  
-                                                            <option value="<%= specialists[j]["id"] %>"><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %></option>   
+                                                            <option value="<%= uniqueSpecialists[j]["id"] %>"><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %></option>   
                                                         <% } %>    
                                                     <% } %>
                                                 </select>
@@ -180,13 +180,13 @@
                                             <td>Current Specialist:</td>
                                             <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                                 <select id="update-specialist" name="specialist" class="form-select">
-                                                    <% if (problems[i]["specialistName"] == null) { %> <!-- Display none if problem was submitted with no current specialist -->
+                                                    <% if (problems[i]["specialistName"] == null) { %> <!-- Display none if problem was submitted with no specialist -->
                                                         <option value="NULL" selected>None</option>
                                                     <% } else { %> 
                                                         <option value="NULL">None</option>
                                                     <% } %> 
-                                                    <% for (var j = 0; j < specialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows current specialist -->
-                                                        <% if ((specialists[j]["specialty_id"] == problems[i]["problemTypeId"])) {%>
+                                                    <% for (var j = 0; j < specialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if ((specialists[j]["specialty_id"] == problems[i]["problemTypeId"]) && specialists[j]["name"] == [problems[i]["specialistName"]]) {%>
                                                             <option selected><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %> - <%= specialists[j]["ext"] %> - <%= specialists[j]["specialty"] %></option>
                                                         <% } else { %>  
                                                             <option value="<%= specialists[j]["id"] %>"><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %> - <%= specialists[j]["ext"] %> - <%= specialists[j]["specialty"] %></option>   
