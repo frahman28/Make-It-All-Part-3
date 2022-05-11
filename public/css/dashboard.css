@@ -1,0 +1,30 @@
+.container {
+  background-color: #e2e3e5;
+  padding: 50px;
+  border-radius: 5px;
+}
+
+h2,
+h3 {
+  text-decoration: underline;
+}
+
+.problem-number-count {
+  font-weight: bold;
+}
+
+.changeData {
+  text-align: center;
+}
+
+.changeData .btn {
+  background-color: rgb(255, 185, 79);
+  margin: 5px;
+}
+.changeData input {
+  margin: 5px;
+}
+.changeData label {
+  margin: 5px;
+  font-weight: bold;
+}
