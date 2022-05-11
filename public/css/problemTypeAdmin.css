@@ -13,3 +13,8 @@
   margin: 5px;
   font-weight: bold;
 }
+
+#specialistsToShow {
+  width: 50%;
+  height: 200px;
+}

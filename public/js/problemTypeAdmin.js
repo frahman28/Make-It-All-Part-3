@@ -1,6 +1,10 @@
 $(document).ready(function () {
   refreshProblemTypes();
 
+  $("#problemTypeViewSelect").change(function () {
+    getSpecialistForProblemType();
+  });
+
   $("#deleteProblemTypeBtn").click(function () {
     const selected = $("#problemTypesForDelete").val();
     $.ajax({
@@ -18,10 +22,58 @@ $(document).ready(function () {
       },
     });
   });
+
+  $("#createProblemType").click(function () {
+    const selected = $("#problemTypeForCreate").val();
+    const problemTypeName = $("#problemTypeName").val().trim();
+    if (problemTypeName === "") {
+      alert("Problem type name cannot be empty");
+      return;
+    }
+    $.ajax({
+      type: "POST",
+      url: "/problem-type/api",
+      data: { problemTypeName: problemTypeName, problemTypeChild: selected },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          alert(response.msg);
+        } else {
+          alert(response.msg);
+        }
+        refreshProblemTypes();
+      },
+    });
+  });
 });
 
+var getSpecialistForProblemType = () => {
+  const value = $("#problemTypeViewSelect").val();
+  $.ajax({
+    type: "GET",
+    url: "/problem-type/api/specialist?problemTypeID=" + value,
+    data: "",
+    dataType: "json",
+    success: function (response) {
+      $("#specialistsToShow").html("");
+      if (response.success) {
+        htmlCode = "";
+        response.data.forEach((employee) => {
+          htmlCode += "<option>" + employee.name + "</option>";
+        });
+        $("#specialistsToShow").html(htmlCode);
+      }
+    },
+    error: function (error) {
+      console.error(error);
+    },
+  });
+};
+
 function refreshProblemTypes() {
-  setProblemTypesForDelete();
+  setProblemTypes("#problemTypesForDelete");
+  setProblemTypes("#problemTypeForCreate");
+  setProblemTypes("#problemTypeViewSelect");
 }
 
 function createSelect(parentsList, identifier) {
@@ -77,7 +129,7 @@ function getParents(list) {
   return parents;
 }
 
-var setProblemTypesForDelete = () => {
+var setProblemTypes = (identifier) => {
   $.ajax({
     type: "GET",
     url: "/problem-type/api",
@@ -85,8 +137,8 @@ var setProblemTypesForDelete = () => {
     dataType: "json",
     success: function (response) {
       if (response.success) {
-        $("#problemTypesForDelete").html("");
-        createSelect(getParents(response.data), "#problemTypesForDelete");
+        $(identifier).html("");
+        createSelect(getParents(response.data), identifier);
       }
     },
     error: function (error) {
