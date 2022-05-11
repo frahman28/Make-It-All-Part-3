@@ -18,6 +18,10 @@ const {
   deleteProblemType,
 } = require("./problem-type-functions");
 
+router.get("/manage-problem-types", checkRoles("admin"), (req, res) => {
+  res.render("editProblemTypes");
+});
+
 router.get("/api", verifySession, (req, res) => {
   // This API call will return the list of all problem types in the database
   getAllProblemTypes().then((results) => {
@@ -28,10 +32,13 @@ router.get("/api", verifySession, (req, res) => {
 router.get("/api/children", checkRoles("specialist", "admin"), (req, res) => {
   // This API call will return the list of children for a specific problem type,
   // the problem type is based on the request body supplied
-  const { problemTypeID } = req.body;
-  if (problemTypeID === undefined || !Number.isInteger(problemTypeID)) {
+  let { problemTypeID } = req.query;
+  if (problemTypeID === undefined || isNaN(Number.parseInt(problemTypeID))) {
     return res.json({ success: false, msg: "Problem type id not supplied" });
   }
+  console.log("Here");
+  console.log(Number.parseInt(problemTypeID));
+  problemTypeID = Number.parseInt(problemTypeID);
   getAllChildrenForPromblemType(problemTypeID).then((results) => {
     return res.json({ success: true, data: results });
   });
@@ -41,11 +48,13 @@ router.get("/api/specialist", verifySession, (req, res) => {
   // This API call will return a list of specialists who match to a problem type
   // this can be used to find specialists who specialize in a given problem type, useful for assigning problems to
   // the correct people
-  const { problemTypeID, showOnlyAvailable } = req.body;
+  console.log(req.query);
+  let { problemTypeID, showOnlyAvailable } = req.query;
   // Check to see if the problem type id supplied is valid and was supplied
-  if (problemTypeID === undefined || !Number.isInteger(problemTypeID)) {
+  if (problemTypeID === undefined || isNaN(Number.parseInt(problemTypeID))) {
     return res.json({ success: false, msg: "Problem type id not supplied" });
   }
+  problemTypeID = Number.parseInt(problemTypeID);
   getListOfSpecialistForProblemType(problemTypeID, showOnlyAvailable).then(
     (results) => {
       return res.json({ success: true, data: results });
@@ -107,7 +116,7 @@ router.post(
     // This API will add a specialist to a problem type
     // The parameter will take the specialist id
     // The body of the request will be the problem type id to remove the user from
-    const { problemTypeID } = req.body;
+    const { problemTypeID } = req.query;
     const specialistID = req.params.specialist_id;
     // Check the problem type id and specialist id were defined, and the problem type id supplied is not a number
     if (
@@ -164,10 +173,11 @@ router.post("/api", checkRoles("specialist", "admin"), (req, res) => {
   // This API will create a new problem type
   const { problemTypeName, problemTypeChild } = req.body;
   // Check the problem type id and specialist id were defined, and the problem type id supplied is not a number
+  console.log(problemTypeName, problemTypeChild);
   if (problemTypeName === undefined && problemTypeChild === undefined) {
     return res.json({ success: false, msg: "Problem type name not specified" });
   }
-  if (!Number.isInteger(problemTypeChild)) {
+  if (isNaN(Number.parseInt(problemTypeChild))) {
     return res.json({ success: false, msg: "Invalid child problem type" });
   }
   createNewProblemType(problemTypeName, problemTypeChild)
