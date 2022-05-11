@@ -70,7 +70,7 @@
             </tr>
             <!-- Loop through all user's problems and render their details. -->
             <% for(var i=0; i<problems.length; i++) {%>
-                <tr class="visible-row accordion">
+                <tr>
                     <td>#<%= problems[i]["problemId"] %></td>
                     <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
                     <td><%= problems[i]["problemName"] %></td>
@@ -94,7 +94,9 @@
 
                     <td>
                     <% if (role == 'specialist') { %>
-                        <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
+                        <% if (problems[i]["solved"] == 0) { %>
+                            <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
+                        <% } %>
                     <% } else { %>
                         <% if (problems[i]["solved"] == 1) { %>
                             <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
