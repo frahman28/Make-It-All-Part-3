@@ -108,12 +108,21 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
 app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function (req, res, next) {
+
+    //Get all hardware, software, os, problem types and specialists to display in update tables as options
+    var allSoftware = await software.getAllSoftware(req, res);
+    var allHardware = await hardware.getAllHardware(req, res);
+    var allOS = await os.getAllOS(req, res);
+    var allProblemTypes = await problemTypes.getAllProblemTypes();
+    var allSpecialists = await getAllSpecialists();
+
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,
                     employee as reportedById,
                     employees.name as reportedByName,
                     specialists.name as specialistName,
+                    lastSpecialists.name as lastSpecialistName,
                     opened_on as dateOpened,
                     closed_on as dateClosed,
                     status,
@@ -128,6 +137,8 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
                 FROM problems
                 JOIN employees as specialists 
                     ON specialists.employee_id = assigned_to
+                JOIN employees as lastSpecialists
+                    ON lastSpecialists.employee_id = last_reviewed_by
                 JOIN employees 
                     ON employees.employee_id = employee
                 LEFT JOIN os 
@@ -164,10 +175,43 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: rows,
-                                                role: req.session.userRole});                    // array of problems.
+                                                role: req.session.userRole,             // used for dynamic rendering (decides which column should be displayed).
+                                                hardware: allHardware,                  // array of hardware to display as options.
+                                                software: allSoftware,                  // array of software to display as options.
+                                                os: allOS,                              // array of os to display as options.    
+                                                problemTypes: allProblemTypes,          // array of problem types to display as options.
+                                                specialists: allSpecialists});          // array of specialists to display as options.
         }
     });
 });
+
+//Get all data for specialists, including id, name, extension and specialty
+var getAllSpecialists = function() {
+    return new Promise((resolve, reject) => {
+        conn.query(`SELECT 
+                employees.employee_id AS id, name, employees_extension AS ext, problem_types.problem_type AS specialty employees.available AS availability
+                FROM
+                employees
+                LEFT JOIN 
+                employee_problem_type_relation
+                ON
+                employees.employee_id = employee_problem_type_relation.employee_id
+                LEFT JOIN
+                problem_types
+                ON 
+                employee_problem_type_relation.problem_type_id = problem_types.problem_type_id`,
+                function(err, rows) {
+                    if (err) {
+                        reject(err);
+                        console.error('Error: ' + err);
+                    } else {
+                        console.log(rows);
+                        return resolve(rows); 
+                    }
+                })
+            
+    })           
+};
 
 app.get("/submitProblem", checkRoles("employee", "specialist"), async function (req, res, next) {
     var allSoftware = await software.getAllSoftware();
