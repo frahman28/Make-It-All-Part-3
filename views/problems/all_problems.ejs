@@ -107,9 +107,6 @@
                         <div class="status">
                             <!-- Check if problem has been closed nd if so, correct its label. -->
                             <% if (problems[i]["closed"] == 1) { %>
-                                Closed
-                            <!-- Check if problem has been solved and if so, correct its label. -->
-                            <%} else if (problems[i]["solved"] == 1) { %>
                                 Solved
                             <!-- Check if missing status for the problem. -->
                             <%} else if (problems[i]["status"] == null ) { %>
@@ -221,8 +218,8 @@
                                 </tr>
                                 <tr>
                                     <td>Comments:</td>
-                                    <% if (problems[i]["comment"] != undefined) { %>
-                                        <td><%= problems[i]["comment"] %></td>
+                                    <% if (problems[i]["problemDescription"] != undefined) { %>
+                                        <td><%= problems[i]["problemDescription"] %></td>
                                     <%} else { %>
                                         <td>N/A</td>
                                     <% } %>

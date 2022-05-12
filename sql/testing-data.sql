@@ -108,12 +108,12 @@ INSERT INTO `hardware_relation` (`hardware_id`, `serial`) VALUES
 (5, '299388'),
 (6, '635635'),
 (7, '272718'),
-(8, '127827'),
-(9, '726188'),
-(10, '898181'),
-(11, '919882'),
-(12, '299388'),
-(13, '635635'),
+(8, '127821'),
+(9, '726185'),
+(10, '898180'),
+(11, '919881'),
+(12, '299389'),
+(13, '635636'),
 (14, '288738');
 
 --
@@ -176,10 +176,10 @@ INSERT INTO `problems` (`problem_id`, `name`, `problem_description`, `problem_ty
 (1, 'Dropped laptop in water.', NULL, 1, NULL, 5, NULL, '299388', 126711, 609093, 126711, 1, 1, '2022-03-15', '2022-03-09', 4),
 (2, 'Chrome keeps freezing.', NULL, 2, 1, 9, '122611', '726188', 228787, 737277, 228787, 1, 1, '2022-03-09', '2022-03-03', 6),
 (3, 'Bluetooth not connecting to laptop.', 'No matter which device I use, it doesnt seem to work.', 3, NULL, 1, NULL, '127827', NULL, 737277, 329922, 0, 0, NULL, '2022-03-09', 5),
-(4, 'Computer not booting up.', NULL, 1, NULL, 9, NULL, '726188', NULL, 609093, 126711, 0, 0, NULL, '2022-03-09', 5),
+(4, 'Computer not booting up.', NULL, 1, NULL, 9, NULL, '726185', NULL, 609093, 126711, 0, 0, NULL, '2022-03-09', 5),
 (5, 'Application crashes frequently.', 'The computer makes weird noises.', 2, 2, 4, '898282', '919882', NULL, 609093, 228787, 0, 0, NULL, '2022-03-04', 2),
-(6, 'Word keeps crashing when pasting an image in', NULL, 9, 4, NULL, NULL, '127827', 126711, 737277, 126711, 0, 1, '2022-04-02', '2022-02-02', 4),
-(7, 'Internet not auto connecting on startup', 'Ive tried restarting the computer, but it didnt work.', 8, NULL, NULL, NULL, '288738', 126711, 737277, 126711, 0, 1, '2022-03-20', '2022-02-10', 3);
+(6, 'Word keeps crashing when pasting an image in', NULL, 9, 4, 1, NULL, '127827', 126711, 737277, 126711, 0, 1, '2022-04-02', '2022-02-02', 4),
+(7, 'Internet not auto connecting on startup', 'Ive tried restarting the computer, but it didnt work.', 8, NULL, 14, NULL, '288738', 126711, 737277, 126711, 0, 1, '2022-03-20', '2022-02-10', 3);
 
 --
 -- Dumping data for table `problem_status`

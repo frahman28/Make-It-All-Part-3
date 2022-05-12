@@ -26,7 +26,6 @@ var getAllSoftware = function() {
                         reject(err);
                         console.error('Error: ' + err);
                     } else {
-                        console.log(rows);
                         return resolve(rows); 
                     }
                 })
@@ -46,7 +45,6 @@ var getSoftwareTypes = function() {
                         reject(err);
                         console.error('Error: ' + err);
                     } else {
-                        console.log(rows);
                         return resolve(rows); 
                     }
                 })
@@ -76,7 +74,6 @@ var getSoftwareById = function(req) {
                         reject(err);
                         console.error('Error: ' + err);
                     } else {
-                        console.log(rows);
                         return resolve(rows); 
                     }
                 })

@@ -14,14 +14,17 @@ var getProblemById = function (problemId) {
       conn.query(`SELECT problem_id, 
                     problems.name as problemName, 
                     problem_description as problemDescription, 
+                    problems.problem_type_id as problemTypeId, 
                     problem_type as problemType, 
                     software.name as softwareName, 
                     hardware.name as hardwareName, 
                     os.name as OSName, 
                     serial, 
                     license,
+                    solved,
                     employee as reportedBy,
-                    assigned_to as assignedSpecialist
+                    assigned_to as assignedSpecialist,
+                    last_reviewed_by as lastReviewedBy
                   FROM problems 
                   LEFT JOIN software
                     ON problems.software_id = software.software_id 
@@ -39,6 +42,20 @@ var getProblemById = function (problemId) {
     });
   };
 
+var reassignSpecialist = function (problemId, assignedSpecialist) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems
+      SET assigned_to = ${assignedSpecialist}
+      WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
+
 var deleteProblemById = function (problemId) {
     return new Promise((resolve, reject) => {
       conn.query("SELECT * FROM problems WHERE problem_id = ?",
@@ -50,16 +67,6 @@ var deleteProblemById = function (problemId) {
     });
   };
 
-var updateProblem = function (problemId) {
-    return new Promise((resolve, reject) => {
-      conn.query("PUT * FROM problems WHERE problem_id = ?",
-      problemId,
-      (err, results) => {
-        if (err) throw err;
-        resolve(results);
-      });
-    });
-  };
 
 var updateViewed = function (problemId, reviewedBy) {
     return new Promise((resolve, reject) => {
@@ -72,6 +79,39 @@ var updateViewed = function (problemId, reviewedBy) {
             resolve(results);
         });
     });
+};
+
+var getAllSpecialists = function (problemId, reviewedBy) {
+    return new Promise((resolve, reject) => {
+        conn.query(`
+        SELECT 
+          employees.employee_id as specialistId,
+          employees.name as specialistName, 
+          COUNT(problems.problem_id) AS numberOfAssignedProblems 
+        FROM employees 
+        LEFT JOIN employee_problem_type_relation 
+          ON employee_problem_type_relation.employee_id = employees.employee_id 
+        LEFT JOIN problems 
+          ON problems.assigned_to = employees.employee_id 
+        WHERE employees.role_id = 5 
+        GROUP BY problems.assigned_to DESC;`,
+        (err, results) => {
+            if (err) throw err;
+            resolve(results);
+        });
+    });
+};
+
+var createProblemStatus = function (problemId) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      INSERT INTO problem_status_relation (problem_id, status_id)
+      VALUES (${problemId}, 1);`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
 };
 
 var updateProblemStatus = function (problemId, statusId) {
@@ -87,15 +127,58 @@ var updateProblemStatus = function (problemId, statusId) {
     });
 };
 
+var setProblemClosed = function (problemId, closedOn) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems
+      SET solved = 1, closed = 1, closed_on = ${conn.escape(closedOn)}
+      WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
 
-var createProblem = function (name, 
-    problem_description,  problem_type_id, software_id, 
-    hardware_id, software_id, licenses, 
-    serial, employee, opened_on, os_id) {
+var setProblemSolved = function (problemId, solved) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems
+      SET solved = ${solved}, closed = 0
+      WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
+var createProblem = function (problemName, 
+    problemDescription,  problemType, software, 
+    hardware, license, serial, employee, assignedTo, 
+    openedOn, os) {
     return new Promise((resolve, reject) => {
       conn.query(`
-      INSERT INTO ()
-      VALUES ()`,
+      INSERT INTO problems (name, problem_description, problem_type_id,
+                          software_id, hardware_id, license, serial,
+                          employee, assigned_to, opened_on, os_id)
+      VALUES ("${problemName}", "${problemDescription}", ${problemType},
+              ${software}, ${hardware}, "${license}", "${serial}", ${employee}, 
+              ${assignedTo}, ${conn.escape(openedOn)}, ${os});`,
+      (err, results) => {
+        if (err) throw err;
+        console.log(results);
+        resolve(results);
+      });
+    });
+  };
+
+  var updateProblemLastViewedBy = function (problemId, lastReviewedBy) {
+    return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems
+      SET last_reviewed_by = ${lastReviewedBy}
+      WHERE problem_id = ${problemId}`,
       problemId,
       (err, results) => {
         if (err) throw err;
@@ -108,8 +191,13 @@ var createProblem = function (name,
     getAllProblems,
     getProblemById,
     deleteProblemById,
-    updateProblem,
+    reassignSpecialist,
     updateViewed,
+    setProblemClosed,
+    setProblemSolved,
+    getAllSpecialists,
+    createProblemStatus,
     updateProblemStatus,
+    updateProblemLastViewedBy,
     createProblem,
   };

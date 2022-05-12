@@ -14,6 +14,7 @@ var os = require("./os");
 var solutionUtils = require("./solution");
 var problemTypes = require("./problem-type-functions");
 var problemUtils = require("./problems-functions");
+const e = require('connect-flash');
 
 // route:  GET /
 // access: ALL NOT LOGGED IN
@@ -56,18 +57,19 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
-                problems.name as problemName,
-                problems.problem_type_id as problemTypeId,
-                problems.software_id as problemSoftwareId,
-                problems.hardware_id as problemHardwareId,
-                employee as reportedById,
-                assigned_to as specialistId,
-                employees.name as reportedByName,
-                specialists.name as specialistName,
-                opened_on as dateOpened,
-                closed_on as dateClosed,
-                problems.os_id as problemOSId,
-                status
+                    problems.name as problemName,
+                    problems.problem_type_id as problemTypeId,
+                    problems.software_id as problemSoftwareId,
+                    problems.hardware_id as problemHardwareId,
+                    employee as reportedById,
+                    assigned_to as specialistId,
+                    employees.name as reportedByName,
+                    specialists.name as specialistName,
+                    opened_on as dateOpened,
+                    closed_on as dateClosed,
+                    problems.os_id as problemOSId,
+                    solved,
+                    status
                 FROM problems
                 LEFT JOIN employees 
                     ON employees.employee_id = employee
@@ -79,7 +81,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                     ON problem_status_relation.status_id = problem_status.status_id
                 WHERE closed <> 1
                 AND ${query} = ${userId}
-                ORDER BY problems.problem_id ASC;`,  function (err, rows) {
+                ORDER BY solved DESC, problems.problem_id ASC;`,  function (err, rows) {
         if (err){
             // If error occured, return an empty array.
             res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
@@ -111,17 +113,19 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,
+                    problem_description as problemDescription,
                     employee as reportedById,
                     employees.name as reportedByName,
                     specialists.name as specialistName,
                     opened_on as dateOpened,
                     closed_on as dateClosed,
                     status,
-                    solut.comment as solution,
-                    comments.comment,
+                    closed,
                     os.name as OS,
                     software.name as softwareName,
                     type_of_software.type as softwareType,
+                    solut.comment as solution,
+                    comments.comment as solutionNotes,
                     hardware.name as hardwareName,
                     type_of_hardware.type as hardwareType,
                     hardware_relation.serial as serialNumber
@@ -186,38 +190,92 @@ app.get("/submitProblem", checkRoles("employee", "specialist"), async function (
 });
 
 
-app.post("/submitProblem", checkRoles("employee", "specialist"), function (req, res, next) {
+app.post("/submitProblem", checkRoles("employee", "specialist"), async function (req, res, next) {
     let problemName = req.body.problemName;
     let problemType = req.body.problemType;
-    let serialNumber = req.body.serialNumber;
-    let operatingSystem = req.body.operatingSystem;
-    let software = req.body.software;
-    let hardware = req.body.hardware;
+    let operatingSystem = req.body.operatingSystem.length > 0 ? req.body.operatingSystem : null;
+    let software = req.body.software.length > 0 ? req.body.software : null;
+    let hardware = req.body.hardware.length > 0 ? req.body.hardware : null;
+    let license = req.body.license.length > 0 ? req.body.license : null;
+    let serialNumber = req.body.serialNumber.length > 0 ? req.body.serialNumber : null;
     let problemDesription = req.body.problemDesription;
-
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
 
+    console.log(req.body);
+    
+    let openedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    let asssignedSpecialist;
 
-    // If no username or password provided, 
-    // if (!username || !password) {
-    //     return res.render('login', {
-    //         errorMessage: 'Please provide both your username and password.'
-    //     });
-    // }
+    if (problemName.length < 1 || problemType.length < 1 || (software == null && hardware == null)) {
+        return res.redirect("/submitProblem");
+    }
+
+    let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemType, true);
+    if (specialistsForProblemType.length < 1) {
+        let problemParent = await problemTypes.getChildNodeID(problemType);
+        let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemParent, true);
+
+        if (specialistsForProblemType.length < 1) {
+            let allSpecialists = await problemUtils.getAllSpecialists();
+            asssignedSpecialist = allSpecialists[0].specialistId;
+
+        } else {
+            asssignedSpecialist = specialistsForProblemType[0].specialistId;
+        }
+    } else {
+        asssignedSpecialist = specialistsForProblemType[0].specialistId;
+    }
+
+
+    let newProblemId = await problemUtils.createProblem(problemName, problemDesription, problemType, 
+        software, hardware, license,
+        serialNumber, req.session.userId, asssignedSpecialist, 
+        openedOn, operatingSystem);
+
+    await problemUtils.createProblemStatus(newProblemId.insertId);
+
+    if (solution.length > 0) {
+        await problemUtils.updateProblemStatus(newProblemId.insertId, 3);
+        await problemUtils.setProblemClosed(newProblemId.insertId, openedOn);
+        
+        let problemSolution = await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solution);
+        await solutionUtils.linkProblemToSolution(newProblemId.insertId, problemSolution.insertId);
+
+        if (solutionNotes.length > 0) {
+            await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solutionNotes);
+        }
+    }
+    
+    return res.redirect("/myProblems");
 });
 
 
 
-app.get("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin"), async function (req, res, next) {
+app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
     let problemId = req.params["problemId"];
     if (isNaN(problemId)) return res.redirect("../myProblems");
 
     let problem = await problemUtils.getProblemById(problemId);
 
+    if (problem.length < 1) {
+        return res.redirect("../myProblems");
+    }
+
     if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId && req.session.userRole != "admin") {
         // Prohibit enter.
         return res.sendStatus(401);
+    }
+
+    // change problem status
+    if (problem[0].lastReviewedBy != req.session.userId && req.session.userRole == "specialist") {
+        await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
+        await problemUtils.updateProblemStatus(problemId, 2);
+    }
+    
+    let problemSolution = undefined;
+    if (problem[0].solved == 1) {
+        problemSolution = await solutionUtils.getSolutionForProblemId(problemId);
     }
 
     var allSoftware = await software.getAllSoftware();
@@ -226,155 +284,110 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin
     var allSolutions = await solutionUtils.getAllSolutions();
     var allProblemTypes = await problemTypes.getAllProblemTypes();
 
-    res.render('submitProblem', {userName: req.session.userName,
+    return res.render('submitProblem', {userName: req.session.userName,
                                 problem: problem,
                                 software: allSoftware,
                                 hardware: allHardware,
                                 os: allOS,
                                 solution: allSolutions,
+                                problemSolution: problemSolution,
                                 problemTypes: allProblemTypes,
                                 role: req.session.userRole});
 });
 
 
-app.post("/submitProblem/:problemId", checkRoles("employee", "specialist", "admin"), async function (req, res, next) {
+app.post("/submitProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
     let problemId = req.params["problemId"];
     let author = req.session.userId;
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
 
-    await solutionUtils.addComments(problemId, author, solutionNotes);
+    if (solution.length < 1) return res.redirect("/submitProblem/" + problemId);
+    
     let newSolution = await solutionUtils.addComments(problemId, author, solution);
-    await solutionUtils.linkProblemToSolution(problemId, newSolution["comment_id"]);
+    await solutionUtils.linkProblemToSolution(problemId, newSolution.insertId);
 
-    await problemUtils.updateProblem(problemId);
-    res.redirect('/myProblems');
+    if (solutionNotes.length > 0) {
+        await solutionUtils.addComments(problemId, author, solutionNotes);
+    }
+    
+    await problemUtils.updateProblemStatus(problemId, 3);
+    await problemUtils.setProblemSolved(problemId, 1);
+
+    return res.redirect('/myProblems');
 });
 
-//Patch route allows user to edit name, type, software, hardware, os of their problems
-//Access to employee users and specialist users
-app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req, res) {
-    const { name, type, hardware, software, os } = req.body;
-    const id = parseInt(req.params.id);
 
-    try { //Update each attribute seperately incase certain attributes are not inputted
-        if (name) { //If name value is inputted
-            conn.query(`UPDATE 
-                        problems
-                        SET
-                        name = '${name}'
-                        WHERE
-                        problem_id = '${id}'`);
-        }
-        if (type) { //If type value is inputted
-            conn.query(`SELECT 
-                        *
-                        FROM 
-                        problem_types
-                        WHERE
-                        problem_type = '${type}'`,
-                        function(err, rows) { //Get data from problem types to use to update problem type id
-                            if (err) {
-                                console.error('Error: ' + err);
-                            } else {
-                                const type_id = rows[0]["problem_type_id"]
-                                conn.query(`UPDATE 
-                                            problems
-                                            SET
-                                            problem_type_id = '${type_id}'
-                                            WHERE
-                                            problem_id = '${id}'`);
-                            }
-                        })
-        }
-        if (hardware != 'N/A') { //If hardware has valid input
-            if (hardware == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            hardware_id = NULL,
-                            serial = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else { 
-                conn.query(`SELECT 
-                            *
-                            FROM 
-                            hardware_relation
-                            WHERE
-                            hardware_id = '${hardware}'`,
-                            function(err, rows) { //Get serial number from relation table of submitted id then update problems table
-                                if (err) {
-                                    console.error('Error: ' + err);
-                                } else {
-                                    const serial = rows[0]["serial"]
-                                    conn.query(`UPDATE 
-                                                problems
-                                                SET
-                                                hardware_id = '${hardware}',
-                                                serial = '${serial}'
-                                                WHERE
-                                                problem_id = '${id}'`);
-                                }
-                            })
-            }
-        }
-        if (software != 'N/A') { //If software has valid input
-            if (software == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            software_id = NULL,
-                            license = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else {
-                conn.query(`SELECT 
-                            *
-                            FROM 
-                            software_relation
-                            WHERE
-                            software_id = '${software}'`,
-                            function(err, rows) { //Get license number from relation table of submitted id then update problems table
-                                if (err) {
-                                    console.error('Error: ' + err);
-                                } else {
-                                    const license = rows[0]["license"]
-                                    conn.query(`UPDATE 
-                                                problems
-                                                SET
-                                                software_id = '${software}',
-                                                license = '${license}'
-                                                WHERE
-                                                problem_id = '${id}'`);
-                                }
-                            })
-            }                
-        }
-        if (os != 'N/A') { //If os has valid input
-            if (os == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            os_id = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else { 
-                conn.query(`UPDATE
-                            problems
-                            SET
-                            os_id = '${os}'
-                            WHERE
-                            problem_id = '${id}'`);
-            }
-        }
-        res.status(200);
-        res.redirect('/myProblems'); //Direct user back to dashboard with problems updated
-    } catch (err) {
-        console.log(err);
-        res.render({ message: "Error in request" });
+app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
+    // TODO
+    let problemId = req.params["problemId"];
+    if (isNaN(problemId)) return res.redirect("../myProblems");
+
+    let problem = await problemUtils.getProblemById(problemId);
+
+    if (problem.length < 1) {
+        return res.redirect("../myProblems");
     }
-})
+
+    if (problem[0].reportedBy != req.session.userId) {
+        // Prohibit enter.
+        return res.sendStatus(401);
+    }
+
+    let asssignedSpecialist;
+    let problemType = problem[0].problemTypeId;
+    console.log("problemType, assignedSpecialist: ", problemType, problem[0].assignedSpecialist)
+
+    let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemTypeExcluding(problemType, problem[0].assignedSpecialist);
+    console.log("specialistsForProblemType: ", specialistsForProblemType)
+
+    if (specialistsForProblemType.length < 1) {
+        let problemParent = await problemTypes.getChildNodeID(problemType);
+        if (problemParent.length < 1) {
+            let allSpecialists = await problemUtils.getAllSpecialists();
+            asssignedSpecialist = allSpecialists[0].specialistId;
+        } else {
+            let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemTypeExcluding(problemParent[0].child_of, problem[0].assignedSpecialist);
+            if (specialistsForProblemType.length < 1) {
+                let allSpecialists = await problemUtils.getAllSpecialists();
+                asssignedSpecialist = allSpecialists[0].specialistId;
+    
+            } else {
+                asssignedSpecialist = specialistsForProblemType[0].specialistId;
+            }
+        }
+    } else {
+        asssignedSpecialist = specialistsForProblemType[0].specialistId;
+    }
+
+    await problemUtils.reassignSpecialist(problemId, asssignedSpecialist);
+    await problemUtils.updateProblemStatus(problemId, 1);
+    await problemUtils.setProblemSolved(problemId, 0);
+
+    return res.redirect('../myProblems');
+});
+
+app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
+    // TODO
+    let problemId = req.params["problemId"];
+    if (isNaN(problemId)) return res.redirect("../myProblems");
+
+    let problem = await problemUtils.getProblemById(problemId);
+
+    if (problem.length < 1) {
+        return res.redirect("../myProblems");
+    }
+
+    if (problem[0].reportedBy != req.session.userId) {
+        // Prohibit enter.
+        return res.sendStatus(401);
+    }
+    console.log("PROBLEM ", problemId, " RESOLVED");
+    await problemUtils.setProblemClosed(problemId);
+
+    return res.redirect('../myProblems');
+});
+
 
 //Patch route allows user to edit name, type, software, hardware, os of their problems
 //Access to employee users and specialist users
@@ -514,6 +527,6 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
         console.log(err);
         res.render({ message: "Error in request" });
     }
-})
+});
 
 module.exports = app;

@@ -26,7 +26,6 @@ var getAllHardware = function() {
                         reject(err);
                         console.error('Error: ' + err);
                     } else {
-                        console.log(rows);
                         return resolve(rows); 
                     } 
                 })
@@ -45,7 +44,6 @@ var getHardwareTypes = function() {
                             reject(err);
                             console.error('Error: ' + err);
                         } else {
-                            console.log(rows);
                             return resolve(rows); 
                         }
                     })
@@ -75,7 +73,6 @@ var getHardwareById = function(req) {
                             reject(err);
                             console.error('Error: ' + err);
                         } else {
-                            console.log(rows);
                             return resolve(rows); 
                         }
                     })
