@@ -69,7 +69,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/", problemsRouter);
 app.use("/", equipmentRouter);
-app.use("/employee", usersRouter);
+app.use("/", usersRouter);
 app.use("/problem-type", problemTypeRouter);
 app.use("/analysis", analysisRouter);
 

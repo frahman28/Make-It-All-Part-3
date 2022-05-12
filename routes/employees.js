@@ -31,6 +31,41 @@ router.get("/api", verifySession, (req, res) => {
   });
 });
 
+router.get("/allEmployees", checkRoles("admin"), (req, res) => {
+    // Retrieve details about user's open problems.
+    conn.query(`
+    SELECT employees.employee_id as employeeId, 
+          employees.name as employeeName, 
+          employees.extension as extension, 
+          employees.external as isExternal, 
+          employees.available as isAvailable, 
+          departments.name AS departmentName, 
+          job_title.title as jobTitle, 
+          company_roles.role as role, 
+          (SELECT COUNT(*) FROM problems WHERE (problems.employee = employeeId OR problems.assigned_to = employeeId) AND problems.solved <> 1) AS ongoingProblems,
+          (SELECT COUNT(*) FROM problems WHERE (problems.employee = employeeId OR problems.assigned_to = employeeId)) AS allProblems 
+      FROM employees 
+      LEFT JOIN job_info 
+        ON employees.employee_id = job_info.employee_id
+      LEFT JOIN departments 
+        ON job_info.department_id = departments.department_id 
+      LEFT JOIN job_title
+        ON job_info.title_id = job_title.title_id 
+      LEFT JOIN company_roles 
+        ON employees.role_id = company_roles.role_id;`, function (err, rows) {
+  if (err) {
+  // If error occured, return an empty array.
+  res.render('all_employees', {userName: req.session.userName,     // displays user's username.
+                                employees: [],
+                                role: req.session.userRole});                      // empty array of problems.
+  } else {
+  res.render('all_employees', {userName: req.session.userName,     // displays user's username.
+                                employees: rows,
+                                role: req.session.userRole});                    // array of problems.
+  }
+  });
+});
+
 router.get("/api/:employee_id", verifySession, (req, res) => {
   // This api request will get a specific employee based their id from the database
   // The employee id is in the request parameter
