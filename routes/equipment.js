@@ -84,7 +84,7 @@ router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res
         //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
         res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Hardware Updated:", columns: columns, data: data});
         //Pass user information from session to display and determine functions
-    } else if (req.body.delete) {
+    } else if (req.body.delete) { //specific to deleting hardware, calls deleteHardware function
         var result = await deleteHardware(req, res);
         if (result.constructor.name == 'OkPacket') {
             var columns = ["Name", "Type", "Serial"];
@@ -93,7 +93,7 @@ router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res
             res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Hardware Deleted:", columns: columns, data: data});
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect('/EquipmentCannotDelete');
+            res.redirect('/EquipmentCannotDelete'); //If error direct to submit equipment with error message
         }
     }
 
@@ -110,7 +110,7 @@ router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res
         //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
         res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Software Updated:", columns: columns, data: data});
         //Pass user information from session to display and determine functions
-    } else if (req.body.delete) {
+    } else if (req.body.delete) { //specific to deleting software, calls deleteSoftware function
         var result = await deleteSoftware(req, res);
         if (result.constructor.name == 'OkPacket') {
             var columns = ["Name", "Type", "License"];
@@ -119,7 +119,7 @@ router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res
             res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Software Deleted:", columns: columns, data: data});
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect('/EquipmentCannotDelete');
+            res.redirect('/EquipmentCannotDelete'); //If error direct to submit equipment with error message
         }
     } 
 });
@@ -135,7 +135,7 @@ router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
         //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
         res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "OS Updated:", columns: columns, data: data});
         //Pass user information from session to display and determine functions
-    } else if (req.body.delete) {
+    } else if (req.body.delete) { //specific to deleting os, calls deleteOS function
         var result = await deleteOS(req, res);
         if (result.constructor.name == 'OkPacket') {
             var columns = ["Name"];
@@ -144,56 +144,8 @@ router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
             res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "OS Deleted:", columns: columns, data: data});
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect('/EquipmentCannotDelete');
+            res.redirect('/EquipmentCannotDelete'); //If error direct to submit equipment with error message
         }
-    }
-});
-
-//Post route specific to deleting hardware, calls deleteHardware function
-//If error direct to submit equipment with error message
-//Admin
-router.delete('/deleteHardware/:id', checkRoles("admin"), async function(req, res) {
-    var result = await deleteHardware(req, res);
-    if (result.constructor.name == 'OkPacket') {
-        var columns = ["Name", "Type", "Serial"];
-        var data = [req.body.name, req.body.type, req.body.serial];
-        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Hardware Deleted:", columns: columns, data: data});
-        //Pass user information from session to display and determine functions
-    } else {
-        res.redirect('/EquipmentCannotDelete');
-    }
-});
-
-//Post route specific to deleting software, calls deleteSoftware function
-//If error direct to submit equipment with error message
-//Admin
-router.delete('/deleteSoftware/:id', checkRoles("admin"), async function(req, res) {
-    var result = await deleteSoftware(req, res);
-    if (result.constructor.name == 'OkPacket') {
-        var columns = ["Name", "Type", "License"];
-        var data = [req.body.name, req.body.type, req.body.license];
-        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Software Deleted:", columns: columns, data: data});
-        //Pass user information from session to display and determine functions
-    } else {
-        res.redirect('/EquipmentCannotDelete');
-    }
-});
-
-//Post route specific to deleting os, calls deleteOS function
-//If error direct to submit equipment with error message
-//Admin
-router.delete('/deleteOS/:id', checkRoles("admin"), async function(req, res) {
-    var result = await deleteOS(req, res);
-    if (result.constructor.name == 'OkPacket') {
-        var columns = ["Name"];
-        var data = [req.body.name];
-        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "OS Deleted:", columns: columns, data: data});
-        //Pass user information from session to display and determine functions
-    } else {
-        res.redirect('/EquipmentCannotDelete');
     }
 });
 
