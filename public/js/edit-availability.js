@@ -15,7 +15,7 @@ $(document).ready(function () {
 var changeAvailability = (employeeID, availabilitySet) => {
   $.ajax({
     type: "PUT",
-    url: "/employee/api/" + employeeID,
+    url: "/api/" + employeeID,
     data: { available: availabilitySet },
     dataType: "json",
     success: function (response) {
@@ -30,7 +30,7 @@ var populateSpecialistSelect = (employeeID = null) => {
   // Use the API to get the specialsits from the database
   $.ajax({
     type: "GET",
-    url: "/employee/api/5/role",
+    url: "/api/5/role",
     data: "",
     dataType: "json",
     success: function (response) {
