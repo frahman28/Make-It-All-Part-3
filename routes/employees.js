@@ -116,7 +116,7 @@ router.get("/api/:roleID/role", verifySession, (req, res) => {
 
 router.get("/edit-availability", checkRoles("admin"), (req, res) => {
   // Display the availability page for admins
-  res.render("availability", { userName: req.session.userName });
+  res.render("availability", { userName: req.session.userName, role: req.session.userRole });
 });
 
 router.put("/api/:employee_id", checkRoles("admin"), (req, res) => {
