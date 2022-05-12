@@ -58,6 +58,32 @@ router.get("/api/:employee_id", verifySession, (req, res) => {
   }
 });
 
+router.get("/api/:roleID/role", verifySession, (req, res) => {
+  // This api will get an employee based on their role
+  const roleID = req.params.roleID;
+  // Check the employee id was supplied as a parameter
+  if (roleID) {
+    // Attempt to get the employee that matches the employee id
+    conn.query(
+      getSQLForJoinEmployee("WHERE employees.role_id = ?"),
+      roleID,
+      function (err, results) {
+        if (err) throw err;
+        // Check if an employee was found in the database
+        // Return the json of the employees
+        return res.json({ success: true, data: results });
+      }
+    );
+  } else {
+    return res.json({ success: false, msg: "Role ID not set" });
+  }
+});
+
+router.get("/edit-availability", checkRoles("admin"), (req, res) => {
+  // Display the availability page for admins
+  res.render("availability", { userName: req.session.userName });
+});
+
 router.put("/api/:employee_id", checkRoles("admin"), (req, res) => {
   // This api call is for updating an employees information
   // All updated fields are optional and do not have to be supplied
@@ -85,7 +111,8 @@ router.put("/api/:employee_id", checkRoles("admin"), (req, res) => {
     }
   }
   if (available !== undefined) {
-    if (Number.isInteger(available)) {
+    if (!isNaN(Number.parseInt(available))) {
+      available = Number.parseInt(available);
       if (available == 0 || available == 1) {
         toUpdateWith.available = available;
       }
