@@ -19,7 +19,7 @@ const {
 } = require("./problem-type-functions");
 
 router.get("/manage-problem-types", checkRoles("admin"), (req, res) => {
-  res.render("editProblemTypes");
+  res.render("editProblemTypes", { userName: req.session.userName });
 });
 
 router.get("/api", verifySession, (req, res) => {
