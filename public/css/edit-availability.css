@@ -1,0 +1,11 @@
+.container .btn {
+  background-color: rgb(255, 185, 79);
+  margin: 10px;
+}
+.container input {
+  margin: 10px;
+}
+.container label {
+  margin: 10px;
+  font-weight: bold;
+}
