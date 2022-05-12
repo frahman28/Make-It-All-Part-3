@@ -45,7 +45,7 @@ router.post('/addHardware', checkRoles("admin"), async function(req, res) {
     var columns = ["Name", "Type", "Serial"];
     var data = [req.body.name, req.body.type, req.body.serial];
     //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "Hardware Added:", columns: columns, data: data});
+    res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Hardware Added:", columns: columns, data: data});
     //Pass user information from session to display and determine functions
 });
 
@@ -57,7 +57,7 @@ router.post('/addSoftware', checkRoles("admin"), async function(req, res) {
     var columns = ["Name", "Type", "License"];
     var data = [req.body.name, req.body.type, req.body.license];
     //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "Software Added:", columns: columns, data: data});
+    res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Software Added:", columns: columns, data: data});
     //Pass user information from session to display and determine functions
 });
 
@@ -69,7 +69,7 @@ router.post('/addOS', checkRoles("admin"), async function(req, res) {
     var columns = ["Name"];
     var data = [req.body.name];
     //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "OS Added:", columns: columns, data: data});
+    res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "OS Added:", columns: columns, data: data});
     //Pass user information from session to display and determine functions
 });
 
@@ -81,7 +81,7 @@ router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res
     var columns = ["Name", "Type", "Serial"];
     var data = [req.body.name, req.body.type, req.body.serial];
     //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "Hardware Updated:", columns: columns, data: data});
+    res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Hardware Updated:", columns: columns, data: data});
     //Pass user information from session to display and determine functions
 });
 
@@ -93,7 +93,7 @@ router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res
     var columns = ["Name", "Type", "License"];
     var data = [req.body.name, req.body.type, req.body.license];
     //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "Software Updated:", columns: columns, data: data});
+    res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Software Updated:", columns: columns, data: data});
     //Pass user information from session to display and determine functions
 });
 
@@ -105,7 +105,7 @@ router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
     var columns = ["Name"];
     var data = [req.body.name];
     //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-    res.render("submitEquipment", {userName: req.session.userName, message: "OS Updated:", columns: columns, data: data});
+    res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "OS Updated:", columns: columns, data: data});
     //Pass user information from session to display and determine functions
 });
 
@@ -118,7 +118,7 @@ router.delete('/deleteHardware/:id', checkRoles("admin"), async function(req, re
         var columns = ["Name", "Type", "Serial"];
         var data = [req.body.name, req.body.type, req.body.serial];
         //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, message: "Hardware Deleted:", columns: columns, data: data});
+        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Hardware Deleted:", columns: columns, data: data});
         //Pass user information from session to display and determine functions
     } else {
         res.redirect('/EquipmentCannotDelete');
@@ -134,7 +134,7 @@ router.delete('/deleteSoftware/:id', checkRoles("admin"), async function(req, re
         var columns = ["Name", "Type", "License"];
         var data = [req.body.name, req.body.type, req.body.license];
         //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, message: "Software Deleted:", columns: columns, data: data});
+        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Software Deleted:", columns: columns, data: data});
         //Pass user information from session to display and determine functions
     } else {
         res.redirect('/EquipmentCannotDelete');
@@ -150,7 +150,7 @@ router.delete('/deleteOS/:id', checkRoles("admin"), async function(req, res) {
         var columns = ["Name"];
         var data = [req.body.name];
         //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, message: "OS Deleted:", columns: columns, data: data});
+        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "OS Deleted:", columns: columns, data: data});
         //Pass user information from session to display and determine functions
     } else {
         res.redirect('/EquipmentCannotDelete');
@@ -159,7 +159,7 @@ router.delete('/deleteOS/:id', checkRoles("admin"), async function(req, res) {
 
 //Single get route direct to submit equipment and let user know of delete failue
 router.get('/EquipmentCannotDelete', async function(req, res) {
-    res.render("submitEquipment", {userName: req.session.userName, message: "Cannot Delete", columns: "Null", data: "null"});
+    res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Cannot Delete", columns: "Null", data: "null"});
 });
 
 module.exports = router;
