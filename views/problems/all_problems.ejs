@@ -9,12 +9,11 @@
     <link rel="stylesheet" href="../css/employee_styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="../js/problems.js" defer></script>
-    <title>All Problems</title>
 </head>
 
 <body>
     <div class="text-center image-div">
-        <img class="text-center logo" src="../images/logo.png" alt="make-it-all">
+        <img class="text-center logo" src="../../images/logo.png" alt="make-it-all">
     </div>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
         <div class="container-fluid">
@@ -23,22 +22,34 @@
             </button>
             <div class="collapse navbar-collapse" id="main-links">
                 <ul class="navbar-nav">
-                    <li class="nav-item px-4"><a href="myProblems" class="nav-link">Home</a></li>
-                    <li class="nav-item px-4"><a href="submitProblem" class="nav-link">Submit a Problem</a></li>
-                    <li class="nav-item px-4"><a href="allProblems" class="nav-link">All Problems</a></li>
+                    <% if (role == 'specialist' || role == 'employee') { %>
+                        <li class="nav-item px-4"><a href="../myProblems" class="nav-link">Home</a></li>
+                    <% } else { %>
+                        <li class="nav-item px-4"><a href="../dashboard" class="nav-link">Home</a></li>
+                    <% } %>
+                    
+                    <% if (role == 'specialist' || role == 'employee') { %>
+                        <li class="nav-item px-4"><a href="../submitProblem" class="nav-link">Submit a Problem</a></li>
+                    <% } %>
+                    <li class="nav-item px-4"><a href="../allProblems" class="nav-link">All Problems</a></li>
+                    <% if (role == 'admin') { %>
+                        <li class="nav-item px-4"><a href="../allEmployees" class="nav-link">All Employees</a></li>
+                        <li class="nav-item px-4"><a href="/problem-type/manage-problem-types" class="nav-link">Edit problem types</a></li>
+                        <li class="nav-item px-4"><a href="/edit-availability" class="nav-link">Edit availability</a></li>
+                    <% } %>
                     <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
-                        <li class="nav-item px-4"><a href="viewEquipment" class="nav-link">Equipment</a></li>
+                        <li class="nav-item px-4"><a href="../viewEquipment" class="nav-link">Equipment</a></li>
                     <% } %>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown px-4">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <!-- Render user's username -->
-                            <%= userName %> 
+                    <li class="nav-item dropdown  px-4">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <%= userName %>
                         </a>
                         <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                          <li><a class="dropdown-item" href="../settings">Settings</a></li>
-                          <li><a class="dropdown-item" href="../logout">Logout</a></li>
+                            <li><a class="dropdown-item" href="../settings">Settings</a></li>
+                            <li><a class="dropdown-item" href="../logout">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -50,19 +61,20 @@
         <form action="">
             <div class="row">
                 <div class="col-6">
-                    <input type="text" id="search-area" name="search-area" class="form-control">
+                    <input type="text" id="search-area" name="search-area" class="form-control" placeholder="Search..">
                 </div>
                 <div class="col-4">
                     <select id="search-by" name="search-by" class="form-select">
                         <option selected>Search By</option>
-                        <option value="problem-id">Problem ID</option>
-                        <option value="closed-date">Closed Date</option>
-                        <option value="problem-name">Problem Name</option>
+                        <option value="first">ID</option>
+                        <option value="second">Name</option>
+                        <option value="td:third">Type</option>
+                        <option value="td:fourth">Serial/License Number</option>
                     </select>
                 </div>
                 <div class="col-2">
-                    <input type="submit" id="search" name="search" value="Search"
-                        class="btn btn-dark w-100 px-0 px-m-3">
+                    <input type="submit" id= "search" name="search" value="Search"
+                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Search...">
                 </div>
             </div>
             <div class="col">
@@ -73,323 +85,335 @@
     </div>
     <br>
     <div class="container">
-        <table class="all-problem-table table table-bordered accordion">
-            <tr class="table-secondary">
-                <th>Problem ID</th>
-                <th>Closed on</th>
-                <th>Problem Description</th>
-                <th>Status</th>
-            </tr>
-            <!-- Loop through all problems and render their details. -->
-            <% for(var i=0; i<problems.length; i++) {%>
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
-                    <td>#<%= problems[i]["problemId"] %></td>
-                    <td>
-                        <!-- Check whether problem has resolution date, and label accordingly  -->
-                        <% if (problems[i]["dateClosed"] == undefined) { %>
-                            N/A
-                        <%} else { %>
-                            <%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %>
-                        <% } %>
-                    </td>
-                    <td><%= problems[i]["problemName"] %></td>
-                    <td>
-                        <div class="status">
-                            <!-- Check if problem has been closed nd if so, correct its label. -->
-                            <% if (problems[i]["closed"] == 1) { %>
-                                Closed
-                            <!-- Check if problem has been solved and if so, correct its label. -->
-                            <%} else if (problems[i]["solved"] == 1) { %>
-                                Solved
-                            <!-- Check if missing status for the problem. -->
-                            <%} else if (problems[i]["status"] == null ) { %>
-                                N/A
-                            <!-- Otherwise show default status. -->
-                            <%} else { %>
-                                <%= problems[i]["status"] %>
-                            <% } %>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
-                    <td class="hidden-data" colspan="5">
-                        <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
-                            <br>
-                            <% if (role == "admin") { %> <!-- Make table for admins where they can edit the selected problem -->
-                                <form action="/allProblems/<%= problems[i]["problemId"] %>?_method=PATCH" method="POST">
+        <div class="container">
+            <table class="all-problem-table table table-bordered accordion">
+                <tbody id="view-addHardware-table">
+                    <tr class="visible-row accordion" data-bs-toggle="collapse">
+                        <td>Add Hardware</td>
+                    </tr> 
+                    <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                        <td class="hidden-data" colspan="4"> 
+                            <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                                <form action="/addHardware" method="POST">
                                     <table class="hidden-table table table-striped table-bordered">
                                         <tr>
-                                            <th>Update</th>
-                                            <td name="id_update">#<%= problems[i]["problemId"] %></td> <!-- Display id of selected row -->
+                                            <th>Add New</th>
+                                            <td>Enter Fields:</td>
                                         </tr>
                                         <tr>
-                                            <td>Problem ID:</td>
-                                            <td><%= problems[i]["problemId"] %></td>
+                                            <td>Name:</td>
+                                            <td><input type="text" id="new-name" name="name" class="form-control" required></td>
                                         </tr>
                                         <tr>
-                                            <td>Problem Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                            <td><input type="text" id="update-name" name="name" class="form-control" value="<%= problems[i]["problemName"] %>"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Problem Type:</td>
-                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                                <select id="update-type" name="type" class="form-select">
-                                                    <% for (var j = 0; j < problemTypes.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if (problemTypes[j]["problem_type_id"] == problems[i]["problemTypeId"] ) {%>
-                                                            <option selected><%= problemTypes[j]["problem_type"] %></option>
-                                                        <% } else { %>  
-                                                            <option value="<%= problemTypes[j]["problem_type"] %>"><%= problemTypes[j]["problem_type"] %></option>   
-                                                        <% } %>
+                                            <td>Type:</td>
+                                            <td>
+                                                <select id="new-type" name="type" class="form-select">
+                                                    <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
+                                                    <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>
                                                     <% } %>
                                                 </select>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Problem Description:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                            <td><textarea id="update-desc" name="desc" class="form-control" cols="40" rows="5"><%= problems[i]["problemDesc"] %></textarea></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Solution:</td>
-                                            <% if (problems[i]["solution"] != undefined) { %>
-                                                <td><%= problems[i]["solution"] %></td>
-                                            <%} else { %>
-                                                <td>N/A</td>
-                                            <% } %>
-                                        </tr>
-                                        <tr>
-                                            <td>Last Specialist:</td>
-                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                                <select id="update-lastSpecialist" name="lastSpecialist" class="form-select">
-                                                    <% if (problems[i]["lastSpecialistName"] == null) { %> <!-- Display none if problem was submitted with no last specialist -->
-                                                        <option value="NULL" selected>None</option>
-                                                    <% } else { %> 
-                                                        <option value="NULL">None</option>
-                                                    <% } %> 
-                                                    <% for (var j = 0; j < uniqueSpecialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if ((uniqueSpecialists[j]["name"] == problems[i]["lastSpecialistName"])) {%>
-                                                            <option selected><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %></option>
-                                                        <% } else { %>  
-                                                            <option value="<%= uniqueSpecialists[j]["id"] %>"><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %></option>   
-                                                        <% } %>    
-                                                    <% } %>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Current Specialist:</td>
-                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                                <select id="update-specialist" name="specialist" class="form-select">
-                                                    <% if (problems[i]["specialistName"] == null) { %> <!-- Display none if problem was submitted with no specialist -->
-                                                        <option value="NULL" selected>None</option>
-                                                    <% } else { %> 
-                                                        <option value="NULL">None</option>
-                                                    <% } %> 
-                                                    <% for (var j = 0; j < specialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if ((specialists[j]["specialty_id"] == problems[i]["problemTypeId"]) && specialists[j]["name"] == [problems[i]["specialistName"]]) {%>
-                                                            <option selected><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %> - <%= specialists[j]["ext"] %> - <%= specialists[j]["specialty"] %></option>
-                                                        <% } else { %>  
-                                                            <option value="<%= specialists[j]["id"] %>"><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %> - <%= specialists[j]["ext"] %> - <%= specialists[j]["specialty"] %></option>   
-                                                        <% } %>    
-                                                    <% } %>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Opened on:</td>
-                                            <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Closed on:</td>
-                                            <% if (problems[i]["dateClosed"] != undefined) { %>
-                                                <td><%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %></td>
-                                            <%} else { %>
-                                                <td>N/A</td>
-                                            <% } %>
-                                        </tr>
-                                        <tr>
-                                            <td>Operating System:</td>
-                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                                <select id="update-os" name="os" class="form-select">
-                                                    <% if (problems[i]["OS"] == null) { %> <!-- Display none if problem was submitted with no os -->
-                                                        <option value="NULL" selected>None</option>
-                                                    <% } else { %> 
-                                                        <option value="NULL">None</option>
-                                                    <% } %> 
-                                                    <% for (var j = 0; j < os.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if (os[j]["name"] == problems[i]["OS"] ) {%>
-                                                            <option selected><%= os[j]["os_id"] %> - <%= os[j]["name"] %></option>
-                                                        <% } else { %>  
-                                                            <option value="<%= os[j]["os_id"] %>"><%= os[j]["os_id"] %> - <%= os[j]["name"] %></option>   
-                                                        <% } %>
-                                                    <% } %>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Software:</td>
-                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                                <select id="update-software" name="software" class="form-select">
-                                                    <% if (problems[i]["softwareName"] == null) { %> <!-- Display none if problem was submitted with no software -->
-                                                        <option value="NULL" selected>None</option>
-                                                    <% } else { %> 
-                                                        <option value="NULL">None</option>
-                                                    <% } %> 
-                                                    <% for (var j = 0; j < software.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if (software[j]["name"] == problems[i]["softwareName"] ) {%>
-                                                            <option selected><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %></option>
-                                                        <% } else { %>  
-                                                            <option value="<%= software[j]["software_id"] %>"><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %> - <%= problems[i]["softwareType"] %></option>   
-                                                        <% } %>    
-                                                    <% } %>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Hardware Id:</td>
-                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                                <select id="update-hardware" name="hardware" class="form-select">
-                                                    <% if (problems[i]["hardwareName"] == null) { %> <!-- Display none if problem was submitted with no hardware --> 
-                                                        <option value="NULL" selected>None</option>
-                                                    <% } else { %> 
-                                                        <option value="NULL">None</option>
-                                                    <% } %> 
-                                                    <% for (var j = 0; j < hardware.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if (hardware[j]["name"] == problems[i]["hardwareName"] ) {%>
-                                                            <option selected><%= hardware[j]["hardware_id"] %> - <%= hardware[j]["name"] %> - <%= hardware[j]["serial"] %></option>
-                                                        <% } else { %>  
-                                                            <option value="<%= hardware[j]["hardware_id"] %>"><%= hardware[j]["hardware_id"] %> - <%= hardware[j]["name"] %> - <%= hardware[j]["serial"] %> - <%= problems[i]["hardwareType"] %></option>   
-                                                        <% } %>
-                                                    <% } %>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Comments:</td>
-                                            <% if (problems[i]["comment"] != undefined) { %>
-                                                <td><%= problems[i]["comment"] %></td>
-                                            <%} else { %>
-                                                <td>N/A</td>
-                                            <% } %>
+                                            <td>Serial Number:</td>
+                                            <td><input type="text" id="new-serial" name="serial" class="form-control" required></td>
                                         </tr>
                                         <tr>
                                             <td>Submit:</td>
-                                            <td><input type="submit" id= "update" name="update" value="Update"
-                                                class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                            <td><input type="submit" id= "new_hardware" name="new_hardware" value="Add"
+                                                class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Hardware"></td>
                                         </tr>
                                     </table>
                                 </form>
-                            <% } else { %> <!-- If any other user make table just display selected problem details -->
+                            </div>
+                        </td>    
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    <div class="container">
+        <table class="all-problem-table table table-bordered accordion">
+            <thead>
+                <tr class="table-secondary">
+                    <th value = "0">Hardware ID</th>
+                    <th value = "1" >Hardware Name</th>
+                    <th value = "2" >Hardware Type</th>
+                    <th value = "3" >Serial Number</th>
+                </tr>
+            </thead>
+            
+            <tbody id="view-hardware-table">
+                <% for (var i = 0; i < hardware.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
+                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                    <td>#<%= hardware[i]["hardware_id"] %> </td>
+                    <td><%= hardware[i]["name"] %></td>
+                    <td><%= hardware[i]["type"] %></td>
+                    <td><%= hardware[i]["serial"] %> </td>
+                </tr> 
+                <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                    <% if (role == "admin") { %> <!-- Only allow dropdown functions if user is an admin -->
+                    <td class="hidden-data" colspan="4"> 
+                        <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                            <br>
+                            <form action="/updateHardware/<%= hardware[i]["hardware_id"] %>?_method=PATCH" method="POST">
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
-                                        <td>Problem ID:</td>
-                                        <td><%= problems[i]["problemId"] %></td>
+                                        <th>Update</th> 
+                                        <td name="id">#<%= hardware[i]["hardware_id"] %></td> <!-- Display id of selected row -->
                                     </tr>
                                     <tr>
-                                        <td>Problem Type:</td>
-                                        <% if (problems[i]["problemType"] != undefined) { %>
-                                            <td><%= problems[i]["problemType"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= hardware[i]["name"] %>" value="<%= hardware[i]["name"] %>"></td>
                                     </tr>
                                     <tr>
-                                        <td>Problem Description:</td>
-                                        <td><%= problems[i]["problemName"] %></td>
+                                        <td>Type:</td>
+                                        <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                            <select id="update-type" name="type" class="form-select">
+                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                    <% if (hardwareTypes[j]["type"] == hardware[i]["type"] ) {%>
+                                                        <option selected><%= hardwareTypes[j]["type"] %></option>
+                                                    <% } else { %>  
+                                                        <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>   
+                                                    <% } %>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>Serial Number:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
+                                        <td><input type="text" id="new-serial" name="serial" class="form-control" placeholder="<%= hardware[i]["serial"] %>" value="<%= hardware[i]["serial"] %>"></td>
                                     </tr>
                                     <tr>
-                                        <td>Solution:</td>
-                                        <% if (problems[i]["solution"] != undefined) { %>
-                                            <td><%= problems[i]["solution"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Specialist Name:</td>
-                                        <% if (problems[i]["specialistName"] != undefined) { %>
-                                            <td><%= problems[i]["specialistName"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Opened on:</td>
-                                        <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Closed on:</td>
-                                        <% if (problems[i]["dateClosed"] != undefined) { %>
-                                            <td><%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Operating System:</td>
-                                        <% if (problems[i]["OS"] != undefined) { %>
-                                            <td><%= problems[i]["OS"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Software Name:</td>
-                                        <% if (problems[i]["softwareName"] != undefined) { %>
-                                            <td><%= problems[i]["softwareName"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Software Type:</td>
-                                        <% if (problems[i]["softwareType"] != undefined) { %>
-                                            <td><%= problems[i]["softwareType"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Device Name:</td>
-                                        <% if (problems[i]["hardwareName"] != undefined) { %>
-                                            <td><%= problems[i]["hardwareName"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Equipment type:</td>
-                                        <% if (problems[i]["hardwareType"] != undefined) { %>
-                                            <td><%= problems[i]["hardwareType"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Serial Number:</td>
-                                        <% if (problems[i]["serialNumber"] != undefined) { %>
-                                            <td><%= problems[i]["serialNumber"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
-                                        <td>Comments:</td>
-                                        <% if (problems[i]["comment"] != undefined) { %>
-                                            <td><%= problems[i]["comment"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "delete" name="delete" value="Delete"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Delete"><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Update"></td>
                                     </tr>
                                 </table>
-                            <% } %>
+                            </form>
                             <br>
                         </div>
                     </td>
+                    <% } %>
                 </tr>
-            <% } %>
+                <% } %>
+            </tbody>
         </table>
     </div>
+    <br>
+    <div class="container">
+        <div class="container">
+            <table class="all-problem-table table table-bordered accordion">
+                <tbody id="view-addSoftware-table">
+                    <tr class="visible-row accordion" data-bs-toggle="collapse">
+                        <td>Add Software</td>
+                    </tr> 
+                    <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                        <td class="hidden-data" colspan="4"> 
+                            <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                                <form action="/addSoftware" method="POST">
+                                    <table class="hidden-table table table-striped table-bordered">
+                                        <tr>
+                                            <th>Add New</th>
+                                            <td>Enter Fields:</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Name:</td>
+                                            <td><input type="text" id="new-name" name="name" class="form-control" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Type:</td>
+                                            <td>
+                                                <select id="new-type" name="type" class="form-select">
+                                                    <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
+                                                    <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>License Number:</td>
+                                            <td><input type="text" id="new-serial" name="license" class="form-control" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Submit:</td>
+                                            <td><input type="submit" id= "new_software" name="new_software" value="Add"
+                                                class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Software"></td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                        </td>    
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    <div class="container">
+        <table class="all-problem-table table table-bordered accordion">
+            <thead>
+                <tr class="table-secondary">
+                    <th value = "0">Software ID</th>
+                    <th value = "1" >Software Name</th>
+                    <th value = "2" >Software Type</th>
+                    <th value = "3" >License Number</th>
+                </tr>
+            </thead>
+            <tbody id="view-software-table">
+                <% for (var i = 0; i < software.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
+                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                    <td>#<%= software[i]["software_id"] %> </td>
+                    <td><%= software[i]["name"] %></td>
+                    <td><%= software[i]["type"] %></td>
+                    <td><%= software[i]["license"] %> </td>
+                </tr> 
+                <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                    <% if (role == "admin") { %> <!-- Only allow dropdown functions if user is an admin -->
+                    <td class="hidden-data" colspan="4">
+                        <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                            <br>
+                            <form action="/updateSoftware/<%= software[i]["software_id"] %>?_method=PATCH" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Update</th>
+                                        <td name="id">#<%= software[i]["software_id"] %></td> <!-- Display id of selected row -->
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td><input type="text" id="update-name" name="name" class="form-control" placeholder="<%= software[i]["name"] %>" value="<%= software[i]["name"] %>"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Type:</td>
+                                        <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                            <select id="update-type" name="type" class="form-select">
+                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                    <% if (softwareTypes[j]["type"] == software[i]["type"] ) {%>
+                                                        <option selected><%= softwareTypes[j]["type"] %></option>
+                                                    <% } else { %>  
+                                                        <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>   
+                                                    <% } %>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
+                                        <td>License Number:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
+                                        <td><input type="text" id="update-serial" name="license" class="form-control" value="<%= software[i]["license"] %>"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "delete" name="delete" value="Delete"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Delete"><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </td>
+                    <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <div class="container">
+        <div class="container">
+            <table class="all-problem-table table table-bordered accordion">
+                <tbody id="view-addOS-table">
+                    <tr class="visible-row accordion" data-bs-toggle="collapse">
+                        <td>Add OS</td>
+                    </tr> 
+                    <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                        <td class="hidden-data" colspan="4"> 
+                            <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                                <form action="/addOS" method="POST">
+                                    <table class="hidden-table table table-striped table-bordered">
+                                        <tr>
+                                            <th>Add New</th>
+                                            <td>Enter Fields:</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Name:</td>
+                                            <td><input type="text" id="new-name" name="name" class="form-control" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Submit:</td>
+                                            <td><input type="submit" id= "new_os" name="new_os" value="Add"
+                                                class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New OS"></td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                        </td>    
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    <div class="container">
+        <table class="all-problem-table table table-bordered accordion">
+            <thead>
+                <tr class="table-secondary">
+                    <th value = "0">OS ID</th>
+                    <th value = "1" >OS Name</th>
+                </tr>
+            </thead>
+            <tbody id="view-os-table">
+                <% for (var i = 0; i < os.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
+                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                    <td>#<%= os[i]["os_id"] %> </td>
+                    <td><%= os[i]["name"] %></td>
+                </tr>
+                <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                    <% if (role == "admin") { %> <!-- Only allow dropdown functions if user is an admin -->
+                    <td class="hidden-data" colspan="4">
+                        <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                            <br>
+                            <form action="/updateOS/<%= os[i]["os_id"] %>?_method=PATCH" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <th>Update</th>
+                                        <td name="id_update">#<%= os[i]["os_id"] %></td> <!-- Display id of selected row -->
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td><input type="text" id="update-name" name="name" class="form-control" value="<%= os[i]["name"] %>"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "delete" name="delete" value="Delete"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Delete"><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </td>
+                    <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+        <script>
+            $(document).ready(function(){
+              $("#search-area").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#view-equipment-table tr").filter(function() {
+                    $(this).toggle($(this).find(("#search-by").value).text().toLowerCase().indexOf(value) > -1)                });
+              });
+            });
+
+
+            
+        </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
