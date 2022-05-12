@@ -109,7 +109,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function (req, res, next) {
+app.all('/allProblems', verifySession, function (req, res, next) {
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,

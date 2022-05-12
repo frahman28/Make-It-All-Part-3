@@ -10,7 +10,7 @@ const {
 
 router.get(
   "/api/problem-type",
-  checkRoles("advisor", "admin", "specialist"),
+  checkRoles("adviser", "admin", "specialist"),
   (req, res) => {
     // Dates should be in the format mm/dd/yyyy or something similar
     // An array of dates after being converted to date objects, or undefined
@@ -34,7 +34,7 @@ router.get(
 
 router.get(
   "/api/specialist",
-  checkRoles("advisor", "admin", "specialist"),
+  checkRoles("adviser", "admin", "specialist"),
   (req, res) => {
     // This API will get the number of problems each specialist has closed, assuming they've closed a problem
     let dates = [req.query.startDate, req.query.endDate];
@@ -55,7 +55,7 @@ router.get(
 
 router.get(
   "/api/open-problems",
-  checkRoles("advisor", "admin", "specialist"),
+  checkRoles("adviser", "admin", "specialist"),
   (req, res) => {
     // Use SQL to count the number of open problems in the database and return this is as a json response
     getNumOfOpenProblems().then((results) => {
