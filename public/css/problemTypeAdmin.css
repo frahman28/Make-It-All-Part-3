@@ -1,0 +1,20 @@
+.container select {
+  width: 200px;
+}
+
+.container .btn {
+  background-color: rgb(255, 185, 79);
+  margin: 5px;
+}
+.container input {
+  margin: 5px;
+}
+.container label {
+  margin: 5px;
+  font-weight: bold;
+}
+
+#specialistsToShow {
+  width: 50%;
+  height: 200px;
+}
