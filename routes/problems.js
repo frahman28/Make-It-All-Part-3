@@ -34,7 +34,7 @@ app.get('/', function (req, res, next) {
 // Navigates users of role Admin or Adviser to their own
 // dashboards.
 app.get('/dashboard', checkRoles("admin", "adviser"), function (req, res, next) {
-    res.render('dashboard');
+    res.render('dashboard', {userName: req.session.userName, role: req.session.userRole});
 });
 
 
