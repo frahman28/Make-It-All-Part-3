@@ -109,4 +109,11 @@ $(document).ready(function () {
             $(this)[0].setCustomValidity("Please select a valid license.");
         }
     });
+
+    $("#editNotesButton").click(function () {
+        var t = $(this).closest("tr");
+        $(t).find("td:nth-child(n)").css("background-color", "#ffffff");
+        $(t).next("tr").collapse("toggle");
+        $(t).next().find("div").collapse("toggle");
+    });
 });

@@ -100,9 +100,35 @@
                     <% } else { %>
                         <% if (problems[i]["solved"] == 1) { %>
                             <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
+                        <% } else { %>
+                            <a class="btn btn-secondary editNotesButton-<%= problems[i]['problemId'] %>" id="editNotesButton">Edit Notes</a>
                         <% } %>
                     <% } %>
                     </td>   
+                </tr>
+
+                <tr>
+                    <% if (role == "employee") { %> <!-- Allow employees to be able to edit their problems -->
+                    <td class="hidden-data" colspan="6">
+                        <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
+                            <br>
+                            <form action="/myProblems/<%= problems[i]['problemId'] %>?_method=PATCH" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <td>Problem Description:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td><textarea id="update-desc" name="desc" class="form-control" cols="40" rows="5"><%= problems[i]["problemDescription"] %></textarea></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </table>
+                            </form>
+                            <br>
+                        </div>
+                    </td>
+                    <% } %>
                 </tr>
 
             <% } %>
