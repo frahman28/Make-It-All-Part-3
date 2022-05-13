@@ -168,9 +168,19 @@
                                                     <% } %> 
                                                     <% for (var j = 0; j < uniqueSpecialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                         <% if ((uniqueSpecialists[j]["name"] == problems[i]["lastSpecialistName"])) {%>
-                                                            <option selected><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %></option>
+                                                            <option selected><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %> - |
+                                                                <% for (var k = 0; k < specialists.length; k++) {  %> <!-- Display specialist assigned with loop adding each specialty of problem type -->
+                                                                    <% if (specialists[k]["name"] == uniqueSpecialists[j]["name"]) {%>
+                                                                        <%= specialists[k]["specialty"] %> |
+                                                                    <% } %>    
+                                                                <% }  %></option>
                                                         <% } else { %>  
-                                                            <option value="<%= uniqueSpecialists[j]["id"] %>"><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %></option>   
+                                                            <option value="<%= uniqueSpecialists[j]["id"] %>"><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %>
+                                                                <% for (var k = 0; k < specialists.length; k++) {  %> <!-- Display specialist assigned with loop adding each specialty of problem type -->
+                                                                    <% if (specialists[k]["name"] == uniqueSpecialists[j]["name"]) {%>
+                                                                        <%= specialists[k]["specialty"] %> |
+                                                                    <% } %>    
+                                                                <% }  %></option>
                                                         <% } %>    
                                                     <% } %>
                                                 </select>
@@ -179,20 +189,16 @@
                                         <tr>
                                             <td>Current Specialist:</td>
                                             <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                                <select id="update-specialist" name="specialist" class="form-select">
-                                                    <% if (problems[i]["specialistName"] == null) { %> <!-- Display none if problem was submitted with no specialist -->
-                                                        <option value="NULL" selected>None</option>
-                                                    <% } else { %> 
-                                                        <option value="NULL">None</option>
-                                                    <% } %> 
-                                                    <% for (var j = 0; j < specialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
-                                                        <% if ((specialists[j]["specialty_id"] == problems[i]["problemTypeId"]) && specialists[j]["name"] == [problems[i]["specialistName"]]) {%>
-                                                            <option selected><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %> - <%= specialists[j]["ext"] %> - <%= specialists[j]["specialty"] %></option>
-                                                        <% } else { %>  
-                                                            <option value="<%= specialists[j]["id"] %>"><%= specialists[j]["id"] %> - <%= specialists[j]["name"] %> - <%= specialists[j]["ext"] %> - <%= specialists[j]["specialty"] %></option>   
-                                                        <% } %>    
+                                                <% for (var j = 0; j < uniqueSpecialists.length; j++) { %>
+                                                    <% if (problems[i]["specialistName"] == uniqueSpecialists[j]["name"]) {%>
+                                                            <%= uniqueSpecialists[j]["name"] %> - | <!-- Display specialist assigned with loop adding each specialty of problem type -->
+                                                            <% for (var k = 0; k < specialists.length; k++) {  %>
+                                                                <% if (specialists[k]["name"] == uniqueSpecialists[j]["name"]) {%>
+                                                                    <%= specialists[k]["specialty"] %> |
+                                                                <% } %>    
+                                                            <% }  %>
                                                     <% } %>
-                                                </select>
+                                                <% } %> 
                                             </td>
                                         </tr>
                                         <tr>
@@ -274,8 +280,9 @@
                                         </tr>
                                         <tr>
                                             <td>Submit:</td>
-                                            <td><input type="submit" id= "update" name="update" value="Update"
-                                                class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                            <td><input type="submit" id= "delete" name="delete" value="Delete"
+                                                class="btn btn-dark w-50 px-0 px-m-3" placeholder="Delete"><input type="submit" id= "update" name="update" value="Update"
+                                                class="btn btn-dark w-50 px-0 px-m-3" placeholder="Update"></td>
                                         </tr>
                                     </table>
                                 </form>

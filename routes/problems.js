@@ -544,171 +544,229 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
     const { name, desc, type, hardware, software, os, specialist, lastSpecialist } = req.body;
     const id = parseInt(req.params.id);
 
-    try { //Update each attribute seperately incase certain attributes are not inputted
-        if (name) { //If name value is inputted
-            conn.query(`UPDATE 
-                        problems
-                        SET
-                        name = '${name}'
-                        WHERE
-                        problem_id = '${id}'`);
+    if (req.body.update) {
+        try { //Update each attribute seperately incase certain attributes are not inputted
+            if (name) { //If name value is inputted
+                conn.query(`UPDATE 
+                            problems
+                            SET
+                            name = '${name}'
+                            WHERE
+                            problem_id = '${id}'`);
+            }
+            if (desc) { //If description value is inputted
+                conn.query(`UPDATE 
+                            problems
+                            SET
+                            problem_description = '${desc}'
+                            WHERE
+                            problem_id = '${id}'`);
+            } else { //If description value is not inputted
+                conn.query(`UPDATE 
+                            problems
+                            SET
+                            problem_description = NULL
+                            WHERE
+                            problem_id = '${id}'`);
+            }
+            if (type) { //If type value is inputted
+                conn.query(`SELECT 
+                            *
+                            FROM 
+                            problem_types
+                            WHERE
+                            problem_type = '${type}'`,
+                            function(err, rows) { //Get data from problem types to use to update problem type id
+                                if (err) {
+                                    console.error('Error: ' + err);
+                                } else {
+                                    const type_id = rows[0]["problem_type_id"]
+                                    conn.query(`UPDATE 
+                                                problems
+                                                SET
+                                                problem_type_id = '${type_id}'
+                                                WHERE
+                                                problem_id = '${id}'`);
+                                }
+                            })
+            }
+            if (hardware) { //If hardware has valid input
+                if (hardware == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                hardware_id = NULL,
+                                serial = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else { 
+                    conn.query(`SELECT 
+                                *
+                                FROM 
+                                hardware_relation
+                                WHERE
+                                hardware_id = '${hardware}'`,
+                                function(err, rows) { //Get serial number from relation table of submitted id then update problems table
+                                    if (err) {
+                                        console.error('Error: ' + err);
+                                    } else {
+                                        const serial = rows[0]["serial"]
+                                        conn.query(`UPDATE 
+                                                    problems
+                                                    SET
+                                                    hardware_id = '${hardware}',
+                                                    serial = '${serial}'
+                                                    WHERE
+                                                    problem_id = '${id}'`);
+                                    }
+                                })
+                }
+            }
+            if (software) { //If software has valid input
+                if (software == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                software_id = NULL,
+                                license = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else {
+                    conn.query(`SELECT 
+                                *
+                                FROM 
+                                software_relation
+                                WHERE
+                                software_id = '${software}'`,
+                                function(err, rows) { //Get license number from relation table of submitted id then update problems table
+                                    if (err) {
+                                        console.error('Error: ' + err);
+                                    } else {
+                                        const license = rows[0]["license"]
+                                        conn.query(`UPDATE 
+                                                    problems
+                                                    SET
+                                                    software_id = '${software}',
+                                                    license = '${license}'
+                                                    WHERE
+                                                    problem_id = '${id}'`);
+                                    }
+                                })
+                }                
+            }
+            if (os) { //If os has valid input
+                if (os == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                os_id = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else { 
+                    conn.query(`UPDATE
+                                problems
+                                SET
+                                os_id = '${os}'
+                                WHERE
+                                problem_id = '${id}'`);
+                }
+            }
+            if (specialist) {
+                if (specialist == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                assigned_to = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else { 
+                    conn.query(`UPDATE
+                                problems
+                                SET
+                                assigned_to = '${specialist}'
+                                WHERE
+                                problem_id = '${id}'`);
+                }
+            }
+            if (lastSpecialist) {
+                if (lastSpecialist == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                last_reviewed_by = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else { 
+                    conn.query(`UPDATE
+                                problems
+                                SET
+                                last_reviewed_by = '${lastSpecialist}'
+                                WHERE
+                                problem_id = '${id}'`);
+                }
+            }
+            res.status(200);
+            res.redirect('/allProblems'); //Direct user back to dashboard with problems updated
+        } catch (err) {
+            console.log(err);
+            res.render({ message: "Error in request" });
         }
-        if (desc) { //If description value is inputted
-            conn.query(`UPDATE 
-                        problems
-                        SET
-                        problem_description = '${desc}'
-                        WHERE
-                        problem_id = '${id}'`);
-        } else { //If description value is not inputted
-            conn.query(`UPDATE 
-                        problems
-                        SET
-                        problem_description = NULL
-                        WHERE
-                        problem_id = '${id}'`);
-        }
-        if (type) { //If type value is inputted
-            conn.query(`SELECT 
-                        *
+    } else if (req.body.delete) {
+        try { //Delete from foreign key dependecies first then from problem table
+            conn.query(`DELETE
                         FROM 
-                        problem_types
+                        comments
                         WHERE
-                        problem_type = '${type}'`,
-                        function(err, rows) { //Get data from problem types to use to update problem type id
+                        problem_id = '${id}'`,
+                        function(err, rows) {
                             if (err) {
                                 console.error('Error: ' + err);
                             } else {
-                                const type_id = rows[0]["problem_type_id"]
-                                conn.query(`UPDATE 
-                                            problems
-                                            SET
-                                            problem_type_id = '${type_id}'
-                                            WHERE
-                                            problem_id = '${id}'`);
+                                console.log(rows);
                             }
                         })
+            conn.query(`DELETE
+                        FROM 
+                        problem_status_relation
+                        WHERE
+                        problem_id = '${id}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                console.log(rows);
+                            }
+                        })
+            conn.query(`DELETE
+                        FROM 
+                        solutions
+                        WHERE
+                        problem_id = '${id}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                console.log(rows);
+                            }
+                        })
+            conn.query(`DELETE
+                        FROM 
+                        problems
+                        WHERE
+                        problem_id = '${id}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                console.log(rows);
+                            }
+                        })
+            res.status(200);
+            res.redirect('/allProblems'); //Direct user back to dashboard with problems updated
+        } catch (err) {
+            console.log(err);
+            res.render({ message: "Error in request" });
         }
-        if (hardware) { //If hardware has valid input
-            if (hardware == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            hardware_id = NULL,
-                            serial = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else { 
-                conn.query(`SELECT 
-                            *
-                            FROM 
-                            hardware_relation
-                            WHERE
-                            hardware_id = '${hardware}'`,
-                            function(err, rows) { //Get serial number from relation table of submitted id then update problems table
-                                if (err) {
-                                    console.error('Error: ' + err);
-                                } else {
-                                    const serial = rows[0]["serial"]
-                                    conn.query(`UPDATE 
-                                                problems
-                                                SET
-                                                hardware_id = '${hardware}',
-                                                serial = '${serial}'
-                                                WHERE
-                                                problem_id = '${id}'`);
-                                }
-                            })
-            }
-        }
-        if (software) { //If software has valid input
-            if (software == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            software_id = NULL,
-                            license = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else {
-                conn.query(`SELECT 
-                            *
-                            FROM 
-                            software_relation
-                            WHERE
-                            software_id = '${software}'`,
-                            function(err, rows) { //Get license number from relation table of submitted id then update problems table
-                                if (err) {
-                                    console.error('Error: ' + err);
-                                } else {
-                                    const license = rows[0]["license"]
-                                    conn.query(`UPDATE 
-                                                problems
-                                                SET
-                                                software_id = '${software}',
-                                                license = '${license}'
-                                                WHERE
-                                                problem_id = '${id}'`);
-                                }
-                            })
-            }                
-        }
-        if (os) { //If os has valid input
-            if (os == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            os_id = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else { 
-                conn.query(`UPDATE
-                            problems
-                            SET
-                            os_id = '${os}'
-                            WHERE
-                            problem_id = '${id}'`);
-            }
-        }
-        if (specialist) {
-            if (specialist == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            assigned_to = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else { 
-                conn.query(`UPDATE
-                            problems
-                            SET
-                            assigned_to = '${specialist}'
-                            WHERE
-                            problem_id = '${id}'`);
-            }
-        }
-        if (lastSpecialist) {
-            if (lastSpecialist == 'NULL') {
-                conn.query(`UPDATE 
-                            problems
-                            SET
-                            last_reviewed_by = NULL
-                            WHERE
-                            problem_id = '${id}'`);
-            } else { 
-                conn.query(`UPDATE
-                            problems
-                            SET
-                            last_reviewed_by = '${lastSpecialist}'
-                            WHERE
-                            problem_id = '${id}'`);
-            }
-        }
-        res.status(200);
-        res.redirect('/allProblems'); //Direct user back to dashboard with problems updated
-    } catch (err) {
-        console.log(err);
-        res.render({ message: "Error in request" });
     }
 })
 
