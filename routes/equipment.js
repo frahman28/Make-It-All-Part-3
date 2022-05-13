@@ -70,10 +70,7 @@ router.post('/addOS', checkRoles("admin"), async function(req, res) {
 router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res) {
     if (req.body.update) {
         await updateHardware(req, res);
-        var columns = ["Name", "Type", "Serial"];
-        var data = [req.body.name, req.body.type, req.body.serial];
-        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Hardware Updated:", columns: columns, data: data});
+        res.redirect("/viewEquipment");
         //Pass user information from session to display and determine functions
     } else if (req.body.delete) { //specific to deleting hardware, calls deleteHardware function
         var result = await deleteHardware(req, res);
@@ -94,10 +91,7 @@ router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res
 router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res) {
     if (req.body.update) {
         await updateSoftware(req, res);
-        var columns = ["Name", "Type", "License"];
-        var data = [req.body.name, req.body.type, req.body.license];
-        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Software Updated:", columns: columns, data: data});
+        res.redirect("/viewEquipment");
         //Pass user information from session to display and determine functions
     } else if (req.body.delete) { //specific to deleting software, calls deleteSoftware function
         var result = await deleteSoftware(req, res);
@@ -117,10 +111,7 @@ router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res
 router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
     if (req.body.update) {
         await updateOS(req, res);
-        var columns = ["Name"];
-        var data = [req.body.name];
-        //Save table columns with data being added as arrays, passed to submitEquipment page to be displayed
-        res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "OS Updated:", columns: columns, data: data});
+        res.redirect("/viewEquipment");
         //Pass user information from session to display and determine functions
     } else if (req.body.delete) { //specific to deleting os, calls deleteOS function
         var result = await deleteOS(req, res);
