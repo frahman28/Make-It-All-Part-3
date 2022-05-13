@@ -79,7 +79,7 @@ router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res
             res.redirect("/viewEquipment");
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect('/EquipmentCannotDelete'); //If error direct to submit equipment with error message
+            res.redirect("/viewEquipment");
         }
     }
 
@@ -100,7 +100,7 @@ router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res
             res.redirect("/viewEquipment");
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect('/EquipmentCannotDelete'); //If error direct to submit equipment with error message
+            res.redirect("/viewEquipment");
         }
     } 
 });
@@ -120,14 +120,9 @@ router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
             res.redirect("/viewEquipment");
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect('/EquipmentCannotDelete'); //If error direct to submit equipment with error message
+            res.redirect("/viewEquipment");
         }
     }
-});
-
-//Single get route direct to submit equipment and let user know of delete failue
-router.get('/EquipmentCannotDelete', async function(req, res) {
-    res.render("submitEquipment", {userName: req.session.userName, role: req.session.userRole, message: "Cannot Delete", columns: "Null", data: "null"});
 });
 
 module.exports = router;
