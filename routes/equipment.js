@@ -79,7 +79,8 @@ router.patch('/updateHardware/:id', checkRoles("admin"), async function(req, res
             res.redirect("/viewEquipment");
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect("/viewEquipment");
+            var string = encodeURIComponent("CannotDelete");
+            res.redirect("/viewEquipment" + string);
         }
     }
 
@@ -100,7 +101,8 @@ router.patch('/updateSoftware/:id', checkRoles("admin"), async function(req, res
             res.redirect("/viewEquipment");
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect("/viewEquipment");
+            var string = encodeURIComponent("CannotDelete");
+            res.redirect("/viewEquipment" + string);
         }
     } 
 });
@@ -120,9 +122,25 @@ router.patch('/updateOS/:id', checkRoles("admin"), async function(req, res) {
             res.redirect("/viewEquipment");
             //Pass user information from session to display and determine functions
         } else {
-            res.redirect("/viewEquipment");
+            var string = encodeURIComponent("CannotDelete");
+            res.redirect("/viewEquipment" + string);
         }
     }
+});
+
+//Single get route calls functions from all files to display results on single page
+//For if an error in deleting an equipment
+//Admin, Specialist, Employee
+router.get('/viewEquipmentCannotDelete', checkRoles("admin", "specialist", "employee"), async function(req, res) {
+    //Save function returns as variables to send to page as array which can be used to display in tables
+    var hware = await getAllHardware();
+    var hwareTypes = await getHardwareTypes();
+    var sware = await getAllSoftware();
+    var swareTypes = await getSoftwareTypes();
+    var osys = await getAllOS();
+
+    res.render("viewEquipment", { userName: req.session.userName, role: req.session.userRole, hardware: hware, hardwareTypes: hwareTypes, software: sware, softwareTypes: swareTypes, os: osys });
+    //Pass user information from session to display and determine functions
 });
 
 module.exports = router;
