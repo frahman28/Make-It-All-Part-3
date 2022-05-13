@@ -715,6 +715,18 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
         try { //Delete from foreign key dependecies first then from problem table
             conn.query(`DELETE
                         FROM 
+                        solutions
+                        WHERE
+                        problem_id = '${id}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                console.log(rows);
+                            }
+                        })
+            conn.query(`DELETE
+                        FROM 
                         comments
                         WHERE
                         problem_id = '${id}'`,
@@ -728,18 +740,6 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
             conn.query(`DELETE
                         FROM 
                         problem_status_relation
-                        WHERE
-                        problem_id = '${id}'`,
-                        function(err, rows) {
-                            if (err) {
-                                console.error('Error: ' + err);
-                            } else {
-                                console.log(rows);
-                            }
-                        })
-            conn.query(`DELETE
-                        FROM 
-                        solutions
                         WHERE
                         problem_id = '${id}'`,
                         function(err, rows) {
