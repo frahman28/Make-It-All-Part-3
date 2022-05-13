@@ -292,6 +292,7 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async
                                 os: allOS,
                                 solution: allSolutions,
                                 problemSolution: problemSolution,
+                                currentUser: req.session.userId,
                                 problemTypes: allProblemTypes,
                                 role: req.session.userRole});
 });
