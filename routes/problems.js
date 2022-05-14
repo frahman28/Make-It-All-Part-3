@@ -188,11 +188,18 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async fun
                                                 moment: moment,                      // used for date formatting.
                                                 problems: [],
                                                 problemNotes:[], 
+                                                hardware: [],                  // array of hardware to display as options.
+                                                software: [],                  // array of software to display as options.
+                                                os: [],                              // array of os to display as options.    
+                                                problemTypes: [],          // array of problem types to display as options.
+                                                specialists: [],            // array of specialists to display as options.
+                                                uniqueSpecialists: [],
                                                 role: req.session.userRole});                      // empty array of problems.
         } else {
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: rows,
+                                                problemNotes: problemNotes,
                                                 role: req.session.userRole,             // used for dynamic rendering (decides which column should be displayed).
                                                 hardware: allHardware,                  // array of hardware to display as options.
                                                 software: allSoftware,                  // array of software to display as options.
@@ -285,6 +292,9 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
         serialNumber, req.session.userId, asssignedSpecialist, 
         openedOn, operatingSystem);
 
+    var specialistName = await problemUtils.getEmployeeName(asssignedSpecialist);
+    await solutionUtils.addComments(newProblemId.insertId, req.session.userId, "Problem assigned to " + specialistName[0].name);
+
     await problemUtils.createProblemStatus(newProblemId.insertId);
 
     if (solution.length > 0) {
@@ -369,6 +379,9 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist"), asyn
     await problemUtils.updateProblemStatus(problemId, 3);
     await problemUtils.setProblemSolved(problemId, 1);
 
+    let clodedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    await problemUtils.setProblemSolutionDate(problemId, clodedOn);
+
     return res.redirect('/myProblems');
 });
 
@@ -426,6 +439,10 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
     await problemUtils.reassignSpecialist(problemId, asssignedSpecialist);
     await problemUtils.updateProblemStatus(problemId, 1);
     await problemUtils.setProblemSolved(problemId, 0);
+
+    var previousSpecialistName = await problemUtils.getEmployeeName(problem[0].assignedSpecialist);
+    var newSpecialistName = await problemUtils.getEmployeeName(asssignedSpecialist);
+    await solutionUtils.addComments(problemId, req.session.userId, "Reassigned Specialist from " + previousSpecialistName[0].name + " to " + newSpecialistName[0].name + ".");
 
     return res.redirect('../myProblems');
 });

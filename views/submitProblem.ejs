@@ -238,7 +238,7 @@
 
 
   <article class = "col-sm-6">
-<% if ((role == "employee") || (role == "specialist" && problem[0]["lastReviewedBy"] == currentUser)) { %>
+<% if ((role == "employee") || (role == "specialist" && typeof problem == 'undefined') || (role == "specialist" && problem[0]["lastReviewedBy"] == currentUser)) { %>
 
 <div id="lookupTables">
 <div class="accordion">Solution</div>
@@ -386,7 +386,7 @@
 </div>
 <% } %>
 
-<% if (role == "specialist" && problem[0]["lastReviewedBy"] != currentUser)  { %>
+<% if ((role == "specialist" && typeof problem != 'undefined') && (role == "specialist" && problem[0]["lastReviewedBy"] != currentUser)) { %>
 <div  class="panel" style="max-height: 998px;">
   <br><br>
   <h4 class="text-center">Do you think you're this problem is for you?</h4>

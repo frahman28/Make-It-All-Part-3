@@ -28,6 +28,32 @@ var getAllProblemNotes = function () {
   });
 };
 
+var setProblemSolutionDate = function (problemId, closedOn) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems 
+      SET closed_on = "${closedOn}"
+      WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
+var getEmployeeName = function (employeeId) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      SELECT name
+      FROM employees 
+      WHERE employee_id = ${employeeId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
 
 var getProblemById = function (problemId) {
     return new Promise((resolve, reject) => {
@@ -218,7 +244,9 @@ var createProblem = function (problemName,
     getAllSpecialists,
     createProblemStatus,
     updateProblemStatus,
+    setProblemSolutionDate,
     updateProblemLastViewedBy,
     getAllProblemNotes,
     createProblem,
+    getEmployeeName
   };
