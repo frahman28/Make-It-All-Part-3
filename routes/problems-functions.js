@@ -1,4 +1,5 @@
 var conn = require("../dbconfig");
+var moment  = require('moment');
 
 var getAllProblems = function () {
   return new Promise((resolve, reject) => {
@@ -173,11 +174,16 @@ var updateProblemStatus = function (problemId, statusId) {
     });
 };
 
-var setProblemClosed = function (problemId, closedOn) {
+var setProblemClosed = function (problemId, isClosed) {
+  var query = "";
+  if (isClosed) {
+    var closedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    query = `, closed_on = ${conn.escape(closedOn)}`;
+  }
   return new Promise((resolve, reject) => {
       conn.query(`
       UPDATE problems
-      SET solved = 1, closed = 1, closed_on = ${conn.escape(closedOn)}
+      SET solved = 1, closed = 1 ${query}
       WHERE problem_id = ${problemId};`,
       (err, results) => {
           if (err) throw err;

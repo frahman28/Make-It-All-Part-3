@@ -293,7 +293,7 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
 
     if (solution.length > 0) {
         await problemUtils.updateProblemStatus(newProblemId.insertId, 3);
-        await problemUtils.setProblemClosed(newProblemId.insertId, openedOn);
+        await problemUtils.setProblemClosed(newProblemId.insertId, false);
         
         let problemSolution = await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solution);
         await solutionUtils.linkProblemToSolution(newProblemId.insertId, problemSolution.insertId);
@@ -457,7 +457,7 @@ app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), asyn
         return res.sendStatus(401);
     }
     console.log("PROBLEM ", problemId, " RESOLVED");
-    await problemUtils.setProblemClosed(problemId);
+    await problemUtils.setProblemClosed(problemId, true);
 
     return res.redirect('../myProblems');
 });
