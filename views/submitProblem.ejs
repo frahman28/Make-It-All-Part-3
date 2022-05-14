@@ -75,7 +75,7 @@
           </div>
           <div class = "rightCol">
             <% if (typeof problem != 'undefined'){ %>
-              <input type="text" id = "problemName" name="problemName"  disabled="disabled" value="<%= problem[0]["problemName"] %>">
+              <input type="text" id = "problemName" name="problemName"  disabled="disabled" value="<%= problem[0]['problemName'] %>">
             <% } else{ %>  
               <input type="text" id = "problemName" name="problemName" required>
            <% } %>
@@ -107,13 +107,13 @@
           <div class = "rightCol">
 
             <% if (typeof problem != 'undefined'){ %>
-              <input type="text" id="operatingSystem" name="operatingSystem" disabled="disabled" value="<%= problem[0]["OSName"] %>">
+              <input type="text" id="operatingSystem" name="operatingSystem" disabled="disabled" value="<%= problem[0]['OSName'] %>">
             <% } else{ %>  
 
               <select id="operatingSystem" name="operatingSystem">
                 <option value="">Select OS</option>
                 <% for(var i=0; i<os.length; i++) {%>
-                  <option value="<%= os[i]["os_id"] %>">
+                  <option value="<%= os[i]['os_id'] %>">
                     <%= os[i]["name"] %>
                   </option>
                 <% } %>
@@ -194,7 +194,7 @@
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="hardware" name="hardware" disabled="disabled" value="<%= problem[0]["hardwareName"] %>">
             <% } else{ %>  
-              <input type="text" id = "hardware"  readonly="readonly" placeholder="Provide a serial number first.">
+              <input type="text" id = "hardware"  readonly="readonly" placeholder="Provide a serial number first." >
               <input type="hidden" name="hardware" id="hardwareHidden">
            <% } %>
 
@@ -230,7 +230,9 @@
 
 
   <article class = "col-sm-6">
+<% if ((role == "employee") || (role == "specialist" && problem[0]["lastReviewedBy"] == currentUser)) { %>
 
+<div id="lookupTables">
 <div class="accordion">Solution</div>
       <div class="panel">
         <br>
@@ -265,8 +267,8 @@
         <% if (typeof problemSolution != 'undefined' && role == "employee") { %> 
           <div class="row">
             <div class=" d-flex justify-content-end">
-              <a class = "mb-4 mt-2 btn-lg btn btn-success mx-2" href="../resolveProblem/<%= problem[0]["problem_id"] %>"> Mark as Resolved </a>
-              <a class = "mb-4 mt-2 btn-lg btn btn-secondary" href="../reassignProblem/<%= problem[0]["problem_id"] %>"> Didn't work </a>
+              <a class = "mb-4 mt-2 btn-lg btn btn-success mx-2" href="../resolveProblem/<%= problem[0]['problem_id'] %>"> Mark as Resolved </a>
+              <a class = "mb-4 mt-2 btn-lg btn btn-secondary" href="../reassignProblem/<%= problem[0]['problem_id'] %>"> Didn't work </a>
             </div>
             </div>
         <% } else if (role == "specialist") { %> 
@@ -275,8 +277,59 @@
       
       </div>
 
+      <% if (typeof problemNotes != 'undefined' && role == "specialist") { %>    
+      <div class="accordion">Look up Problem Notes</div>
+      <div class="panel">
+      
+        <br>
+      
+        <!-- <div class="row">
+          <div class = "leftCol">
+            <select name="Filter" id="solutionColumn">
+                <option value="0">Problem Name</option>
+                <option value="1">Solution</option>
+                <option value="2">Problem Type</option>
+              </select>
+          </div>
+          <div class = "rightCol">
+            <input list="solutions" id = "solutionSearch" name="solutionSearch" onkeyup="solutionsFunction()">
+          </div>
+        </div>
+      
+        <br> -->
+      
+          <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Author</th>
+              <th>Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% var commentCount = 0; %>
+            <% for(var i=0; i<problemNotes.length; i++) {%>
+              <% if (problem[0]["problemId"] == problemNotes[i]["problemId"]) {%>
+                <% var commentCount = commentCount + 1; %>
+              <tr>
+                  <td><%= problemNotes[i]["name"] %></td>
+                  <td><%= problemNotes[i]["comment"] %></td>
+              </tr>
+              <% } %>
+          <% } %>
 
-      <div class="accordion">Look up Previous Solutions</div>
+          <% if (commentCount == 0) {%>
+          <tr>
+              <td>N/A</td>
+              <td>No comments found!</td>
+          </tr>
+          <% } %>
+          </tbody>
+        </table>
+      <br>
+      </div>
+      <% } %>
+
+<div class="accordion">Look up Previous Solutions</div>
 <div class="panel">
 
   <br>
@@ -319,23 +372,28 @@
 
 <% if (role == "employee" && typeof problemSolution == 'undefined') { %>
   <input type="submit" name="largeSubmit" class = "mb-4 mt-2 btn-lg w-100">
-  <% } %>
+<% } %>    
 
-<% if (role == "specialist" && typeof problem[0]["assignedTo"] == currentUser) { %>
+<br><br><br><br><br><br>
+</div>
+<% } %>
+
+<% if (role == "specialist" && problem[0]["lastReviewedBy"] != currentUser)  { %>
+<div  class="panel" style="max-height: 998px;">
+  <br><br>
+  <h4 class="text-center">Do you think you're this problem is for you?</h4>
+  <p class="container col-10 text-center">The system assigned you a new problem. You can accept or reject it, if you don't think that is something you can solve.</p>
   <div class="container">
     <div class="row">
         <div  class="text-center col-12">
-            <a type="submit" class="col col-5 btn btn-lg btn-success" href="">Accept</a>
+            <a type="submit" class="col col-5 btn btn-lg btn-success" href="../assignProblem/<%= problem[0]['problem_id'] %>">Accept</a>
             <a type="submit" class="col col-5 btn btn-lg btn-secondary" href="../reassignProblem/<%= problem[0]['problem_id'] %>">Reject</a>
         </div>
     </div>
+  </div>
 </div>
+
 <% } %>
-    
-
-<br><br><br><br><br><br>
-
-
   </article>
 
 </div>

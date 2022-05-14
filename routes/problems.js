@@ -64,6 +64,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                     problem_description as problemDescription,
                     employee as reportedById,
                     assigned_to as specialistId,
+                    last_reviewed_by as lastReviewedBy,
                     employees.name as reportedByName,
                     specialists.name as specialistName,
                     opened_on as dateOpened,
@@ -88,7 +89,12 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
             res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
                                             moment: moment,                         // used for date formatting.
                                             problems: [],                           // empty array of problems.
-                                            role: req.session.userRole});           // used for dynamic rendering (decides which column 
+                                            role: req.session.userRole,
+                                            currentUser: req.session.userId,
+                                            hardware: [],                  // array of hardware to display as options.
+                                            software: [],                  // array of software to display as options.
+                                            os: [],                              // array of os to display as options.    
+                                            problemTypes: []});           // used for dynamic rendering (decides which column 
                                                                                     // should be displayed).
         } else {
             // Otherwise return an array of problems..
@@ -96,6 +102,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                                             moment: moment,                         // used for date formatting.
                                             problems: rows,                         // array of problems.
                                             role: req.session.userRole,             // used for dynamic rendering (decides which column should be displayed).
+                                            currentUser: req.session.userId,
                                             hardware: allHardware,                  // array of hardware to display as options.
                                             software: allSoftware,                  // array of software to display as options.
                                             os: allOS,                              // array of os to display as options.    
@@ -288,16 +295,16 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async
         return res.redirect("../myProblems");
     }
 
-    if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId && req.session.userRole != "admin") {
+    if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId) {
         // Prohibit enter.
         return res.sendStatus(401);
     }
 
     // change problem status
-    if (problem[0].lastReviewedBy != req.session.userId && req.session.userRole == "specialist") {
-        await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
-        await problemUtils.updateProblemStatus(problemId, 2);
-    }
+    // if (problem[0].lastReviewedBy != req.session.userId && req.session.userRole == "specialist") {
+    //     await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
+    //     await problemUtils.updateProblemStatus(problemId, 2);
+    // }
     
     let problemSolution = undefined;
     if (problem[0].solved == 1) {
@@ -346,6 +353,16 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist"), asyn
     return res.redirect('/myProblems');
 });
 
+app.get("/assignProblem/:problemId", checkRoles("specialist"), async function (req, res, next) {
+    let problemId = req.params["problemId"];
+    if (isNaN(problemId)) return res.redirect("../myProblems");
+
+    await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
+    await problemUtils.updateProblemStatus(problemId, 2);
+
+    return res.redirect("/submitProblem/" + problemId);
+});
+
 
 app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
     // TODO
@@ -358,7 +375,7 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
         return res.redirect("../myProblems");
     }
 
-    if (problem[0].reportedBy != req.session.userId) {
+    if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId) {
         // Prohibit enter.
         return res.sendStatus(401);
     }

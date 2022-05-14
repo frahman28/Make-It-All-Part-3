@@ -124,4 +124,9 @@ $(document).ready(function () {
         $(t).next().find("div").collapse("toggle");
     });
 
+    $("#acceptProblemButton").click(function () {
+        $("#lookupTables").css("display", "inline-block");
+        $("#acceptOrRejectProblem").css("display", "none");
+    });
+
 });

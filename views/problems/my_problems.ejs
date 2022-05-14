@@ -94,7 +94,9 @@
 
                     <td>
                     <% if (role == 'specialist') { %>
-                        <% if (problems[i]["solved"] == 0) { %>
+                        <% if (problems[i]["lastReviewedBy"] != currentUser) { %>
+                            <a class="btn btn-secondary" href='submitProblem/<%= problems[i]["problemId"] %>'>Lookup</a>
+                        <% } else if (problems[i]["solved"] == 0) { %>
                             <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
                         <% } %>
                     <% } else { %>
