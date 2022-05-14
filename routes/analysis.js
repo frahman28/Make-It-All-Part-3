@@ -14,7 +14,10 @@ router.get(
   (req, res) => {
     // Dates should be in the format mm/dd/yyyy or something similar
     // An array of dates after being converted to date objects, or undefined
-    const dates = checkTwoDates(req.body.startDate, req.body.endDate);
+    let dates = [req.query.startDate, req.query.endDate];
+    if (!checkTwoDates(req.query.startDate, req.query.endDate)) {
+      dates = [undefined, undefined];
+    }
     // Execute the sql query to get the number of problems, between two dates and group them by the number of problems
     // each problem type has, to see what problem types are causing the most problems
     getClosedByProblemTypeCount(dates[0], dates[1])
@@ -34,7 +37,10 @@ router.get(
   checkRoles("advisor", "admin", "specialist"),
   (req, res) => {
     // This API will get the number of problems each specialist has closed, assuming they've closed a problem
-    const dates = checkTwoDates(req.body.startDate, req.body.endDate);
+    let dates = [req.query.startDate, req.query.endDate];
+    if (!checkTwoDates(req.query.startDate, req.query.endDate)) {
+      dates = [undefined, undefined];
+    }
     getClosedBySpecialistCount(dates[0], dates[1])
       .then((results) => {
         // If the query is succesful then return the results
