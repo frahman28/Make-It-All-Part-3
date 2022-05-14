@@ -110,8 +110,10 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function (req, res, next) {
+app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async function (req, res, next) {
     // Retrieve details about user's open problems.
+    let problemNotes = await problemUtils.getAllProblemNotes();
+
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,
                     problem_description as problemDescription,
@@ -164,11 +166,13 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: [],
+                                                problemNotes:[], 
                                                 role: req.session.userRole});                      // empty array of problems.
         } else {
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: rows,
+                                                problemNotes:problemNotes,
                                                 role: req.session.userRole});                    // array of problems.
         }
     });
@@ -212,22 +216,43 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
         return res.redirect("/submitProblem");
     }
 
+    // Get all specialist of a specific specialisation.
     let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemType, true);
-    if (specialistsForProblemType.length < 1) {
-        let problemParent = await problemTypes.getChildNodeID(problemType);
-        let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemParent, true);
 
+    try{
         if (specialistsForProblemType.length < 1) {
-            let allSpecialists = await problemUtils.getAllSpecialists();
-            asssignedSpecialist = allSpecialists[0].specialistId;
-
+            // If there's no specialist for this specialisation, find a parent
+            // of this specialisation.
+            let problemParent = await problemTypes.getChildNodeID(problemType);
+    
+            if (problemParent.length > 0) {
+                // If the problem type/specialisation is a children of some other
+                // specialisation, assign a specialist of this parent specialisation
+                // to this problem.
+                let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemParent[0].child_of, true);
+                asssignedSpecialist = specialistsForProblemType[0].specialistId;
+    
+            } else {
+                // If there is no specialist of this specialisation, assign
+                // a random specialist.
+                let allSpecialists = await problemUtils.getAllSpecialists();            
+                asssignedSpecialist = allSpecialists[0].specialistId;
+            }
         } else {
+            // If there exists a specialist for this specialisation,
+            //  assign them to this problem.
             asssignedSpecialist = specialistsForProblemType[0].specialistId;
+            console.log(asssignedSpecialist)
         }
-    } else {
-        asssignedSpecialist = specialistsForProblemType[0].specialistId;
-    }
+    } catch (e) {
+        // If an error occurs, assign a random specialist.
+        console.log("ERROR")
+        console.log(e)
+        console.log("Assigned a random specialist.")
 
+        let allSpecialists = await problemUtils.getAllSpecialists();            
+        asssignedSpecialist = allSpecialists[0].specialistId;
+    }
 
     let newProblemId = await problemUtils.createProblem(problemName, problemDesription, problemType, 
         software, hardware, license,
@@ -284,6 +309,7 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async
     var allOS = await os.getAllOS();
     var allSolutions = await solutionUtils.getAllSolutions();
     var allProblemTypes = await problemTypes.getAllProblemTypes();
+    var problemNotes = await problemUtils.getAllProblemNotes();
 
     return res.render('submitProblem', {userName: req.session.userName,
                                 problem: problem,
@@ -293,6 +319,7 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async
                                 solution: allSolutions,
                                 problemSolution: problemSolution,
                                 currentUser: req.session.userId,
+                                problemNotes: problemNotes,
                                 problemTypes: allProblemTypes,
                                 role: req.session.userRole});
 });
@@ -338,10 +365,8 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
 
     let asssignedSpecialist;
     let problemType = problem[0].problemTypeId;
-    console.log("problemType, assignedSpecialist: ", problemType, problem[0].assignedSpecialist)
 
     let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemTypeExcluding(problemType, problem[0].assignedSpecialist);
-    console.log("specialistsForProblemType: ", specialistsForProblemType)
 
     if (specialistsForProblemType.length < 1) {
         let problemParent = await problemTypes.getChildNodeID(problemType);
@@ -393,32 +418,20 @@ app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), asyn
 
 //Patch route allows user to edit name, type, software, hardware, os of their problems
 //Access to employee users and specialist users
-app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req, res) {
-    const { desc } = req.body;
+app.post('/myProblems/:id', checkRoles("employee"), async function (req, res) {
+    const { comment } = req.body;
     const id = parseInt(req.params.id);
 
     try { //Update each attribute seperately incase certain attributes are not inputted
-        if (desc) { //If description value is inputted
-            conn.query(`UPDATE 
-                        problems
-                        SET
-                        problem_description = '${desc}'
-                        WHERE
-                        problem_id = '${id}'`);
-        } else { //If description value is not inputted
-            conn.query(`UPDATE 
-                        problems
-                        SET
-                        problem_description = NULL
-                        WHERE
-                        problem_id = '${id}'`);
+        if (comment) { //If description value is inputted
+            await solutionUtils.addComments(id, req.session.userId, comment);
         }
     
         res.status(200);
-        res.redirect('/myProblems'); //Direct user back to dashboard with problems updated
+        return res.redirect('/myProblems'); //Direct user back to dashboard with problems updated
     } catch (err) {
         console.log(err);
-        res.render({ message: "Error in request" });
+        return res.render({ message: "Error in request" });
     }
 });
 
