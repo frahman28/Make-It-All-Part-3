@@ -80,12 +80,6 @@ router.get("/allEmployees", checkRoles("admin"), async (req, res) => {
   });
 });
 
-// TODO
-router.post("/updateEmployee/:employeeId", checkRoles("admin"), async (req, res) => {
-  const employeeID = req.params.employee_id;
-  return res.redirect("../allEmployees");
-});
-
 router.get("/api/:employee_id", verifySession, (req, res) => {
   // This api request will get a specific employee based their id from the database
   // The employee id is in the request parameter
@@ -293,5 +287,181 @@ router.put("/api/:employee_id/title", checkRoles("admin"), (req, res) => {
     }
   );
 });
+
+// TODO
+router.patch("/updateEmployee/:employeeId", checkRoles("admin"), async (req, res) => {
+  const employeeID = req.params.employeeId;
+    // This api call is for updating an employees information
+  // All updated fields are optional and do not have to be supplied
+  // We look for the name, extension, external, available in the request body as these are what can be
+  // updated for the employee
+  let { name, extension, external, available } = req.body;
+  console.log(available);
+  // Create a blank object to add the changed information about the employee to
+  let toUpdateWith = {};
+  // Check if undefined, if undefined then the information wasn't supplied in the request body
+  if (name !== undefined) {
+    // If not undefined then add it to the object for updating the database with
+    toUpdateWith.name = name;
+  }
+  if (extension !== undefined) {
+    toUpdateWith.extension = extension;
+  }
+  if (external !== undefined) {
+    // These should be numbers supplied
+    if (Number.isInteger(external)) {
+      // Check the number supplied can be a boolean interpreted by the database
+      if (external == 0 || external == 1) {
+        toUpdateWith.external = external;
+      }
+    } else {
+      if (external == "external") {
+        toUpdateWith.external = 1;
+      } else {
+        toUpdateWith.external = 0;
+      }
+    }
+  } else {
+    if (external == "external") {
+      toUpdateWith.external = 1;
+    } else {
+      toUpdateWith.external = 0;
+    }
+  }
+  if (available !== undefined) {
+    if (Number.isInteger(available)) {
+      if (available == 0 || available == 1) {
+        toUpdateWith.available = available;
+      }
+    } else {
+      if (available == "available") {
+        toUpdateWith.available = 1;
+      } else {
+        toUpdateWith.available = 0;
+      }
+    }
+  } else {
+    if (available == "available") {
+      toUpdateWith.available = 1;
+    } else {
+      toUpdateWith.available = 0;
+    }
+  }
+  // Check that the object to add has at least one piece of information to update the databaes with
+  if (Object.keys(toUpdateWith).length > 0) {
+    conn.query(
+      "UPDATE employees SET ? WHERE employee_id = ?",
+      [toUpdateWith, employeeID],
+      function (err, results) {
+        if (err) throw err;
+        // If the affected rows is greater than 0 then the employee had its information updated
+        if (results.affectedRows > 0) {
+
+        } else {
+          // else no employee was updated, which means the employee couldn't be found
+
+        }
+      }
+    );
+  } else {
+
+  }
+  // This api call is used for updating an employees role in the company
+  // The role is located in the body
+  const roleID = req.body.role_id;
+  // If the role couldn't be found in the body then we can't update the database with anything
+  toUpdateWith2 = {
+    employee_id: employeeID,
+    role_id: roleID,
+  };
+  console.log("wtf");
+  // First check that a role exists with this new role id
+  conn.query(
+    "SELECT * FROM company_roles WHERE role_id = ?",
+    roleID,
+    (err, results) => {
+      if (err) throw err;
+      // Check the role exists with the role id being used to update with
+      if (results.length > 0) {
+        // Update the employee with the new role
+        conn.query(
+          "UPDATE employees SET ? WHERE employee_id = ?",
+          [toUpdateWith2, toUpdateWith2.employee_id],
+          function (err, results) {
+            if (err) throw err;
+            if (results.affectedRows > 0) {
+            } else {
+              
+            }
+          }
+        );
+      } else {
+      }
+    }
+  );
+  // Works similarly to the role api call, instead updates an employees department
+  // But first checks the department exists in the database before updating
+  const departmentID = req.body.department_id;
+  toUpdateWith3 = {
+    employee_id: employeeID,
+    department_id: departmentID,
+  };
+  console.log("wtf2");
+  conn.query(
+    "SELECT * FROM departments WHERE department_id = ?",
+    departmentID,
+    (err, results) => {
+      if (err) throw err;
+      if (results.length > 0) {
+        conn.query(
+          "UPDATE job_info SET ? WHERE employee_id = ?",
+          [toUpdateWith3, toUpdateWith3.employee_id],
+          function (err, results) {
+            if (err) throw err;
+            if (results.affectedRows > 0) {
+
+            } else {
+
+            }
+          }
+        );
+      } else {
+
+      }
+    }
+  );
+  // Works similarly to the role api call, instead updates an employees title
+  // But first checks the title exists in the database before updating
+  const titleID = req.body.title_id;
+  toUpdateWith4 = {
+    employee_id: employeeID,
+    title_id: titleID,
+  };
+  console.log("wtf3");
+  conn.query(
+    "SELECT * FROM job_title WHERE title_id = ?",
+    titleID,
+    (err, results) => {
+      if (err) throw err;
+      if (results.length > 0) {
+        conn.query(
+          "UPDATE job_info SET ? WHERE employee_id = ?",
+          [toUpdateWith4, toUpdateWith4.employee_id],
+          function (err, results) {
+            if (err) throw err;
+            if (results.affectedRows > 0) {
+            } else {
+
+            }
+          }
+        );
+      } else {
+      }
+    }
+  );
+  console.log("wtf4"); 
+  return res.redirect("../allEmployees");
+});
+
 
 module.exports = router;

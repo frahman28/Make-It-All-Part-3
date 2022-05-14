@@ -108,7 +108,7 @@
                         <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
                             <br>
                             <table class="hidden-table table table-striped table-bordered">
-                                <form action="updateEmployee/<%= employees[i]['employeeId'] %>" method="post">
+                                <form action="updateEmployee/<%= employees[i]['employeeId'] %>?_method=PATCH" method="post">
                                 <tr>
                                     <td>Employee ID:</td>
                                     <td><%= employees[i]["employeeId"] %></td>
@@ -120,12 +120,12 @@
                                 <tr>
                                     <td>Job Title:</td>
                                     <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                        <select id="update-title" name="type" class="form-select">
+                                        <select id="update-title" name="title_id" class="form-select">
                                             <% for (var j = 0; j < jobTitles.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                 <% if (employees[i]["jobTitle"]== jobTitles[j]["title"] ) {%>
-                                                    <option selected><%= jobTitles[j]["title"] %></option>
+                                                    <option value="<%= jobTitles[j]['title_id'] %>" selected><%= jobTitles[j]["title"] %></option>
                                                 <% } else { %>  
-                                                    <option value="<%= jobTitles[j]['title'] %>"><%= jobTitles[j]["title"] %></option>   
+                                                    <option value="<%= jobTitles[j]['title_id'] %>"><%= jobTitles[j]["title"] %></option>   
                                                 <% } %>
                                             <% } %>
                                         </select>
@@ -134,12 +134,12 @@
                                 <tr>
                                     <td>Department:</td>
                                     <td>
-                                        <select id="update-department" name="type" class="form-select">
+                                        <select id="update-department" name="department_id" class="form-select">
                                             <% for (var j = 0; j < departments.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                 <% if (employees[i]["departmentName"] == departments[j]["name"] ) {%>
-                                                    <option  value="<%= departments[j]['name'] %>" selected><%= departments[j]["name"] %></option>
+                                                    <option  value="<%= departments[j]['department_id'] %>" selected><%= departments[j]["name"] %></option>
                                                 <% } else { %>  
-                                                    <option value="<%= departments[j]['name'] %>"><%= departments[j]["name"] %></option>   
+                                                    <option value="<%= departments[j]['department_id'] %>"><%= departments[j]["name"] %></option>   
                                                 <% } %>
                                             <% } %>
                                         </select>
@@ -148,12 +148,12 @@
                                 <tr>
                                     <td>Role:</td>
                                     <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                        <select id="update-role" name="type" class="form-select">
+                                        <select id="update-role" name="role_id" class="form-select">
                                             <% for (var j = 0; j < companyRoles.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
                                                 <% if (employees[i]["role"] == companyRoles[j]["role"] ) {%>
-                                                    <option value="<%= companyRoles[j]['role'] %>" selected><%= companyRoles[j]["role"] %></option>
+                                                    <option value="<%= companyRoles[j]['role_id'] %>" selected><%= companyRoles[j]["role"] %></option>
                                                 <% } else { %>  
-                                                    <option value="<%= companyRoles[j]['role'] %>"><%= companyRoles[j]["role"] %></option>   
+                                                    <option value="<%= companyRoles[j]['role_id'] %>"><%= companyRoles[j]["role"] %></option>   
                                                 <% } %>
                                             <% } %>
                                         </select>
@@ -181,10 +181,10 @@
                                         <td>External:</td>
                                         <td>
                                             <% if (employees[i]["isExternal"]) { %>
-                                                <input type="checkbox" class="external" name="external" value="true" checked>
+                                                <input type="checkbox" class="external" name="external" value="external" checked>
                                                 <label for="external"> External Specialist</label>
                                                 <% } else { %>
-                                                <input type="checkbox" class="external" name="external" value="false">
+                                                <input type="checkbox" class="external" name="external" value="external">
                                                 <label for="external"> Internal Specialist</label>
                                             <% } %>
                                         </td>
@@ -194,10 +194,10 @@
                                         <td>Available:</td>
                                         <td>
                                         <% if (employees[i]["isAvailable"]) { %>
-                                            <input type="checkbox" class="available" name="available" value="true" checked>
+                                            <input type="checkbox" class="available" name="available" value="available" checked>
                                             <label for="available"> Available</label>
                                             <% } else { %>
-                                            <input type="checkbox" class="available" name="available" value="false">
+                                            <input type="checkbox" class="available" name="available" value="available">
                                             <label for="available"> Away</label>
 
                                         <% } %>
