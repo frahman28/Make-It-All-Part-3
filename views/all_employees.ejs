@@ -66,7 +66,6 @@
                 <div class="col-4">
                     <select id="search-by" name="search-by" class="form-select">
                         <option selected>Search By</option>
-                        <option value="employee-id">Employee ID</option>
                         <option value="job-title">Job Title</option>
                         <option value="department">Department</option>
                         <option value="ongoing-problems">Ongoing Problems</option>
@@ -109,7 +108,7 @@
                         <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
                             <br>
                             <table class="hidden-table table table-striped table-bordered">
-                                <form action="updateEmployee/<%= employees[i]['employeeId'] %>">
+                                <form action="updateEmployee/<%= employees[i]['employeeId'] %>" method="post">
                                 <tr>
                                     <td>Employee ID:</td>
                                     <td><%= employees[i]["employeeId"] %></td>

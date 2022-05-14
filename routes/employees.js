@@ -80,6 +80,12 @@ router.get("/allEmployees", checkRoles("admin"), async (req, res) => {
   });
 });
 
+// TODO
+router.post("/updateEmployee/:employeeId", checkRoles("admin"), async (req, res) => {
+  const employeeID = req.params.employee_id;
+  return res.redirect("../allEmployees");
+});
+
 router.get("/api/:employee_id", verifySession, (req, res) => {
   // This api request will get a specific employee based their id from the database
   // The employee id is in the request parameter
