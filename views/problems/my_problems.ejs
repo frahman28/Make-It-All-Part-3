@@ -139,7 +139,7 @@
                                         <td>Software Id:</td>
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-software" name="software" class="form-select">
-                                                <% if (problems[i]["problemSoftwareId"] == null) { %> <!-- Display none if problem was submitted with no hardware -->
+                                                <% if (problems[i]["problemSoftwareId"] == null) { %> <!-- Display none if problem was submitted with no software -->
                                                     <option value="NULL" selected>None</option>
                                                 <% } else { %> 
                                                     <option value="NULL">None</option>
@@ -158,7 +158,7 @@
                                         <td>Hardware Id:</td>
                                         <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <select id="update-hardware" name="hardware" class="form-select">
-                                                <% if (problems[i]["problemHardwareId"] == null) { %> <!-- Display none if problem was submitted with no software --> 
+                                                <% if (problems[i]["problemHardwareId"] == null) { %> <!-- Display none if problem was submitted with no hardware --> 
                                                     <option value="NULL" selected>None</option>
                                                 <% } else { %> 
                                                     <option value="NULL">None</option>

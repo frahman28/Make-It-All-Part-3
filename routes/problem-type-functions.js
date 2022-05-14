@@ -13,7 +13,7 @@ var getAllChildrenForPromblemType = function (parentProblemTypeId) {
   return new Promise((resolve, reject) => {
     conn.query(
       "SELECT * FROM problem_types WHERE child_of = ?",
-      problemTypeID,
+      parentProblemTypeId,
       (err, results) => {
         if (err) throw err;
         resolve(results);
@@ -169,14 +169,11 @@ var createNewProblemType = function (problemTypeName, problemTypeChildID) {
           // is not referencing a problem type
           reject("Child problem type does not reference a problem type");
         } else {
-          throw err;
+          reject(err);
         }
+      } else {
+        resolve(results.insertId);
       }
-      resolve(results.insertId);
-      return res.json({
-        success: true,
-        msg: `Problem type has been created, ID is ${results.insertId}`,
-      });
     });
   });
 };
