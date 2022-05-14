@@ -284,7 +284,6 @@
         <% } %> 
       
       </div>
-
       <% if (typeof problemNotes != 'undefined' && role == "specialist") { %>    
       <div class="accordion">Look up Problem Notes</div>
       <div class="panel">
@@ -316,7 +315,8 @@
           <tbody>
             <% var commentCount = 0; %>
             <% for(var i=0; i<problemNotes.length; i++) {%>
-              <% if (problem[0]["problemId"] == problemNotes[i]["problemId"]) {%>
+
+              <% if (problem[0]["problem_id"] == problemNotes[i]["problemId"]) {%>
                 <% var commentCount = commentCount + 1; %>
               <tr>
                   <td><%= problemNotes[i]["name"] %></td>
