@@ -132,56 +132,52 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async fun
     let problemNotes = await problemUtils.getAllProblemNotes();
 
     conn.query(`SELECT problems.problem_id as problemId,
-                    problems.name as problemName,
-                    problems.problem_description as problemDesc,
-                    problems.problem_type_id as problemTypeId,
-                    employee as reportedById,
-                    employees.name as reportedByName,
-                    specialists.name as specialistName,
-                    lastSpecialists.name as lastSpecialistName,
-                    opened_on as dateOpened,
-                    closed_on as dateClosed,
-                    status,
-                    closed,
-                    os.name as OS,
-                    software.name as softwareName,
-                    type_of_software.type as softwareType,
-                    solut.comment as solution,
-                    comments.comment as solutionNotes,
-                    hardware.name as hardwareName,
-                    type_of_hardware.type as hardwareType,
-                    hardware_relation.serial as serialNumber
-                FROM problems
-                JOIN employees as specialists 
-                    ON specialists.employee_id = assigned_to
-                LEFT JOIN employees as lastSpecialists
-                    ON lastSpecialists.employee_id = last_reviewed_by
-                JOIN employees 
-                    ON employees.employee_id = employee
-                LEFT JOIN os 
-                    ON os.os_id = problems.os_id
-                LEFT JOIN hardware 
-                    ON hardware.hardware_id = problems.hardware_id
-                LEFT JOIN type_of_hardware 
-                    ON type_of_hardware.type_id = hardware.type_id
-                LEFT JOIN software 
-                    ON software.software_id = problems.software_id
-                LEFT JOIN type_of_software 
-                    ON type_of_software.type_id = software.type_id
-                LEFT JOIN hardware_relation 
-                    ON hardware_relation.hardware_id = hardware.hardware_id
-                LEFT JOIN problem_status_relation 
-                    ON problems.problem_id = problem_status_relation.problem_id
-                LEFT JOIN problem_status
-                    ON problem_status_relation.status_id = problem_status.status_id
-                LEFT JOIN solutions 
-                    ON solutions.problem_id = problems.problem_id
-                LEFT JOIN comments AS solut 
-                    ON solut.comment_id = solutions.comment_id
-                LEFT JOIN comments 
-                    ON comments.problem_id = problems.problem_id 
-                    AND comments.comment_id NOT IN (select comment_id FROM solutions)
-                ORDER BY problems.problem_id ASC;`, function (err, rows) {
+                problems.name as problemName,
+                problems.problem_description as problemDesc,
+                problems.problem_type_id as problemTypeId,
+                employee as reportedById,
+                employees.name as reportedByName,
+                specialists.name as specialistName,
+                lastSpecialists.name as lastSpecialistName,
+                opened_on as dateOpened,
+                closed_on as dateClosed,
+                status,
+                closed,
+                os.name as OS,
+                software.name as softwareName,
+                type_of_software.type as softwareType,
+                solut.comment as solution,
+                hardware.name as hardwareName,
+                type_of_hardware.type as hardwareType,
+                hardware_relation.serial as serialNumber
+            FROM problems
+            JOIN employees as specialists 
+                ON specialists.employee_id = assigned_to
+            LEFT JOIN employees as lastSpecialists
+                ON lastSpecialists.employee_id = last_reviewed_by
+            JOIN employees 
+                ON employees.employee_id = employee
+            LEFT JOIN os 
+                ON os.os_id = problems.os_id
+            LEFT JOIN hardware 
+                ON hardware.hardware_id = problems.hardware_id
+            LEFT JOIN type_of_hardware 
+                ON type_of_hardware.type_id = hardware.type_id
+            LEFT JOIN software 
+                ON software.software_id = problems.software_id
+            LEFT JOIN type_of_software 
+                ON type_of_software.type_id = software.type_id
+            LEFT JOIN hardware_relation 
+                ON hardware_relation.hardware_id = hardware.hardware_id
+            LEFT JOIN problem_status_relation 
+                ON problems.problem_id = problem_status_relation.problem_id
+            LEFT JOIN problem_status
+                ON problem_status_relation.status_id = problem_status.status_id
+            LEFT JOIN solutions 
+                ON solutions.problem_id = problems.problem_id
+            LEFT JOIN comments AS solut 
+                ON solut.comment_id = solutions.comment_id
+            ORDER BY problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
