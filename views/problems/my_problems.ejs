@@ -101,7 +101,7 @@
                         <% if (problems[i]["solved"] == 1) { %>
                             <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
                         <% } else { %>
-                            <a class="btn btn-secondary editNotesButton-<%= problems[i]['problemId'] %>" id="editNotesButton">Edit Notes</a>
+                            <a class="btn btn-secondary editNotesButton">Add Note</a>
                         <% } %>
                     <% } %>
                     </td>   
@@ -112,11 +112,13 @@
                     <td class="hidden-data" colspan="6">
                         <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
                             <br>
-                            <form action="/myProblems/<%= problems[i]['problemId'] %>?_method=PATCH" method="POST">
+                            <form action="/myProblems/<%= problems[i]['problemId'] %>" method="POST">
                                 <table class="hidden-table table table-striped table-bordered">
                                     <tr>
-                                        <td>Problem Description:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                        <td><textarea id="update-desc" name="desc" class="form-control" cols="40" rows="5"><%= problems[i]["problemDescription"] %></textarea></td>
+                                        <td>Problem Note:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td>
+                                            <textarea id="add-note" name="problemNote" class="form-control" cols="40" rows="5"></textarea>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Submit:</td>

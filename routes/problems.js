@@ -419,15 +419,16 @@ app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), asyn
 //Patch route allows user to edit name, type, software, hardware, os of their problems
 //Access to employee users and specialist users
 app.post('/myProblems/:id', checkRoles("employee"), async function (req, res) {
-    const { comment } = req.body;
+    const problemNote = req.body.problemNote;
     const id = parseInt(req.params.id);
-
+        
+    console.log(problemNote, id);
+    
     try { //Update each attribute seperately incase certain attributes are not inputted
-        if (comment) { //If description value is inputted
-            await solutionUtils.addComments(id, req.session.userId, comment);
+        if (problemNote) { //If description value is inputted
+            await solutionUtils.addComments(id, req.session.userId, problemNote);
         }
     
-        res.status(200);
         return res.redirect('/myProblems'); //Direct user back to dashboard with problems updated
     } catch (err) {
         console.log(err);
