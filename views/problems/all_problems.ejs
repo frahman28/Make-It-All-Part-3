@@ -127,13 +127,13 @@
                                     <% } %>
                                 </tr>
                                 <tr>
-                                    <td>Problem Description:</td>
+                                    <td>Problem Name:</td>
                                     <td><%= problems[i]["problemName"] %></td>
                                 </tr>
                                 <tr>
-                                    <td>Solution:</td>
-                                    <% if (problems[i]["solution"] != undefined) { %>
-                                        <td><%= problems[i]["solution"] %></td>
+                                    <td>Problem Description:</td>
+                                    <% if (problems[i]["problemDescription"] != undefined) { %>
+                                        <td><%= problems[i]["problemDescription"] %></td>
                                     <%} else { %>
                                         <td>N/A</td>
                                     <% } %>
@@ -207,12 +207,29 @@
                                     <% } %>
                                 </tr>
                                 <tr>
-                                    <td>Comments:</td>
-                                    <% if (problems[i]["problemDescription"] != undefined) { %>
-                                        <td><%= problems[i]["problemDescription"] %></td>
+                                    <td>Solution:</td>
+                                    <% if (problems[i]["solution"] != undefined) { %>
+                                        <td><%= problems[i]["solution"] %></td>
                                     <%} else { %>
                                         <td>N/A</td>
                                     <% } %>
+                                </tr>
+                                <tr>
+                                    <td>Problem Notes:</td>
+                                    <td>
+                                    <% var commentCount = 0; %>
+                                    <% for(var j=0; j<problemNotes.length; j++) {%>
+                                        <% if (problems[i]["problemId"] == problemNotes[j]["problemId"]) { %>
+                                            <% commentCount = commentCount+1; %>
+                                            <%= problemNotes[j]["comment"] %> - <strong><%= problemNotes[j]["name"] %></strong> <br>
+                                        <% } %>
+                                    <% } %>
+
+                                    <% if (commentCount < 1) { %>
+                                        N/A
+                                    <% } %>
+
+                                    </td>
                                 </tr>
                             </table>
                             <br>

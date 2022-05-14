@@ -9,6 +9,26 @@ var getAllProblems = function () {
   });
 };
 
+var getAllProblemNotes = function () {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      SELECT 
+        problem_id as problemId, 
+        name, 
+        comment 
+      FROM comments
+      JOIN employees 
+        ON author = employee_id
+      WHERE comment_id NOT IN
+        (SELECT comment_id from solutions);`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
+
 var getProblemById = function (problemId) {
     return new Promise((resolve, reject) => {
       conn.query(`SELECT problem_id, 
@@ -199,5 +219,6 @@ var createProblem = function (problemName,
     createProblemStatus,
     updateProblemStatus,
     updateProblemLastViewedBy,
+    getAllProblemNotes,
     createProblem,
   };
