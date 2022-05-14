@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { verifySession, checkRoles } = require("./auth.middleware");
+const employeesUtils = require("./employees-functions");
 
 var conn = require("../dbconfig");
 
@@ -31,8 +32,13 @@ router.get("/api", verifySession, (req, res) => {
   });
 });
 
-router.get("/allEmployees", checkRoles("admin"), (req, res) => {
+router.get("/allEmployees", checkRoles("admin"), async (req, res) => {
     // Retrieve details about user's open problems.
+    var specialistsAndProblemTypes = await employeesUtils.getSpecialistsAndSpecialisations();
+    var departments = await employeesUtils.getAllDepartments();
+    var jobTitles = await employeesUtils.getJobTitles();
+    var companyRoles = await employeesUtils.getAllRoles();
+
     conn.query(`
     SELECT employees.employee_id as employeeId, 
           employees.name as employeeName, 
@@ -57,10 +63,18 @@ router.get("/allEmployees", checkRoles("admin"), (req, res) => {
   // If error occured, return an empty array.
   res.render('all_employees', {userName: req.session.userName,     // displays user's username.
                                 employees: [],
+                                companyRoles: companyRoles,
+                                jobTitles: jobTitles,
+                                departments: departments,
+                                specialistsAndProblemTypes: specialistsAndProblemTypes,
                                 role: req.session.userRole});                      // empty array of problems.
   } else {
   res.render('all_employees', {userName: req.session.userName,     // displays user's username.
                                 employees: rows,
+                                companyRoles: companyRoles,
+                                jobTitles: jobTitles,
+                                departments: departments,
+                                specialistsAndProblemTypes: specialistsAndProblemTypes,
                                 role: req.session.userRole});                    // array of problems.
   }
   });
