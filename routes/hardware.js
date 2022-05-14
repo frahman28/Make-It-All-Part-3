@@ -125,7 +125,14 @@ var addHardware = function(req, res, next) {
                                                                         hardware_relation
                                                                         (hardware_id, serial)
                                                                         VALUES
-                                                                        ('${id}', '${serial}')`)
+                                                                        ('${id}', '${serial}')`,
+                                                                        function(err, rows) {
+                                                                            if (err) {
+                                                                                console.error('Error: ' + err);
+                                                                            } else {
+                                                                                res.redirect("/viewEquipment");
+                                                                            }
+                                                                        })
                                                                     }
                                                                 })
                                                 }

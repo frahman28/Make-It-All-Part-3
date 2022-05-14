@@ -116,108 +116,280 @@
                     <td class="hidden-data" colspan="5">
                         <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
                             <br>
-                            <table class="hidden-table table table-striped table-bordered">
-                                <tr>
-                                    <td>Problem ID:</td>
-                                    <td><%= problems[i]["problemId"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>Problem Type:</td>
-                                    <% if (problems[i]["problemType"] != undefined) { %>
-                                        <td><%= problems[i]["problemType"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Problem Description:</td>
-                                    <td><%= problems[i]["problemName"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>Solution:</td>
-                                    <% if (problems[i]["solution"] != undefined) { %>
-                                        <td><%= problems[i]["solution"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Specialist Name:</td>
-                                    <% if (problems[i]["specialistName"] != undefined) { %>
-                                        <td><%= problems[i]["specialistName"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Opened on:</td>
-                                    <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
-                                </tr>
-                                <tr>
-                                    <td>Closed on:</td>
-                                    <% if (problems[i]["dateClosed"] != undefined) { %>
-                                        <td><%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Operating System:</td>
-                                    <% if (problems[i]["OS"] != undefined) { %>
-                                        <td><%= problems[i]["OS"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Software Name:</td>
-                                    <% if (problems[i]["softwareName"] != undefined) { %>
-                                        <td><%= problems[i]["softwareName"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Software Type:</td>
-                                    <% if (problems[i]["softwareType"] != undefined) { %>
-                                        <td><%= problems[i]["softwareType"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Device Name:</td>
-                                    <% if (problems[i]["hardwareName"] != undefined) { %>
-                                        <td><%= problems[i]["hardwareName"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Equipment type:</td>
-                                    <% if (problems[i]["hardwareType"] != undefined) { %>
-                                        <td><%= problems[i]["hardwareType"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Serial Number:</td>
-                                    <% if (problems[i]["serialNumber"] != undefined) { %>
-                                        <td><%= problems[i]["serialNumber"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                                <tr>
-                                    <td>Comments:</td>
-                                    <% if (problems[i]["comment"] != undefined) { %>
-                                        <td><%= problems[i]["comment"] %></td>
-                                    <%} else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                            </table>
+                            <% if (role == "admin") { %> <!-- Make table for admins where they can edit the selected problem -->
+                                <form action="/allProblems/<%= problems[i]["problemId"] %>?_method=PATCH" method="POST">
+                                    <table class="hidden-table table table-striped table-bordered">
+                                        <tr>
+                                            <th>Update</th>
+                                            <td name="id_update">#<%= problems[i]["problemId"] %></td> <!-- Display id of selected row -->
+                                        </tr>
+                                        <tr>
+                                            <td>Problem ID:</td>
+                                            <td><%= problems[i]["problemId"] %></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Problem Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                            <td><input type="text" id="update-name" name="name" class="form-control" value="<%= problems[i]["problemName"] %>"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Problem Type:</td>
+                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                                <select id="update-type" name="type" class="form-select">
+                                                    <% for (var j = 0; j < problemTypes.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if (problemTypes[j]["problem_type_id"] == problems[i]["problemTypeId"] ) {%>
+                                                            <option selected><%= problemTypes[j]["problem_type"] %></option>
+                                                        <% } else { %>  
+                                                            <option value="<%= problemTypes[j]["problem_type"] %>"><%= problemTypes[j]["problem_type"] %></option>   
+                                                        <% } %>
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Problem Description:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                            <td><textarea id="update-desc" name="desc" class="form-control" cols="40" rows="5"><%= problems[i]["problemDesc"] %></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Solution:</td>
+                                            <% if (problems[i]["solution"] != undefined) { %>
+                                                <td><%= problems[i]["solution"] %></td>
+                                            <%} else { %>
+                                                <td>N/A</td>
+                                            <% } %>
+                                        </tr>
+                                        <tr>
+                                            <td>Last Specialist:</td>
+                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                                <select id="update-lastSpecialist" name="lastSpecialist" class="form-select">
+                                                    <% if (problems[i]["lastSpecialistName"] == null) { %> <!-- Display none if problem was submitted with no last specialist -->
+                                                        <option value="NULL" selected>None</option>
+                                                    <% } else { %> 
+                                                        <option value="NULL">None</option>
+                                                    <% } %> 
+                                                    <% for (var j = 0; j < uniqueSpecialists.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if ((uniqueSpecialists[j]["name"] == problems[i]["lastSpecialistName"])) {%>
+                                                            <option selected><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %> - |
+                                                                <% for (var k = 0; k < specialists.length; k++) {  %> <!-- Display specialist assigned with loop adding each specialty of problem type -->
+                                                                    <% if (specialists[k]["name"] == uniqueSpecialists[j]["name"]) {%>
+                                                                        <%= specialists[k]["specialty"] %> |
+                                                                    <% } %>    
+                                                                <% }  %></option>
+                                                        <% } else { %>  
+                                                            <option value="<%= uniqueSpecialists[j]["id"] %>"><%= uniqueSpecialists[j]["id"] %> - <%= uniqueSpecialists[j]["name"] %>
+                                                                <% for (var k = 0; k < specialists.length; k++) {  %> <!-- Display specialist assigned with loop adding each specialty of problem type -->
+                                                                    <% if (specialists[k]["name"] == uniqueSpecialists[j]["name"]) {%>
+                                                                        <%= specialists[k]["specialty"] %> |
+                                                                    <% } %>    
+                                                                <% }  %></option>
+                                                        <% } %>    
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Current Specialist:</td>
+                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                                <% for (var j = 0; j < uniqueSpecialists.length; j++) { %>
+                                                    <% if (problems[i]["specialistName"] == uniqueSpecialists[j]["name"]) {%>
+                                                            <%= uniqueSpecialists[j]["name"] %> - | <!-- Display specialist assigned with loop adding each specialty of problem type -->
+                                                            <% for (var k = 0; k < specialists.length; k++) {  %>
+                                                                <% if (specialists[k]["name"] == uniqueSpecialists[j]["name"]) {%>
+                                                                    <%= specialists[k]["specialty"] %> |
+                                                                <% } %>    
+                                                            <% }  %>
+                                                    <% } %>
+                                                <% } %> 
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Opened on:</td>
+                                            <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Closed on:</td>
+                                            <% if (problems[i]["dateClosed"] != undefined) { %>
+                                                <td><%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %></td>
+                                            <%} else { %>
+                                                <td>N/A</td>
+                                            <% } %>
+                                        </tr>
+                                        <tr>
+                                            <td>Operating System:</td>
+                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                                <select id="update-os" name="os" class="form-select">
+                                                    <% if (problems[i]["OS"] == null) { %> <!-- Display none if problem was submitted with no os -->
+                                                        <option value="NULL" selected>None</option>
+                                                    <% } else { %> 
+                                                        <option value="NULL">None</option>
+                                                    <% } %> 
+                                                    <% for (var j = 0; j < os.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if (os[j]["name"] == problems[i]["OS"] ) {%>
+                                                            <option selected><%= os[j]["os_id"] %> - <%= os[j]["name"] %></option>
+                                                        <% } else { %>  
+                                                            <option value="<%= os[j]["os_id"] %>"><%= os[j]["os_id"] %> - <%= os[j]["name"] %></option>   
+                                                        <% } %>
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Software:</td>
+                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                                <select id="update-software" name="software" class="form-select">
+                                                    <% if (problems[i]["softwareName"] == null) { %> <!-- Display none if problem was submitted with no software -->
+                                                        <option value="NULL" selected>None</option>
+                                                    <% } else { %> 
+                                                        <option value="NULL">None</option>
+                                                    <% } %> 
+                                                    <% for (var j = 0; j < software.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if (software[j]["name"] == problems[i]["softwareName"] ) {%>
+                                                            <option selected><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %></option>
+                                                        <% } else { %>  
+                                                            <option value="<%= software[j]["software_id"] %>"><%= software[j]["software_id"] %> - <%= software[j]["name"] %> - <%= software[j]["license"] %> - <%= problems[i]["softwareType"] %></option>   
+                                                        <% } %>    
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Hardware Id:</td>
+                                            <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                                <select id="update-hardware" name="hardware" class="form-select">
+                                                    <% if (problems[i]["hardwareName"] == null) { %> <!-- Display none if problem was submitted with no hardware --> 
+                                                        <option value="NULL" selected>None</option>
+                                                    <% } else { %> 
+                                                        <option value="NULL">None</option>
+                                                    <% } %> 
+                                                    <% for (var j = 0; j < hardware.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                        <% if (hardware[j]["name"] == problems[i]["hardwareName"] ) {%>
+                                                            <option selected><%= hardware[j]["hardware_id"] %> - <%= hardware[j]["name"] %> - <%= hardware[j]["serial"] %></option>
+                                                        <% } else { %>  
+                                                            <option value="<%= hardware[j]["hardware_id"] %>"><%= hardware[j]["hardware_id"] %> - <%= hardware[j]["name"] %> - <%= hardware[j]["serial"] %> - <%= problems[i]["hardwareType"] %></option>   
+                                                        <% } %>
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Comments:</td>
+                                            <% if (problems[i]["comment"] != undefined) { %>
+                                                <td><%= problems[i]["comment"] %></td>
+                                            <%} else { %>
+                                                <td>N/A</td>
+                                            <% } %>
+                                        </tr>
+                                        <tr>
+                                            <td>Submit:</td>
+                                            <td><input type="submit" id= "delete" name="delete" value="Delete"
+                                                class="btn btn-dark w-50 px-0 px-m-3" placeholder="Delete"><input type="submit" id= "update" name="update" value="Update"
+                                                class="btn btn-dark w-50 px-0 px-m-3" placeholder="Update"></td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            <% } else { %> <!-- If any other user make table just display selected problem details -->
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <td>Problem ID:</td>
+                                        <td><%= problems[i]["problemId"] %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Problem Type:</td>
+                                        <% if (problems[i]["problemType"] != undefined) { %>
+                                            <td><%= problems[i]["problemType"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Problem Description:</td>
+                                        <td><%= problems[i]["problemName"] %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Solution:</td>
+                                        <% if (problems[i]["solution"] != undefined) { %>
+                                            <td><%= problems[i]["solution"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Specialist Name:</td>
+                                        <% if (problems[i]["specialistName"] != undefined) { %>
+                                            <td><%= problems[i]["specialistName"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Opened on:</td>
+                                        <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Closed on:</td>
+                                        <% if (problems[i]["dateClosed"] != undefined) { %>
+                                            <td><%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Operating System:</td>
+                                        <% if (problems[i]["OS"] != undefined) { %>
+                                            <td><%= problems[i]["OS"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Software Name:</td>
+                                        <% if (problems[i]["softwareName"] != undefined) { %>
+                                            <td><%= problems[i]["softwareName"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Software Type:</td>
+                                        <% if (problems[i]["softwareType"] != undefined) { %>
+                                            <td><%= problems[i]["softwareType"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Device Name:</td>
+                                        <% if (problems[i]["hardwareName"] != undefined) { %>
+                                            <td><%= problems[i]["hardwareName"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Equipment type:</td>
+                                        <% if (problems[i]["hardwareType"] != undefined) { %>
+                                            <td><%= problems[i]["hardwareType"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Serial Number:</td>
+                                        <% if (problems[i]["serialNumber"] != undefined) { %>
+                                            <td><%= problems[i]["serialNumber"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Comments:</td>
+                                        <% if (problems[i]["comment"] != undefined) { %>
+                                            <td><%= problems[i]["comment"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                </table>
+                            <% } %>
                             <br>
                         </div>
                     </td>

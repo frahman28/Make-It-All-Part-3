@@ -14,6 +14,7 @@ var os = require("./os");
 var solutionUtils = require("./solution");
 var problemTypes = require("./problem-type-functions");
 var problemUtils = require("./problems-functions");
+var specialist = require("./specialists");
 
 // route:  GET /
 // access: ALL NOT LOGGED IN
@@ -57,6 +58,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                 problems.name as problemName,
+                problems.problem_description as problemDesc,
                 problems.problem_type_id as problemTypeId,
                 problems.software_id as problemSoftwareId,
                 problems.hardware_id as problemHardwareId,
@@ -107,13 +109,25 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function (req, res, next) {
+app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async function (req, res, next) {
+
+    //Get all hardware, software, os, problem types and specialists to display in update tables as options
+    var allSoftware = await software.getAllSoftware(req, res);
+    var allHardware = await hardware.getAllHardware(req, res);
+    var allOS = await os.getAllOS(req, res);
+    var allProblemTypes = await problemTypes.getAllProblemTypes();
+    var allSpecialists = await specialist.getAllSpecialists();
+    var eachSpecialist = await specialist.getUniqueSpecialists();
+
     // Retrieve details about user's open problems.
     conn.query(`SELECT problems.problem_id as problemId,
                     problems.name as problemName,
+                    problems.problem_description as problemDesc,
+                    problems.problem_type_id as problemTypeId,
                     employee as reportedById,
                     employees.name as reportedByName,
                     specialists.name as specialistName,
+                    lastSpecialists.name as lastSpecialistName,
                     opened_on as dateOpened,
                     closed_on as dateClosed,
                     status,
@@ -128,6 +142,8 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
                 FROM problems
                 JOIN employees as specialists 
                     ON specialists.employee_id = assigned_to
+                LEFT JOIN employees as lastSpecialists
+                    ON lastSpecialists.employee_id = last_reviewed_by
                 JOIN employees 
                     ON employees.employee_id = employee
                 LEFT JOIN os 
@@ -164,7 +180,13 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), function 
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: rows,
-                                                role: req.session.userRole});                    // array of problems.
+                                                role: req.session.userRole,             // used for dynamic rendering (decides which column should be displayed).
+                                                hardware: allHardware,                  // array of hardware to display as options.
+                                                software: allSoftware,                  // array of software to display as options.
+                                                os: allOS,                              // array of os to display as options.    
+                                                problemTypes: allProblemTypes,          // array of problem types to display as options.
+                                                specialists: allSpecialists,            // array of specialists to display as options.
+                                                uniqueSpecialists: eachSpecialist}); // array of each unique specialist to display as options.
         }
     });
 });
@@ -427,7 +449,7 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
                             }
                         })
         }
-        if (hardware != 'N/A') { //If hardware has valid input
+        if (hardware) { //If hardware has valid input
             if (hardware == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -459,7 +481,7 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
                             })
             }
         }
-        if (software != 'N/A') { //If software has valid input
+        if (software) { //If software has valid input
             if (software == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -491,7 +513,7 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
                             })
             }                
         }
-        if (os != 'N/A') { //If os has valid input
+        if (os) { //If os has valid input
             if (os == 'NULL') {
                 conn.query(`UPDATE 
                             problems
@@ -513,6 +535,238 @@ app.patch('/myProblems/:id', checkRoles("specialist", "employee"), function (req
     } catch (err) {
         console.log(err);
         res.render({ message: "Error in request" });
+    }
+})
+
+//Patch route allows user to edit name, type, software, hardware, os, assigned specialist, last specialist for any problem
+//Access to admin users
+app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
+    const { name, desc, type, hardware, software, os, specialist, lastSpecialist } = req.body;
+    const id = parseInt(req.params.id);
+
+    if (req.body.update) {
+        try { //Update each attribute seperately incase certain attributes are not inputted
+            if (name) { //If name value is inputted
+                conn.query(`UPDATE 
+                            problems
+                            SET
+                            name = '${name}'
+                            WHERE
+                            problem_id = '${id}'`);
+            }
+            if (desc) { //If description value is inputted
+                conn.query(`UPDATE 
+                            problems
+                            SET
+                            problem_description = '${desc}'
+                            WHERE
+                            problem_id = '${id}'`);
+            } else { //If description value is not inputted
+                conn.query(`UPDATE 
+                            problems
+                            SET
+                            problem_description = NULL
+                            WHERE
+                            problem_id = '${id}'`);
+            }
+            if (type) { //If type value is inputted
+                conn.query(`SELECT 
+                            *
+                            FROM 
+                            problem_types
+                            WHERE
+                            problem_type = '${type}'`,
+                            function(err, rows) { //Get data from problem types to use to update problem type id
+                                if (err) {
+                                    console.error('Error: ' + err);
+                                } else {
+                                    const type_id = rows[0]["problem_type_id"]
+                                    conn.query(`UPDATE 
+                                                problems
+                                                SET
+                                                problem_type_id = '${type_id}'
+                                                WHERE
+                                                problem_id = '${id}'`);
+                                }
+                            })
+            }
+            if (hardware) { //If hardware has valid input
+                if (hardware == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                hardware_id = NULL,
+                                serial = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else { 
+                    conn.query(`SELECT 
+                                *
+                                FROM 
+                                hardware_relation
+                                WHERE
+                                hardware_id = '${hardware}'`,
+                                function(err, rows) { //Get serial number from relation table of submitted id then update problems table
+                                    if (err) {
+                                        console.error('Error: ' + err);
+                                    } else {
+                                        const serial = rows[0]["serial"]
+                                        conn.query(`UPDATE 
+                                                    problems
+                                                    SET
+                                                    hardware_id = '${hardware}',
+                                                    serial = '${serial}'
+                                                    WHERE
+                                                    problem_id = '${id}'`);
+                                    }
+                                })
+                }
+            }
+            if (software) { //If software has valid input
+                if (software == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                software_id = NULL,
+                                license = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else {
+                    conn.query(`SELECT 
+                                *
+                                FROM 
+                                software_relation
+                                WHERE
+                                software_id = '${software}'`,
+                                function(err, rows) { //Get license number from relation table of submitted id then update problems table
+                                    if (err) {
+                                        console.error('Error: ' + err);
+                                    } else {
+                                        const license = rows[0]["license"]
+                                        conn.query(`UPDATE 
+                                                    problems
+                                                    SET
+                                                    software_id = '${software}',
+                                                    license = '${license}'
+                                                    WHERE
+                                                    problem_id = '${id}'`);
+                                    }
+                                })
+                }                
+            }
+            if (os) { //If os has valid input
+                if (os == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                os_id = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else { 
+                    conn.query(`UPDATE
+                                problems
+                                SET
+                                os_id = '${os}'
+                                WHERE
+                                problem_id = '${id}'`);
+                }
+            }
+            if (specialist) {
+                if (specialist == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                assigned_to = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else { 
+                    conn.query(`UPDATE
+                                problems
+                                SET
+                                assigned_to = '${specialist}'
+                                WHERE
+                                problem_id = '${id}'`);
+                }
+            }
+            if (lastSpecialist) {
+                if (lastSpecialist == 'NULL') {
+                    conn.query(`UPDATE 
+                                problems
+                                SET
+                                last_reviewed_by = NULL
+                                WHERE
+                                problem_id = '${id}'`);
+                } else { 
+                    conn.query(`UPDATE
+                                problems
+                                SET
+                                last_reviewed_by = '${lastSpecialist}'
+                                WHERE
+                                problem_id = '${id}'`);
+                }
+            }
+            res.status(200);
+            res.redirect('/allProblems'); //Direct user back to dashboard with problems updated
+        } catch (err) {
+            console.log(err);
+            res.render({ message: "Error in request" });
+        }
+    } else if (req.body.delete) {
+        try { //Delete from foreign key dependecies first then from problem table
+            conn.query(`DELETE
+                        FROM 
+                        solutions
+                        WHERE
+                        problem_id = '${id}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                console.log(rows);
+                            }
+                        })
+            conn.query(`DELETE
+                        FROM 
+                        comments
+                        WHERE
+                        problem_id = '${id}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                console.log(rows);
+                            }
+                        })
+            conn.query(`DELETE
+                        FROM 
+                        problem_status_relation
+                        WHERE
+                        problem_id = '${id}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                console.log(rows);
+                            }
+                        })
+            conn.query(`DELETE
+                        FROM 
+                        problems
+                        WHERE
+                        problem_id = '${id}'`,
+                        function(err, rows) {
+                            if (err) {
+                                console.error('Error: ' + err);
+                            } else {
+                                console.log(rows);
+                            }
+                        })
+            res.status(200);
+            res.redirect('/allProblems'); //Direct user back to dashboard with problems updated
+        } catch (err) {
+            console.log(err);
+            res.render({ message: "Error in request" });
+        }
     }
 })
 
