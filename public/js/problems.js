@@ -81,7 +81,22 @@ $(document).ready(function () {
         }
     });
 
+
+    $("#submitProblemButton").on("click", function() {
+        if ($("#hardware").val().length < 1 && $("#software").val().length < 1 ) {
+            console.log("Hardware ", $("#hardware").val().length);
+            console.log("Software ", $("#software").val().length);
+            $("#license")[0].setCustomValidity("At least one of the following must be non-empty: license, serial number.");
+            $("#serialNumber")[0].setCustomValidity("At least one of the following must be non-empty: license, serial number.");
+        } else {
+            $("#license")[0].setCustomValidity("");
+            $("#serialNumber")[0].setCustomValidity("");
+        }
+    })
+    
+
     $("#license").on("change keydown keyup input paste", function () {
+        console.log($(this).val().length)
         let optionFound = false;
         let selectedOption = $(this).val();
         $("#licenseList option").each(function() {
@@ -100,7 +115,7 @@ $(document).ready(function () {
                 return;
             }
         });
-
+        
         // use the setCustomValidity function of the Validation API
         // to provide an user feedback if the value does not exist in the datalist
         if (optionFound || selectedOption.length < 1) {

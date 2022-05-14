@@ -235,8 +235,6 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
     let problemDesription = req.body.problemDesription;
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
-
-    console.log(req.body);
     
     let openedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
     let asssignedSpecialist;
