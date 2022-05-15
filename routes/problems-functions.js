@@ -174,16 +174,12 @@ var updateProblemStatus = function (problemId, statusId) {
     });
 };
 
-var setProblemClosed = function (problemId, isClosed) {
-  var query = "";
-  if (isClosed) {
-    var closedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    query = `, closed_on = ${conn.escape(closedOn)}`;
-  }
+var setProblemClosed = function (problemId) {
+  var closedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
   return new Promise((resolve, reject) => {
       conn.query(`
       UPDATE problems
-      SET solved = 1, closed = 1 ${query}
+      SET solved = 1, closed = 1, closed_on = ${conn.escape(closedOn)}
       WHERE problem_id = ${problemId};`,
       (err, results) => {
           if (err) throw err;
@@ -191,6 +187,18 @@ var setProblemClosed = function (problemId, isClosed) {
       });
   });
 };
+
+var deleteSolution = function(problemId) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      DELETE FROM solutions WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+  
+}
 
 var setProblemSolved = function (problemId, solved) {
   return new Promise((resolve, reject) => {
@@ -241,6 +249,7 @@ var createProblem = function (problemName,
 
   module.exports = {
     getAllProblems,
+    deleteSolution,
     getProblemById,
     deleteProblemById,
     reassignSpecialist,

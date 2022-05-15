@@ -147,6 +147,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async fun
                 software.name as softwareName,
                 type_of_software.type as softwareType,
                 solut.comment as solution,
+                spec.name as solutionProvider,
                 hardware.name as hardwareName,
                 type_of_hardware.type as hardwareType,
                 hardware_relation.serial as serialNumber
@@ -177,6 +178,8 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async fun
                 ON solutions.problem_id = problems.problem_id
             LEFT JOIN comments AS solut 
                 ON solut.comment_id = solutions.comment_id
+            LEFT JOIN employees AS spec 
+                ON solut.author = spec.employee_id
             ORDER BY problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
@@ -293,7 +296,7 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
 
     if (solution.length > 0) {
         await problemUtils.updateProblemStatus(newProblemId.insertId, 3);
-        await problemUtils.setProblemClosed(newProblemId.insertId, false);
+        await problemUtils.setProblemSolved(newProblemId.insertId, 1);
         
         let problemSolution = await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solution);
         await solutionUtils.linkProblemToSolution(newProblemId.insertId, problemSolution.insertId);
@@ -371,10 +374,14 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist"), asyn
     }
     
     await problemUtils.updateProblemStatus(problemId, 3);
-    await problemUtils.setProblemSolved(problemId, 1);
 
-    let clodedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    await problemUtils.setProblemSolutionDate(problemId, clodedOn);
+    if (req.session.userRole == "employee") {
+        await problemUtils.setProblemClosed(problemId);
+    }
+    else {
+        await problemUtils.setProblemSolved(problemId, 1);
+    }
+
 
     return res.redirect('/myProblems');
 });
@@ -434,6 +441,10 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
     await problemUtils.updateProblemStatus(problemId, 1);
     await problemUtils.setProblemSolved(problemId, 0);
 
+    if (problem[0].solved) {
+        await problemUtils.deleteSolution(problemId);
+    }
+
     var previousSpecialistName = await problemUtils.getEmployeeName(problem[0].assignedSpecialist);
     var newSpecialistName = await problemUtils.getEmployeeName(asssignedSpecialist);
     await solutionUtils.addComments(problemId, req.session.userId, "Reassigned Specialist from " + previousSpecialistName[0].name + " to " + newSpecialistName[0].name + ".");
@@ -457,7 +468,7 @@ app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), asyn
         return res.sendStatus(401);
     }
     console.log("PROBLEM ", problemId, " RESOLVED");
-    await problemUtils.setProblemClosed(problemId, true);
+    await problemUtils.setProblemClosed(problemId);
 
     return res.redirect('../myProblems');
 });
