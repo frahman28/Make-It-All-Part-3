@@ -113,10 +113,11 @@ router.get("/create-employee", checkRoles("admin"), async (req, res) => {
   var jobTitles = await employeesUtils.getJobTitles();
   var companyRoles = await employeesUtils.getAllRoles();
   res.render("createEmployee", {
-    username: req.session.userName,
+    userName: req.session.userName,
     companyRoles: companyRoles,
     jobTitles: jobTitles,
     departments: departments,
+    role: req.session.userRole,
   });
 });
 
