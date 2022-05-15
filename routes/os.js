@@ -18,7 +18,6 @@ var getAllOS = function() {
                         reject(err);
                         console.error('Error: ' + err);
                     } else {
-                        console.log(rows);
                         return resolve(rows); 
                     }
                 })
@@ -40,7 +39,6 @@ var getOSById = function(req) {
                             reject(err);
                             console.error('Error: ' + err);
                         } else {
-                            console.log(rows);
                             return resolve(rows); 
                         }
                     })
@@ -99,7 +97,6 @@ var deleteOS = function(req, res) {
                             console.error('Error: ' + err);
                             return resolve(err);
                         } else {
-                            console.log(rows);
                             return resolve(rows)
                         }
                     })

@@ -45,43 +45,50 @@
             </div>
         </div>
     </nav>
-    <br>  
+    <br>
     <div class="container">
         <table class="hidden-table table table-striped table-bordered">
             <!-- Display route (Add/Update/Delete) and equipment type as table header -->
             <tr>
-                <th><%= message %></th>
+                <th>
+                    <%= message %>
+                </th>
                 <th></th>
             </tr>
             <!-- Display data being Added/Updated/Deleted according equipment type -->
-            <% for (var i = 0; i < columns.length; i++) {%> 
-            <tr>
-                <td> <%= columns[i] %>: </td>
-                <td> <%= data[i] %> </td>
-            </tr>
-            <% } %> 
+            <% for (var i=0; i < columns.length; i++) {%>
+                <tr>
+                    <td>
+                        <%= columns[i] %>:
+                    </td>
+                    <td>
+                        <%= data[i] %>
+                    </td>
+                </tr>
+                <% } %>
         </table>
     </div>
     <br>
 
-        <script>
-            $(document).ready(function(){
-              $("#search-area").on("keyup", function() {
+    <script>
+        $(document).ready(function () {
+            $("#search-area").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
-                $("#view-equipment-table tr").filter(function() {
-                    $(this).toggle($(this).find(("#search-by").value).text().toLowerCase().indexOf(value) > -1)                });
-              });
+                $("#view-equipment-table tr").filter(function () {
+                    $(this).toggle($(this).find(("#search-by").value).text().toLowerCase().indexOf(value) > -1)
+                });
             });
+        });
 
-            var checkUrl = window.location.href;
+        var checkUrl = window.location.href;
 
-            if (checkUrl.substring(checkUrl.length-12, checkUrl.length) == 'CannotDelete') {
-                alert("Cannot Delete the Row");
-                window.location = '/viewEquipment';
-            }
+        if (checkUrl.substring(checkUrl.length - 12, checkUrl.length) == 'CannotDelete') {
+            alert("Cannot Delete the Row");
+            window.location = '/viewEquipment';
+        }
 
-            
-        </script>
+
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"

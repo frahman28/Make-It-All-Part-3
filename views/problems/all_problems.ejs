@@ -97,9 +97,6 @@
                         <div class="status">
                             <!-- Check if problem has been closed nd if so, correct its label. -->
                             <% if (problems[i]["closed"] == 1) { %>
-                                Closed
-                            <!-- Check if problem has been solved and if so, correct its label. -->
-                            <%} else if (problems[i]["solved"] == 1) { %>
                                 Solved
                             <!-- Check if missing status for the problem. -->
                             <%} else if (problems[i]["status"] == null ) { %>
@@ -301,13 +298,13 @@
                                         <% } %>
                                     </tr>
                                     <tr>
-                                        <td>Problem Description:</td>
+                                        <td>Problem Name:</td>
                                         <td><%= problems[i]["problemName"] %></td>
                                     </tr>
                                     <tr>
-                                        <td>Solution:</td>
-                                        <% if (problems[i]["solution"] != undefined) { %>
-                                            <td><%= problems[i]["solution"] %></td>
+                                        <td>Problem Description:</td>
+                                        <% if (problems[i]["problemDescription"] != undefined) { %>
+                                            <td><%= problems[i]["problemDescription"] %></td>
                                         <%} else { %>
                                             <td>N/A</td>
                                         <% } %>
@@ -381,12 +378,29 @@
                                         <% } %>
                                     </tr>
                                     <tr>
-                                        <td>Comments:</td>
-                                        <% if (problems[i]["comment"] != undefined) { %>
-                                            <td><%= problems[i]["comment"] %></td>
+                                        <td>Solution:</td>
+                                        <% if (problems[i]["solution"] != undefined) { %>
+                                            <td><%= problems[i]["solution"] %></td>
                                         <%} else { %>
                                             <td>N/A</td>
                                         <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Problem Notes:</td>
+                                        <td>
+                                        <% var commentCount = 0; %>
+                                        <% for(var j=0; j<problemNotes.length; j++) {%>
+                                            <% if (problems[i]["problemId"] == problemNotes[j]["problemId"]) { %>
+                                                <% commentCount = commentCount+1; %>
+                                                <%= problemNotes[j]["comment"] %> - <strong><%= problemNotes[j]["name"] %></strong> <br>
+                                            <% } %>
+                                        <% } %>
+    
+                                        <% if (commentCount < 1) { %>
+                                            N/A
+                                        <% } %>
+    
+                                        </td>
                                     </tr>
                                 </table>
                             <% } %>
