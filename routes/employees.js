@@ -23,6 +23,10 @@ const getSQLForJoinEmployee = (whereClause = "") => {
   return sql;
 };
 
+router.get("/create", (req, res) => {
+  res.render("createEmployee");
+});
+
 router.get("/api", verifySession, (req, res) => {
   // This default /api will get all of the employees from the database
   conn.query(getSQLForJoinEmployee(), function (err, results) {
