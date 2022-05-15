@@ -36,7 +36,7 @@ app.get('/', function (req, res, next) {
 // Navigates users of role Admin or Adviser to their own
 // dashboards.
 app.get('/dashboard', checkRoles("admin", "adviser"), function (req, res, next) {
-    res.render('dashboard');
+    res.render('dashboard', {userName: req.session.userName, role: req.session.userRole});
 });
 
 
@@ -118,7 +118,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async function (req, res, next) {
+app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser"), async function (req, res, next) {
 
     //Get all hardware, software, os, problem types and specialists to display in update tables as options
     var allSoftware = await software.getAllSoftware(req, res);
