@@ -5,7 +5,6 @@ $(document).ready(function() {
         if ($("#new-password").val().length == 0) {
             valid = false;
             alert = "Missing new password.";
-            console.log("test3");
         }
         if ($("#confirm-new-password").val().length == 0) {
             valid = false;
@@ -24,9 +23,9 @@ $(document).ready(function() {
             }
         }
         if (valid == true) {
-            if ($("#new-password").val().length < 6) {
+            if ($("#new-password").val().length < 5) {
                 valid = false;
-                alert = "Password must be at least 6 characters long.";
+                alert = "Password must be at least 5 characters long.";
             }
             else if ($("#new-password").val().length > 256) {
                 valid = false;
