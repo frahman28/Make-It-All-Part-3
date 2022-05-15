@@ -204,7 +204,7 @@ var setProblemSolved = function (problemId, solved) {
   return new Promise((resolve, reject) => {
       conn.query(`
       UPDATE problems
-      SET solved = ${solved}, closed = 0
+      SET solved = ${solved}, closed = 0, closed_on = NULL
       WHERE problem_id = ${problemId};`,
       (err, results) => {
           if (err) throw err;
