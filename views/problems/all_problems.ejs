@@ -149,7 +149,7 @@
                                         <tr>
                                             <td>Solution:</td>
                                             <% if (problems[i]["solution"] != undefined) { %>
-                                                <td><%= problems[i]["solution"] %></td>
+                                                <td><%= problems[i]["solution"] %> - <strong><%= problems[i]["solutionProvider"] %></strong></td>
                                             <%} else { %>
                                                 <td>N/A</td>
                                             <% } %>
@@ -310,14 +310,6 @@
                                         <% } %>
                                     </tr>
                                     <tr>
-                                        <td>Specialist Name:</td>
-                                        <% if (problems[i]["specialistName"] != undefined) { %>
-                                            <td><%= problems[i]["specialistName"] %></td>
-                                        <%} else { %>
-                                            <td>N/A</td>
-                                        <% } %>
-                                    </tr>
-                                    <tr>
                                         <td>Opened on:</td>
                                         <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
                                     </tr>
@@ -378,9 +370,17 @@
                                         <% } %>
                                     </tr>
                                     <tr>
+                                        <td>Specialist Name:</td>
+                                        <% if (problems[i]["specialistName"] != undefined) { %>
+                                            <td><%= problems[i]["specialistName"] %></td>
+                                        <%} else { %>
+                                            <td>N/A</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
                                         <td>Solution:</td>
                                         <% if (problems[i]["solution"] != undefined) { %>
-                                            <td><%= problems[i]["solution"] %></td>
+                                            <td><%= problems[i]["solution"] %> - <strong><%= problems[i]["solutionProvider"] %></strong></td>
                                         <%} else { %>
                                             <td>N/A</td>
                                         <% } %>
