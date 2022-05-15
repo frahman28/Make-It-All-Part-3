@@ -34,22 +34,23 @@ var getSolutionForProblemId = function(problemId) {
     return new Promise((resolve, reject) => {
         conn.query(`
             SELECT solutions.problem_id as problemId, 
-                name as problemName, 
-                problem_type as problemType, 
-                solut.comment as solution, 
-                comments.comment as solutionNotes, 
-                assigned_to as resolvedBy 
-            FROM problems 
-            LEFT JOIN solutions 
-                ON solutions.problem_id = problems.problem_id 
-            LEFT JOIN comments AS solut 
-                ON solut.comment_id = solutions.comment_id 
-            LEFT JOIN comments 
-                ON comments.problem_id = problems.problem_id 
-                AND comments.comment_id NOT IN (select comment_id FROM solutions) 
-            JOIN problem_types 
-                ON problem_types.problem_type_id = problems.problem_type_id 
-            WHERE solutions.problem_id = ${problemId};`,
+            name as problemName, 
+            problem_type as problemType, 
+            solut.comment as solution, 
+            comments.author as author,
+            comments.comment as solutionNotes, 
+            assigned_to as resolvedBy 
+        FROM problems 
+        LEFT JOIN solutions 
+            ON solutions.problem_id = problems.problem_id 
+        LEFT JOIN comments AS solut 
+            ON solut.comment_id = solutions.comment_id 
+        LEFT JOIN comments 
+            ON comments.problem_id = problems.problem_id 
+            AND comments.comment_id NOT IN (select comment_id FROM solutions) 
+        JOIN problem_types 
+            ON problem_types.problem_type_id = problems.problem_type_id 
+        WHERE solutions.problem_id = ${problemId} ORDER BY comments.comment_id DESC LIMIT 1;`,
                 function(err, rows) { 
                     if (err) {
                         reject(err);

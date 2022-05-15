@@ -21,11 +21,11 @@
         <img class="text-center logo" src="../images/logo.png" alt="make-it-all">
     </div>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-links">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="main-links">
+      <div class="container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-links">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="main-links">
               <ul class="navbar-nav">
                 <% if (role == 'specialist' || role == 'employee') { %>
                     <li class="nav-item px-4"><a href="../myProblems" class="nav-link">Home</a></li>
@@ -51,17 +51,17 @@
                     <li class="nav-item dropdown  px-4">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                           <!-- Render user's username -->
-                          <%= userName %>
-                        </a>
-                        <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                          <li><a class="dropdown-item" href="../settings">Settings</a></li>
-                          <li><a class="dropdown-item" href="../logout">Logout</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+                          <%= userName %> 
+                      </a>
+                      <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="../settings">Settings</a></li>
+                        <li><a class="dropdown-item" href="../logout">Logout</a></li>
+                      </ul>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
     <br><br>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
@@ -390,7 +390,7 @@
 <% if ((role == "specialist" && typeof problem != 'undefined') && (role == "specialist" && problem[0]["lastReviewedBy"] != currentUser)) { %>
 <div  class="panel" style="max-height: 998px;">
   <br><br>
-  <h4 class="text-center">Do you think you're this problem is for you?</h4>
+  <h4 class="text-center">Do you think this problem is for you?</h4>
   <p class="container col-10 text-center">The system assigned you a new problem. You can accept or reject it, if you don't think that is something you can solve.</p>
   <div class="container">
     <div class="row">
