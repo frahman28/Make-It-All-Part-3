@@ -11,6 +11,7 @@
     rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/employee_styles.css">
     <script src="../js/problems.js" defer></script>
+    <script src="../js/search-functions.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -342,15 +343,8 @@
   <br>
 
   <div class="row">
-    <div class = "leftCol">
-      <select name="Filter" id="solutionColumn">
-          <option value="0">Problem Name</option>
-          <option value="1">Solution</option>
-          <option value="2">Problem Type</option>
-        </select>
-    </div>
     <div class = "rightCol">
-      <input list="solutions" id = "solutionSearch" name="solutionSearch" onkeyup="solutionsFunction()">
+      <input list="solutions" id = "solution-search" name="solution-search">
     </div>
   </div>
 
@@ -362,14 +356,34 @@
         <th>Problem Name</th>
         <th>Problem Type</th>
         <th>Solution</th>
+        <th>Equipment</th>
       </tr>
     </thead>
     <tbody>
       <% for(var i=0; i<solution.length; i++) {%>
-        <tr>
+        <tr class="solution-row">
             <td><%= solution[i]["problemName"] %></td>
             <td><%= solution[i]["problemType"] %></td>
             <td><%= solution[i]["solution"] %></td>
+            <td>
+              <ul>
+                <% if (solution[i]["hardwareName"] != null) { %>
+                  <li><%= solution[i]["hardwareName"] %> (<%= solution[i]["serial"] %>)</li>
+                <% } %>
+
+                <% if (solution[i]["softwareName"] != null) { %>
+                  <li><%= solution[i]["softwareName"] %> (<%= solution[i]["license"] %>)</li>
+                <% } %>
+
+                <% if (solution[i]["osName"] != null) { %>
+                  <li><%= solution[i]["osName"] %></li>
+                <% } %>
+              </ul>
+            </td>
+             
+            <td class="d-none"><%= solution[i]["problemDescription"] %></td>
+            <td class="d-none"><%= solution[i]["osName"] %></td>
+
         </tr>
     <% } %>
     </tbody>
