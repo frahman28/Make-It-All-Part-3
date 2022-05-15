@@ -147,6 +147,12 @@
                                 </tr>
                                 <tr>
                                     <td>Role:</td>
+                                    <% if (employees[i]["role"] == "Admin") { %>
+                                        <td>
+                                            Admin
+                                            <input type="text" value="1" name="role_id" hidden="hidden"> <!-- Pass role id through as default for admin -->
+                                        </td> 
+                                    <% } else { %>     
                                     <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                         <select id="update-role" name="role_id" class="form-select">
                                             <% for (var j = 0; j < companyRoles.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
@@ -158,6 +164,7 @@
                                             <% } %>
                                         </select>
                                     </td>
+                                    <% } %> 
                                 </tr>
                                 <% if (employees[i]["role"] == "Specialist" ) {%>
                                     <tr>
