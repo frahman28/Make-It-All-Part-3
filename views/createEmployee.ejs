@@ -20,6 +20,7 @@
     />
     <link rel="stylesheet" href="../css/createEmployee.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="../js/createEmployee.js"></script>
     <title>Create employee</title>
   </head>
   <body style="min-height: 100vh; position: relative; overflow-x: hidden">
@@ -89,7 +90,7 @@
 
     <div class="container">
       <section class="container-fluid">
-        <form method="post" id="problemSubmissionForm">
+        <form action="" id="problemSubmissionForm">
           <label for="employee-id">Employee ID</label>
           <input
             type="number"
@@ -99,7 +100,10 @@
             max="999999"
             required
           />
-          <small hidden class="error">Employee ID already exists</small>
+          <small class="error" id="employee-id-error"
+            >Employee ID already exists</small
+          >
+          <br />
           <label for="employee-name">Employee name</label>
           <input
             type="text"
@@ -108,11 +112,32 @@
             required
           />
           <label for="role-id">Role</label>
-          <select name="role-id" id="role-id-input" required></select>
+          <select name="role-id" id="role-id-input" required>
+            <% for (var j = 0; j < companyRoles.length; j++ ) {%>
+            <!-- Loop through types to display and automatically display selected rows type -->
+            <option value="<%= companyRoles[j]['role_id'] %>">
+              <%= companyRoles[j]["role"] %>
+            </option>
+            <% } %>
+          </select>
           <label for="title">Job Title</label>
-          <select name="title" id="title-input" required></select>
+          <select name="title" id="title-input" required>
+            <% for (var j = 0; j < jobTitles.length; j++ ) {%>
+            <!-- Loop through types to display and automatically display selected rows type -->
+            <option value="<%= jobTitles[j]['title_id'] %>">
+              <%= jobTitles[j]["title"] %>
+            </option>
+            <% } %>
+          </select>
           <label for="department">Department</label>
-          <select name="department" id="department-input" required></select>
+          <select name="department" id="department-input" required>
+            <% for (var j = 0; j < departments.length; j++ ) {%>
+            <!-- Loop through types to display and automatically display selected rows type -->
+            <option value="<%= departments[j]['department_id'] %>">
+              <%= departments[j]["name"] %>
+            </option>
+            <% } %>
+          </select>
           <label for="ext-num">Extension Number</label>
           <input
             type="number"
@@ -138,11 +163,15 @@
             id="login-username-input"
             required
           />
+          <small class="error" id="login-username-error"
+            >Username already in use</small
+          >
+          <br />
           <label for="login-password">Login password</label>
           <input
             type="password"
             name="login-username"
-            id="login-username-input"
+            id="login-password-input"
             required
           />
           <br />
