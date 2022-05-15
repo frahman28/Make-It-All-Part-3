@@ -26,7 +26,7 @@ const getSQLForJoinEmployee = (whereClause = "") => {
   return sql;
 };
 
-router.post("/create-employee", async (req, res) => {
+router.post("/create-employee", checkRoles("admin"), async (req, res) => {
   let {
     employee_id,
     name,
@@ -108,18 +108,19 @@ router.post("/create-employee", async (req, res) => {
   });
 });
 
-router.get("/create-employee", async (req, res) => {
+router.get("/create-employee", checkRoles("admin"), async (req, res) => {
   var departments = await employeesUtils.getAllDepartments();
   var jobTitles = await employeesUtils.getJobTitles();
   var companyRoles = await employeesUtils.getAllRoles();
   res.render("createEmployee", {
+    username: req.session.userName,
     companyRoles: companyRoles,
     jobTitles: jobTitles,
     departments: departments,
   });
 });
 
-router.get("/api", (req, res) => {
+router.get("/api", checkRoles("admin"), (req, res) => {
   // This default /api will get all of the employees from the database
   conn.query(getSQLForJoinEmployee(), function (err, results) {
     if (err) throw err;
@@ -127,7 +128,7 @@ router.get("/api", (req, res) => {
   });
 });
 
-router.get("/api/usernames/all", async (req, res) => {
+router.get("/api/usernames/all", checkRoles("admin"), async (req, res) => {
   var usernames = await employeesUtils.getAllUsernames();
   return res.json({ success: true, data: usernames });
 });
