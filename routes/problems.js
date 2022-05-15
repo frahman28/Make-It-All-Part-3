@@ -118,7 +118,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 // Navigates users of role Specialist or Employee to their own
 // dashboards. Displays for each of them their assigned or reported problems,
 // which have not been resolved.
-app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async function (req, res, next) {
+app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser"), async function (req, res, next) {
 
     //Get all hardware, software, os, problem types and specialists to display in update tables as options
     var allSoftware = await software.getAllSoftware(req, res);
@@ -138,7 +138,6 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async fun
                 employee as reportedById,
                 employees.name as reportedByName,
                 specialists.name as specialistName,
-                lastSpecialists.name as lastSpecialistName,
                 opened_on as dateOpened,
                 closed_on as dateClosed,
                 status,
@@ -147,14 +146,13 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async fun
                 software.name as softwareName,
                 type_of_software.type as softwareType,
                 solut.comment as solution,
+                spec.name as solutionProvider,
                 hardware.name as hardwareName,
                 type_of_hardware.type as hardwareType,
                 hardware_relation.serial as serialNumber
             FROM problems
             JOIN employees as specialists 
                 ON specialists.employee_id = assigned_to
-            LEFT JOIN employees as lastSpecialists
-                ON lastSpecialists.employee_id = last_reviewed_by
             JOIN employees 
                 ON employees.employee_id = employee
             LEFT JOIN os 
@@ -177,6 +175,8 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin"), async fun
                 ON solutions.problem_id = problems.problem_id
             LEFT JOIN comments AS solut 
                 ON solut.comment_id = solutions.comment_id
+            LEFT JOIN employees AS spec 
+                ON solut.author = spec.employee_id
             ORDER BY problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
@@ -293,7 +293,7 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
 
     if (solution.length > 0) {
         await problemUtils.updateProblemStatus(newProblemId.insertId, 3);
-        await problemUtils.setProblemClosed(newProblemId.insertId, false);
+        await problemUtils.setProblemSolved(newProblemId.insertId, 1);
         
         let problemSolution = await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solution);
         await solutionUtils.linkProblemToSolution(newProblemId.insertId, problemSolution.insertId);
@@ -371,10 +371,14 @@ app.post("/submitProblem/:problemId", checkRoles("employee", "specialist"), asyn
     }
     
     await problemUtils.updateProblemStatus(problemId, 3);
-    await problemUtils.setProblemSolved(problemId, 1);
 
-    let clodedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    await problemUtils.setProblemSolutionDate(problemId, clodedOn);
+    if (req.session.userRole == "employee") {
+        await problemUtils.setProblemClosed(problemId);
+    }
+    else {
+        await problemUtils.setProblemSolved(problemId, 1);
+    }
+
 
     return res.redirect('/myProblems');
 });
@@ -434,6 +438,10 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
     await problemUtils.updateProblemStatus(problemId, 1);
     await problemUtils.setProblemSolved(problemId, 0);
 
+    if (problem[0].solved) {
+        await problemUtils.deleteSolution(problemId);
+    }
+
     var previousSpecialistName = await problemUtils.getEmployeeName(problem[0].assignedSpecialist);
     var newSpecialistName = await problemUtils.getEmployeeName(asssignedSpecialist);
     await solutionUtils.addComments(problemId, req.session.userId, "Reassigned Specialist from " + previousSpecialistName[0].name + " to " + newSpecialistName[0].name + ".");
@@ -457,7 +465,7 @@ app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), asyn
         return res.sendStatus(401);
     }
     console.log("PROBLEM ", problemId, " RESOLVED");
-    await problemUtils.setProblemClosed(problemId, true);
+    await problemUtils.setProblemClosed(problemId);
 
     return res.redirect('../myProblems');
 });
@@ -485,8 +493,11 @@ app.post('/myProblems/:id', checkRoles("employee"), async function (req, res) {
 
 //Patch route allows user to edit name, type, software, hardware, os, assigned specialist, last specialist for any problem
 //Access to admin users
-app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
+app.patch('/allProblems/:id', checkRoles("admin"), async function (req, res) {
     const { name, desc, type, hardware, software, os, specialist, lastSpecialist } = req.body;
+    console.log("------------BODY------------")
+
+    console.log(req.body)
     const id = parseInt(req.params.id);
 
     if (req.body.update) {
@@ -555,7 +566,7 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
                                     if (err) {
                                         console.error('Error: ' + err);
                                     } else {
-                                        const serial = rows[0]["serial"]
+                                        const serial = rows[0]["serial"];
                                         conn.query(`UPDATE 
                                                     problems
                                                     SET
@@ -616,40 +627,21 @@ app.patch('/allProblems/:id', checkRoles("admin"), function (req, res) {
                                 problem_id = '${id}'`);
                 }
             }
-            if (specialist) {
-                if (specialist == 'NULL') {
-                    conn.query(`UPDATE 
-                                problems
-                                SET
-                                assigned_to = NULL
-                                WHERE
-                                problem_id = '${id}'`);
-                } else { 
-                    conn.query(`UPDATE
-                                problems
-                                SET
-                                assigned_to = '${specialist}'
-                                WHERE
-                                problem_id = '${id}'`);
-                }
-            }
+            console.log("------------SPECIALIST------------")
+            console.log(lastSpecialist, specialist)
             if (lastSpecialist) {
-                if (lastSpecialist == 'NULL') {
-                    conn.query(`UPDATE 
-                                problems
-                                SET
-                                last_reviewed_by = NULL
-                                WHERE
-                                problem_id = '${id}'`);
-                } else { 
-                    conn.query(`UPDATE
-                                problems
-                                SET
-                                last_reviewed_by = '${lastSpecialist}'
-                                WHERE
-                                problem_id = '${id}'`);
+                if (lastSpecialist != specialist) {
+                    await problemUtils.reassignSpecialist(id, lastSpecialist);
+                    await problemUtils.updateProblemStatus(id, 1);
+                    await problemUtils.setProblemSolved(id, 0);
+                    await problemUtils.deleteSolution(id);
+        
+                    var previousSpecialistName = await problemUtils.getEmployeeName(specialist);
+                    var newSpecialistName = await problemUtils.getEmployeeName(lastSpecialist);
+                    await solutionUtils.addComments(id, req.session.userId, "Reassigned Specialist from " + previousSpecialistName[0].name + " to " + newSpecialistName[0].name + ".");
                 }
             }
+            
             res.status(200);
             res.redirect('/allProblems'); //Direct user back to dashboard with problems updated
         } catch (err) {
