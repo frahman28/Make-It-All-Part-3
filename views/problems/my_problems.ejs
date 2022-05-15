@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/employee_styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="../js/problems.js" defer></script>
+    <title>My Problems</title>
+</head>
+<body>
+    <div class="text-center image-div">
+        <img class="text-center logo" src="../images/logo.png" alt="make-it-all">
+    </div>
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-links">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="main-links">
+                <ul class="navbar-nav">
+                    <li class="nav-item px-4"><a href="myProblems" class="nav-link">Home</a></li>
+                    <% if (role == 'specialist' || role == 'employee') { %>
+                        <li class="nav-item px-4"><a href="submitProblem" class="nav-link">Submit a Problem</a></li>
+                    <% } %>
+                    <li class="nav-item px-4"><a href="allProblems" class="nav-link">All Problems</a></li>
+                    <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
+                        <li class="nav-item px-4"><a href="viewEquipment" class="nav-link">Equipment</a></li>
+                    <% } %>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown px-4">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <!-- Render user's username -->
+                            <%= userName %>
+                        </a>
+                        <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+                          <li><a class="dropdown-item" href="../settings">Settings</a></li>
+                          <li><a class="dropdown-item" href="../logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br><br>
+    <div class="container">
+        <table class="my-problem-table table table-bordered">
+            <tr class="table-secondary">
+                <th>Problem ID</th>
+                <th>Problem Date</th>
+                <th>Problem Name</th>
+                
+                <!-- If current user is a specialist or admin, render the column's name. -->
+                <% if (role == "specialist" || role == "admin") { %>
+                    <th>Reported by</th>
+                <% } %>
+
+                <!-- If current user is an employee or admin, render the column's name. -->
+                <% if (role == "employee" || role == "admin") { %>
+                    <th>Specialist Assigned</th>
+                <% } %>       
+
+                <th>Status</th>
+
+                <th></th>
+                
+            </tr>
+            <!-- Loop through all user's problems and render their details. -->
+            <% for(var i=0; i<problems.length; i++) {%>
+                <tr>
+                    <td>#<%= problems[i]["problemId"] %></td>
+                    <td><%= moment(problems[i]["dateOpened"]).format('Do MMMM, YYYY') %></td>
+                    <td><%= problems[i]["problemName"] %></td>
+
+                    <!-- If current user is a specialist or admin, render names of employees who reported the problem. -->
+                    <% if (role == "specialist" || role == "admin") { %>
+                        <td><%= problems[i]["reportedByName"] %></td>
+                    <% } %>
+
+                    <!-- If current user is an employee or admin, render names of specialists who are assigned to the problem. -->
+                    <% if (role == "employee" || role == "admin") { %>
+                        <td><%= problems[i]["specialistName"] %></td>
+                    <% } %>  
+
+                    <td>
+                        <div class="status">
+                             <!-- Check if problem has been solved and if so, correct its label. -->
+                            <%= problems[i]["status"] %>
+                        </div>
+                    </td>
+
+                    <td>
+                    <% if (role == 'specialist') { %>
+                        <% if (problems[i]["lastReviewedBy"] != currentUser) { %>
+                            <a class="btn btn-secondary" href='submitProblem/<%= problems[i]["problemId"] %>'>Lookup</a>
+                        <% } else if (problems[i]["solved"] == 0) { %>
+                            <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
+                        <% } %>
+                    <% } else { %>
+                        <% if (problems[i]["solved"] == 1) { %>
+                            <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
+                        <% } else { %>
+                            <a class="btn btn-secondary editNotesButton">Add Note</a>
+                        <% } %>
+                    <% } %>
+                    </td>   
+                </tr>
+
+                <tr>
+                    <% if (role == "employee") { %> <!-- Allow employees to be able to edit their problems -->
+                    <td class="hidden-data" colspan="6">
+                        <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
+                            <br>
+                            <form action="/myProblems/<%= problems[i]['problemId'] %>" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <td>Problem Note:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td>
+                                            <textarea id="add-note" name="problemNote" class="form-control" cols="40" rows="5"></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </table>
+                            </form>
+                            <br>
+                        </div>
+                    </td>
+                    <% } %>
+                </tr>
+
+            <% } %>
+        </table>
+    </div>
+<div class="invisible user-role"><%= role %></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+</html>

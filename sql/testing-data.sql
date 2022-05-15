@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 20, 2022 at 08:52 PM
+-- Generation Time: May 08, 2022 at 09:47 PM
 -- Server version: 5.5.68-MariaDB
--- PHP Version: 8.0.17
+-- PHP Version: 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -31,7 +31,7 @@ INSERT INTO `comments` (`comment_id`, `problem_id`, `author`, `comment`) VALUES
 --
 
 INSERT INTO `company_roles` (`role_id`, `role`) VALUES
-(1, 'Administrator'),
+(1, 'Admin'),
 (2, 'Adviser'),
 (3, 'Employee'),
 (4, 'Manager'),
@@ -58,7 +58,8 @@ INSERT INTO `employees` (`employee_id`, `name`, `role_id`, `extension`, `externa
 (400393, 'Terry Perry', 2, '104', 0, 1),
 (573827, 'Dave Davidson', 2, '105', 0, 1),
 (609093, 'Lisa Poole', 3, '106', 0, 1),
-(737277, 'Johnny Ipkiss', 3, '107', 0, 1);
+(737277, 'Johnny Ipkiss', 3, '107', 0, 1),
+(768799, 'Miles Upshur', 1, '127', 0, 1);
 
 --
 -- Dumping data for table `employee_problem_type_relation`
@@ -67,13 +68,13 @@ INSERT INTO `employees` (`employee_id`, `name`, `role_id`, `extension`, `externa
 INSERT INTO `employee_problem_type_relation` (`employee_id`, `problem_type_id`) VALUES
 (126711, 1),
 (126711, 4),
+(126711, 5),
 (126711, 6),
 (126711, 7),
-(126711, 9),
 (228787, 2),
-(228787, 3),
-(228787, 8),
-(329922, 3);
+(228787, 9),
+(329922, 3),
+(329922, 8);
 
 --
 -- Dumping data for table `hardware`
@@ -107,12 +108,12 @@ INSERT INTO `hardware_relation` (`hardware_id`, `serial`) VALUES
 (5, '299388'),
 (6, '635635'),
 (7, '272718'),
-(8, '127827'),
-(9, '726188'),
-(10, '898181'),
-(11, '919882'),
-(12, '299388'),
-(13, '635635'),
+(8, '127821'),
+(9, '726185'),
+(10, '898180'),
+(11, '919881'),
+(12, '299389'),
+(13, '635636'),
 (14, '288738');
 
 --
@@ -126,7 +127,8 @@ INSERT INTO `job_info` (`employee_id`, `title_id`, `department_id`) VALUES
 (400393, 4, 2),
 (573827, 4, 2),
 (609093, 1, 1),
-(737277, 1, 1);
+(737277, 1, 1),
+(768799, 6, 3);
 
 --
 -- Dumping data for table `job_title`
@@ -134,6 +136,7 @@ INSERT INTO `job_info` (`employee_id`, `title_id`, `department_id`) VALUES
 
 INSERT INTO `job_title` (`title_id`, `title`) VALUES
 (1, 'Employee'),
+(6, 'General Administrator'),
 (2, 'Operations Manager'),
 (3, 'Senior Manager'),
 (4, 'Technical Adviser'),
@@ -144,13 +147,14 @@ INSERT INTO `job_title` (`title_id`, `title`) VALUES
 --
 
 INSERT INTO `login_info` (`employee_id`, `password`, `username`) VALUES
-(126711, 'specialist', 'bthompson'),
-(228787, 'specialist', 'chart'),
-(329922, 'specialist', 'njefferson'),
-(400393, 'adviser', 'tperry'),
-(573827, 'adviser', 'bigddavidson'),
-(609093, 'employee', 'lpoole'),
-(737277, 'employee', 'jipkiss');
+(126711, '$2a$15$52hdF/KGr0PISjAG9dBOGePi5nyNSHksToroeyr6gcGSTRMzW3vUi', 'bthompson'),
+(228787, '$2a$15$52hdF/KGr0PISjAG9dBOGePi5nyNSHksToroeyr6gcGSTRMzW3vUi', 'chart'),
+(329922, '$2a$15$52hdF/KGr0PISjAG9dBOGePi5nyNSHksToroeyr6gcGSTRMzW3vUi', 'njefferson'),
+(400393, '$2a$15$VMv21TgBN76umEcpEYzrRupXKENrT2.NKmxaj6i5O4Zz9/QEOKi96', 'tperry'),
+(573827, '$2a$15$VMv21TgBN76umEcpEYzrRupXKENrT2.NKmxaj6i5O4Zz9/QEOKi96', 'bigddavidson'),
+(609093, '$2a$15$sbT60XaES9wqX1kW6T0gPufmX1UJ8gokcNvcEKmdJYTS1U49ddfZK', 'lpoole'),
+(737277, '$2a$15$sbT60XaES9wqX1kW6T0gPufmX1UJ8gokcNvcEKmdJYTS1U49ddfZK', 'jipkiss'),
+(768799, '$2a$15$XnaFVh9xQZ84cltiYBciu.gMJdtQAhd04Z/C6fHrs5U0uWaXBPtKy', 'mupshur');
 
 --
 -- Dumping data for table `os`
@@ -168,14 +172,14 @@ INSERT INTO `os` (`os_id`, `name`) VALUES
 -- Dumping data for table `problems`
 --
 
-INSERT INTO `problems` (`problem_id`, `name`, `problem_type_id`, `software_id`, `hardware_id`, `license`, `serial`, `last_reviewed_by`, `employee`, `assigned_to`, `solved`, `closed`, `closed_on`, `opened_on`, `os_id`) VALUES
-(1, 'Dropped laptop in water.', 1, NULL, 5, NULL, '299388', 126711, 609093, 126711, 1, 1, '2022-03-15', '2022-03-09', 4),
-(2, 'Chrome keeps freezing.', 2, 1, 9, '122611', '726188', 228787, 737277, 228787, 1, 1, '2022-03-09', '2022-03-03', 6),
-(3, 'Bluetooth not connecting to laptop.', 3, NULL, 1, NULL, '127827', NULL, 737277, 329922, 0, 0, NULL, '2022-03-09', 5),
-(4, 'Computer not booting up.', 1, NULL, 9, NULL, '726188', NULL, 609093, 126711, 0, 0, NULL, '2022-03-09', 5),
-(5, 'Application crashes frequently.', 2, 2, 4, '898282', '919882', NULL, 609093, 228787, 0, 0, NULL, '2022-03-04', 2),
-(6, 'Word keeps crashing when pasting an image in', 9, 4, NULL, NULL, '127827', 126711, 737277, 126711, 0, 1, '2022-04-02', '2022-02-02', 4),
-(7, 'Internet not auto connecting on startup', 8, NULL, NULL, NULL, '288738', 126711, 737277, 126711, 0, 1, '2022-03-20', '2022-02-10', 3);
+INSERT INTO `problems` (`problem_id`, `name`, `problem_description`, `problem_type_id`, `software_id`, `hardware_id`, `license`, `serial`, `last_reviewed_by`, `employee`, `assigned_to`, `solved`, `closed`, `closed_on`, `opened_on`, `os_id`) VALUES
+(1, 'Dropped laptop in water.', NULL, 1, NULL, 5, NULL, '299388', 126711, 609093, 126711, 1, 1, '2022-03-15', '2022-03-09', 4),
+(2, 'Chrome keeps freezing.', NULL, 2, 1, 9, '122611', '726188', 228787, 737277, 228787, 1, 1, '2022-03-09', '2022-03-03', 6),
+(3, 'Bluetooth not connecting to laptop.', 'No matter which device I use, it doesnt seem to work.', 3, NULL, 1, NULL, '127827', NULL, 737277, 329922, 0, 0, NULL, '2022-03-09', 5),
+(4, 'Computer not booting up.', NULL, 1, NULL, 9, NULL, '726185', NULL, 609093, 126711, 0, 0, NULL, '2022-03-09', 5),
+(5, 'Application crashes frequently.', 'The computer makes weird noises.', 2, 2, 4, '898282', '919882', NULL, 609093, 228787, 0, 0, NULL, '2022-03-04', 2),
+(6, 'Word keeps crashing when pasting an image in', NULL, 9, 4, 1, NULL, '127827', 126711, 737277, 126711, 0, 1, '2022-04-02', '2022-02-02', 4),
+(7, 'Internet not auto connecting on startup', 'Ive tried restarting the computer, but it didnt work.', 8, NULL, 14, NULL, '288738', 126711, 737277, 126711, 0, 1, '2022-03-20', '2022-02-10', 3);
 
 --
 -- Dumping data for table `problem_status`
@@ -183,7 +187,7 @@ INSERT INTO `problems` (`problem_id`, `name`, `problem_type_id`, `software_id`, 
 
 INSERT INTO `problem_status` (`status_id`, `status`) VALUES
 (1, 'Awaiting support'),
-(2, 'Comments recieved'),
+(2, 'Comments received'),
 (3, 'Pending solution');
 
 --
@@ -209,6 +213,7 @@ INSERT INTO `problem_types` (`problem_type_id`, `problem_type`, `child_of`) VALU
 (7, 'Keyboard', 1),
 (8, 'Internet', 3),
 (9, 'Word', 2);
+
 --
 -- Dumping data for table `software`
 --
@@ -260,5 +265,6 @@ INSERT INTO `type_of_software` (`type_id`, `type`) VALUES
 (2, 'Driver'),
 (3, 'Firmware'),
 (4, 'Operating System');
+
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;

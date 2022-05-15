@@ -1,66 +1,92 @@
-var createError  = require('http-errors');
-var express      = require('express');
-var path         = require('path');
-var cookieParser = require('cookie-parser');
-var morgan       = require("morgan");
-var helmet       = require("helmet");
-var cors         = require("cors");
-var ejs          = require('ejs');
-const session    = require('express-session');
+var createError = require("http-errors");
+var express = require("express");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var morgan = require("morgan");
+var helmet = require("helmet");
+var cors = require("cors");
+var ejs = require("ejs");
+const session = require("express-session");
+var flash = require("connect-flash");
+const { secretKey, salt } = require("./constants");
+const methodOverride = require("method-override");
 
-const c          = require("./dbcreate");
+// Uncomment to populate the database with testing data.
+// const c          = require("./dbcreate");
 
-var indexRouter  = require('./routes/auth');
-var usersRouter  = require('./routes/employees');
+var indexRouter = require("./routes/auth");
+var problemTypeRouter = require("./routes/problem-type");
+var analysisRouter = require("./routes/analysis");
+var problemsRouter = require("./routes/problems");
+var usersRouter = require("./routes/employees");
+var equipmentRouter = require("./routes/equipment");
 
+// Initialize the app.
 var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+// Set up view engine.
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 app.use(express.json());
 
-// for better display in the terminal
+// Set up sessions.
+app.use(
+  session({
+    secret: secretKey,
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+// Use flash messages in the app.
+app.use(flash());
+
+// Show details in console whilst debugging.
 app.use(morgan("common"));
 
-// for HTTP protection
-app.use(helmet());
+// Protect HTTP requests.
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
-// for cross-origin sources
+// Handle Cross-Origin errors.
 app.use(cors());
 
 app.use(express.urlencoded({ extended: false }));
 
-// cookie parser middleware
+// Include module for PATCH and DELETE routes
+app.use(methodOverride("_method"));
+
+// Enable cookies.
 app.use(cookieParser());
 
-// images
-app.use(express.static(path.join(__dirname, 'public')));
+// Set up static files path.
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use(session({
-	secret: 'team015-make-it-all-2022',
-	resave: true,
-	saveUninitialized: true
-}));
+// Add routes.
+app.use("/", indexRouter);
+app.use("/", problemsRouter);
+app.use("/", equipmentRouter);
+app.use("/employee", usersRouter);
+app.use("/problem-type", problemTypeRouter);
+app.use("/analysis", analysisRouter);
 
-// Add middleware
-app.use('/', indexRouter);
-app.use('/employee', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
+// Catch 404 and forward to error handler.
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+// Error handler.
+app.use(function (err, req, res, next) {
+  // Set locals, only providing error in development.
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
+  // Render the error page.
   res.status(err.status || 500);
-  res.render('error');
+  res.render("error", { errorMessage: err });
 });
 
 module.exports = app;

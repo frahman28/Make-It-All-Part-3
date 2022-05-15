@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/formatClean.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+
+    rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/employee_styles.css">
+    <script src="../js/problems.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Submit Problem</title>
+</head>
+<body style="min-height: 100vh; position: relative; overflow-x: hidden;">
+    <div class="text-center image-div">
+        <img class="text-center logo" src="../images/logo.png" alt="make-it-all">
+    </div>
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-links">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="main-links">
+              <ul class="navbar-nav">
+                <% if (role == 'specialist' || role == 'employee') { %>
+                    <li class="nav-item px-4"><a href="../myProblems" class="nav-link">Home</a></li>
+                <% } else { %>
+                    <li class="nav-item px-4"><a href="../dashboard" class="nav-link">Home</a></li>
+                <% } %>
+                
+                <% if (role == 'specialist' || role == 'employee') { %>
+                    <li class="nav-item px-4"><a href="../submitProblem" class="nav-link">Submit a Problem</a></li>
+                <% } %>
+                <li class="nav-item px-4"><a href="../allProblems" class="nav-link">All Problems</a></li>
+                <% if (role == 'admin') { %>
+                    <li class="nav-item px-4"><a href="../allEmployees" class="nav-link">All Employees</a></li>
+                    <li class="nav-item px-4"><a href="/problem-type/manage-problem-types" class="nav-link">Edit problem types</a></li>
+                    <li class="nav-item px-4"><a href="/edit-availability" class="nav-link">Edit availability</a></li>
+                <% } %>
+                <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
+                    <li class="nav-item px-4"><a href="../viewEquipment" class="nav-link">Equipment</a></li>
+                <% } %>
+            </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown  px-4">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <!-- Render user's username -->
+                          <%= userName %>
+                        </a>
+                        <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+                          <li><a class="dropdown-item" href="../settings">Settings</a></li>
+                          <li><a class="dropdown-item" href="../logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br><br>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+<section class = "container-fluid">
+
+  <form method="post" id="problemSubmissionForm">
+
+<div class = "row">
+
+  <article class = "col-sm-6 mb-4">
+    <div class="accordion">Problem Details</div>
+      <div class="panel" style="max-height: 998px;">
+        <br>
+        <h3> Problem Details </h3>
+        
+        <div class="row">
+          <div class = "leftCol">
+            <label for="problemName">Problem Name: </label>
+          </div>
+          <div class = "rightCol">
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id = "problemName" name="problemName"  disabled="disabled" value="<%= problem[0]['problemName'] %>">
+            <% } else{ %>  
+              <input type="text" id = "problemName" name="problemName" required>
+           <% } %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="problemType">Problem Type: </label>
+          </div>
+          <div class = "rightCol">
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id = "problemType" name="problemType" disabled="disabled" value="<%= problem[0]["problemType"] %>">
+            <% } else{ %>  
+              <select id = "problemType" name="problemType" >
+                <% for(var i=0; i<problemTypes.length; i++) {%>
+                    <option value="<%= problemTypes[i]["problem_type_id"] %>" ><%= problemTypes[i]["problem_type"] %></option>
+                <% } %>
+              </select>
+           <% } %>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="operatingSystem">OS: </label>
+          </div>
+          <div class = "rightCol">
+
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id="operatingSystem" name="operatingSystem" disabled="disabled" value="<%= problem[0]['OSName'] %>">
+            <% } else{ %>  
+
+              <select id="operatingSystem" name="operatingSystem">
+                <option value="">Select OS</option>
+                <% for(var i=0; i<os.length; i++) {%>
+                  <option value="<%= os[i]['os_id'] %>">
+                    <%= os[i]["name"] %>
+                  </option>
+                <% } %>
+              </select>
+
+           <% } %>
+            
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="license">License: </label>
+          </div>
+          <div class = "rightCol">
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id="license" name="license" disabled="disabled" value="<%= problem[0]["license"] %>">
+            <% } else{ %>  
+              <input list="licenseList" id="license" name="license" placeholder="License">
+              
+           <% } %>
+            
+            <datalist id="licenseList">
+              <% for(var i=0; i<software.length; i++) {%>
+                  <option value="<%= software[i]["license"] %>"data-value='<%= software[i]["software_id"] %>'>
+                    <%= software[i]["name"] %></option>
+              <% } %>
+
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="software">Software: </label>
+          </div>
+          <div class = "rightCol">
+            
+
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id="software" name="software" disabled="disabled" value="<%= problem[0]["softwareName"] %>">
+            <% } else{ %>  
+              <input list="text" id = "software" value="" readonly="readonly" placeholder="Provide a license first.">
+              <input type="hidden" name="software" id="softwareHidden">
+           <% } %>
+
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="serialNumber">Serial Number: </label>
+          </div>
+          <div class = "rightCol">
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id = "serialNumber" name="serialNumber" disabled="disabled" value="<%= problem[0]["serial"] %>">
+            <% } else{ %>  
+              <input list="serialNumbers" id="serialNumber" name="serialNumber" placeholder="Serial number">
+           <% } %>
+            
+            <datalist id="serialNumbers">
+              <% for(var i=0; i<hardware.length; i++) {%>
+                <option data-value='<%= hardware[i]["hardware_id"] %>' value='<%= hardware[i]["serial"] %>'>
+                  <%= hardware[i]["name"] %>
+                </option>
+            <% } %>
+
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="hardware">Hardware: </label>
+          </div>
+          <div class = "rightCol">
+
+            <% if (typeof problem != 'undefined'){ %>
+              <input type="text" id="hardware" name="hardware" disabled="disabled" value="<%= problem[0]["hardwareName"] %>">
+            <% } else{ %>  
+              <input type="text" id = "hardware"  readonly="readonly" placeholder="Provide a serial number first." >
+              <input type="hidden" name="hardware" id="hardwareHidden">
+           <% } %>
+
+          </div>
+        </div>        
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="problemDesription">Problem Description: </label>
+          </div>
+          <div class = "rightCol">
+            
+            <% if (typeof problem != 'undefined'){ %>
+              <textarea name="problemDesription" disabled="disabled" id="problemDesription" rows="5" cols="40"><%= problem[0]["problemDescription"] %></textarea>
+            <% } else{ %>  
+              <textarea name="problemDesription" id="problemDesription" rows="5" cols="40"></textarea>
+           <% } %>
+            
+          </div>
+        </div>
+        <br>
+        <br>
+        
+
+      </div>
+
+      <br>
+
+     
+
+
+  </article>
+
+
+  <article class = "col-sm-6">
+<% if ((role == "employee") || (role == "specialist" && typeof problem == 'undefined') || (role == "specialist" && problem[0]["lastReviewedBy"] == currentUser)) { %>
+
+<div id="lookupTables">
+<div class="accordion">Solution</div>
+      <div class="panel">
+        <br>
+        <h3> Solution </h3>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="solution">Solution: </label>
+          </div>
+          <div class = "rightCol">
+            <% if (typeof problemSolution != 'undefined') { %> 
+              <input type="text" id = "solution" name="solution" disabled="disabled" value="<%= problemSolution[0]["solution"] %>"> 
+            <% } else { %> 
+              <input type="text" id = "solution" name="solution"> 
+            <% } %>          
+          </div>
+        </div>
+
+        <div class="row">
+          <div class = "leftCol">
+            <label for="solutionNotes">Solution Notes: </label>
+          </div>
+          <div class = "rightCol">
+            <% if (typeof problemSolution != 'undefined') { %> 
+              <textarea name="solutionNotes" id="solutionNotes" disabled="disabled" rows="5" cols="40"><%= problemSolution[0]["solutionNotes"] %></textarea>
+            <% } else { %> 
+              <textarea name="solutionNotes" id="solutionNotes" rows="5" cols="40"></textarea>
+            <% } %> 
+          </div>
+        </div>
+
+        <% if (typeof problemSolution != 'undefined' && role == "employee") { %> 
+          <div class="row">
+            <div class=" d-flex justify-content-end">
+              <a class = "mb-4 mt-2 btn-lg btn btn-success mx-2" href="../resolveProblem/<%= problem[0]['problem_id'] %>"> Mark as Resolved </a>
+              <a class = "mb-4 mt-2 btn-lg btn btn-secondary" href="../reassignProblem/<%= problem[0]['problem_id'] %>"> Didn't work </a>
+            </div>
+            </div>
+        <% } else if (role == "specialist") { %> 
+          <input type="submit" name="largeSubmit" class="mb-4 mt-2 btn-lg w-100">
+        <% } %> 
+      
+      </div>
+      <% if (typeof problemNotes != 'undefined' && role == "specialist") { %>    
+      <div class="accordion">Look up Problem Notes</div>
+      <div class="panel">
+      
+        <br>
+      
+        <!-- <div class="row">
+          <div class = "leftCol">
+            <select name="Filter" id="solutionColumn">
+                <option value="0">Problem Name</option>
+                <option value="1">Solution</option>
+                <option value="2">Problem Type</option>
+              </select>
+          </div>
+          <div class = "rightCol">
+            <input list="solutions" id = "solutionSearch" name="solutionSearch" onkeyup="solutionsFunction()">
+          </div>
+        </div>
+      
+        <br> -->
+      
+          <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Author</th>
+              <th>Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% var commentCount = 0; %>
+            <% for(var i=0; i<problemNotes.length; i++) {%>
+
+              <% if (problem[0]["problem_id"] == problemNotes[i]["problemId"]) {%>
+                <% var commentCount = commentCount + 1; %>
+              <tr>
+                  <td><%= problemNotes[i]["name"] %></td>
+                  <td><%= problemNotes[i]["comment"] %></td>
+              </tr>
+              <% } %>
+          <% } %>
+
+          <% if (commentCount == 0) {%>
+          <tr>
+              <td>N/A</td>
+              <td>No comments found!</td>
+          </tr>
+          <% } %>
+          </tbody>
+        </table>
+      <br>
+      </div>
+      <% } %>
+
+<div class="accordion">Look up Previous Solutions</div>
+<div class="panel">
+
+  <br>
+
+  <div class="row">
+    <div class = "leftCol">
+      <select name="Filter" id="solutionColumn">
+          <option value="0">Problem Name</option>
+          <option value="1">Solution</option>
+          <option value="2">Problem Type</option>
+        </select>
+    </div>
+    <div class = "rightCol">
+      <input list="solutions" id = "solutionSearch" name="solutionSearch" onkeyup="solutionsFunction()">
+    </div>
+  </div>
+
+  <br>
+
+    <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Problem Name</th>
+        <th>Problem Type</th>
+        <th>Solution</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for(var i=0; i<solution.length; i++) {%>
+        <tr>
+            <td><%= solution[i]["problemName"] %></td>
+            <td><%= solution[i]["problemType"] %></td>
+            <td><%= solution[i]["solution"] %></td>
+        </tr>
+    <% } %>
+    </tbody>
+  </table>
+<br>
+</div>
+
+<% if (role == "employee" && typeof problemSolution == 'undefined') { %>
+  <input type="submit" name="largeSubmit" id="submitProblemButton" class = "mb-4 mt-2 btn-lg w-100">
+<% } %>    
+
+<br><br><br><br><br><br>
+</div>
+<% } %>
+
+<% if ((role == "specialist" && typeof problem != 'undefined') && (role == "specialist" && problem[0]["lastReviewedBy"] != currentUser)) { %>
+<div  class="panel" style="max-height: 998px;">
+  <br><br>
+  <h4 class="text-center">Do you think you're this problem is for you?</h4>
+  <p class="container col-10 text-center">The system assigned you a new problem. You can accept or reject it, if you don't think that is something you can solve.</p>
+  <div class="container">
+    <div class="row">
+        <div  class="text-center col-12">
+            <a type="submit" class="col col-5 btn btn-lg btn-success" href="../assignProblem/<%= problem[0]['problem_id'] %>">Accept</a>
+            <a type="submit" class="col col-5 btn btn-lg btn-secondary" href="../reassignProblem/<%= problem[0]['problem_id'] %>">Reject</a>
+        </div>
+    </div>
+  </div>
+</div>
+
+<% } %>
+  </article>
+
+</div>
+</form>
+
+</section>
+
+<footer class="mt-4" style="position: absolute; left: 0; bottom: 0; width: 100vw; overflow: hidden;"></footer>
+
+</body>
+</html>
+
