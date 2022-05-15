@@ -17,9 +17,10 @@ h3 {
   text-align: center;
 }
 
-.changeData .btn {
-  background-color: rgb(255, 185, 79);
+.changeData .btn-lg {
+  background-color: #333;
   margin: 5px;
+  color: white;
 }
 .changeData input {
   margin: 5px;

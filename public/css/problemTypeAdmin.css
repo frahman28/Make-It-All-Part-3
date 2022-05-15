@@ -2,9 +2,10 @@
   width: 200px;
 }
 
-.container .btn {
-  background-color: rgb(255, 185, 79);
+.container .btn-lg {
+  background-color: #333;
   margin: 5px;
+  color: white;
 }
 .container input {
   margin: 5px;
