@@ -35,6 +35,22 @@ $(document).ready(function () {
         $(this).next().find("div").collapse("toggle");
     });
 
+    $(".external").change(function() {
+
+        if(this.checked) {
+            $(this).next().text("External Specialist")
+        } else {
+            $(this).next().text("Internal Specialist")
+        }
+    });
+
+    $(".available").change(function() {
+        if(this.checked) {
+            $(this).next().text("Available")
+        } else {
+            $(this).next().text("Away")
+        }
+    });
     $(".resolve-problem-button").click(function() {
         $(this).text() == "Resolved!" ? $(this).text("Click to Resolve.") : $(this).text("Resolved!");
         $(this).toggleClass("btn-outline-success");
