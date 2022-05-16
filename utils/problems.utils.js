@@ -1,6 +1,8 @@
 var conn = require("../dbconfig");
 
 var getAllProblems = function () {
+  // Retrieves all problems from the database, or
+  // throws an error, if unsuccessfull.
   return new Promise((resolve, reject) => {
     conn.query("SELECT * FROM problems", (err, results) => {
       if (err) throw err;
@@ -10,6 +12,8 @@ var getAllProblems = function () {
 };
 
 var getProblemById = function (problemId) {
+    // Gets information of a problem of particular id, or
+    // throws an error, if unsuccessfull.
     return new Promise((resolve, reject) => {
       conn.query(`SELECT problem_id, 
                     problems.name as problemName, 
@@ -43,6 +47,8 @@ var getProblemById = function (problemId) {
   };
 
 var reassignSpecialist = function (problemId, assignedSpecialist) {
+  // Reassigns problem of a particular id to a specific specialist,
+  //  or throws an error, if unsuccessfull.
   return new Promise((resolve, reject) => {
       conn.query(`
       UPDATE problems
@@ -57,6 +63,8 @@ var reassignSpecialist = function (problemId, assignedSpecialist) {
 
 
 var deleteProblemById = function (problemId) {
+  // Reassigns problem of a particular id to a specific specialist,
+  //  or throws an error, if unsuccessfull.
     return new Promise((resolve, reject) => {
       conn.query("SELECT * FROM problems WHERE problem_id = ?",
       problemId,

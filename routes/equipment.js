@@ -2,12 +2,12 @@ var express = require('express');
 var router = express.Router();
 
 var conn = require('../dbconfig')
-var {verifySession, checkRoles} = require("./auth.middleware")
+var {verifySession, checkRoles} = require("/utils/auth.utils")
 
 //Import all functions from hardware, software, os files to interact with database
-var {getAllHardware, getHardwareTypes, getHardwareById, addHardware, updateHardware, deleteHardware} = require('./hardware');
-var {getAllSoftware, getSoftwareTypes, getSoftwareById, addSoftware, updateSoftware, deleteSoftware} = require('./software');
-var {getAllOS, getOSById, addOS, updateOS, deleteOS} = require('./os');
+var {getAllHardware, getHardwareTypes, getHardwareById, addHardware, updateHardware, deleteHardware} = require('/utils/hardware.utils');
+var {getAllSoftware, getSoftwareTypes, getSoftwareById, addSoftware, updateSoftware, deleteSoftware} = require('/utils/software.utils');
+var {getAllOS, getOSById, addOS, updateOS, deleteOS} = require('/utils/os.utils');
 
 
 //Single get route calls functions from all files to display results on single page

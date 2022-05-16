@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { verifySession, checkRoles } = require("./auth.middleware");
+const { verifySession, checkRoles } = require("/utils/auth.utils");
 
 var conn = require("../dbconfig");
 

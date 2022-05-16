@@ -7,13 +7,13 @@ var express = require('express');
 var app     = express.Router();
 var conn    = require('../dbconfig');
 var moment  = require('moment');
-var {verifySession, checkRoles} = require("./auth.middleware");
-var software = require("./software");
-var hardware = require("./hardware");
-var os = require("./os");
-var solutionUtils = require("./solution");
-var problemTypes = require("./problem-type-functions");
-var problemUtils = require("./problems-functions");
+var {verifySession, checkRoles} = require("/utils/auth.utils");
+var software = require("/utils/software.utils");
+var hardware = require("/utils/hardware.utils");
+var os = require("/utils/os.utils");
+var solutionUtils = require("/utils/solution.utils");
+var problemTypes = require("/utils/problem-type.utils");
+var problemUtils = require("/utils/problems.utils");
 const e = require('connect-flash');
 
 // route:  GET /
@@ -23,7 +23,11 @@ const e = require('connect-flash');
 // and show error message.
 app.get('/', function (req, res, next) {
     if (req.session.userId) {
-        res.redirect('/myProblems');
+        if (user.session.userRole == "specialist" || user.session.userRole == "employee") {
+            res.redirect('/myProblems');
+        } else {
+            res.redirect('/dashboard');
+        }
     } else {
         res.redirect("../login");
     } 

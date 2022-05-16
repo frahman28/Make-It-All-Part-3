@@ -1,4 +1,4 @@
-// auth.middleware.js
+// auth.utils.js
 // Stores callbacks to handl user authorization and
 // authentication.
 
