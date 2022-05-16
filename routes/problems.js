@@ -91,7 +91,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                 ORDER BY solved DESC, problems.problem_id ASC;`,  function (err, rows) {
         if (err){
             // If error occured, return an empty array.
-            res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
+            res.render('my_problems', {userName: req.session.userName,     // displays user's username.
                                             moment: moment,                         // used for date formatting.
                                             problems: [],                           // empty array of problems.
                                             role: req.session.userRole,             // user role.
@@ -102,7 +102,7 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
 
         } else {
             // Otherwise return an array of problems..
-            res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
+            res.render('my_problems', {userName: req.session.userName,     // displays user's username.
                                             moment: moment,                         // used for date formatting.
                                             problems: rows,                         // array of problems.
                                             role: req.session.userRole,             // used for dynamic rendering (decides which column should be displayed).
@@ -184,7 +184,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser")
             ORDER BY problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
-            res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
+            res.render('all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: [],
                                                 problemNotes:[], 
@@ -197,7 +197,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser")
                                                 currentUser: req.session.userId,
                                                 role: req.session.userRole});                      // empty array of problems.
         } else {
-            res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
+            res.render('all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: rows,
                                                 problemNotes: problemNotes,
