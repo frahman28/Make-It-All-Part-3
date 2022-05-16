@@ -5,3 +5,4 @@ tperry		:	adviser
 bigddavidson	:	adviser
 lpoole		: 	employee
 jipkiss		:	employee
+mupshur		:	admin

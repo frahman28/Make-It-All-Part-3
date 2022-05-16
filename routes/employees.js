@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const { secretKey, salt } = require("../constants");
-const { verifySession, checkRoles } = require("./auth.middleware");
-const employeesUtils = require("./employees-functions");
+const { verifySession, checkRoles } = require("../utils/auth.utils");
+const employeesUtils = require("../utils/employees.utils");
 
 var conn = require("../dbconfig");
 
@@ -217,6 +217,32 @@ router.get("/api/:employee_id", verifySession, (req, res) => {
   }
 });
 
+router.get("/api/:roleID/role", verifySession, (req, res) => {
+  // This api will get an employee based on their role
+  const roleID = req.params.roleID;
+  // Check the employee id was supplied as a parameter
+  if (roleID) {
+    // Attempt to get the employee that matches the employee id
+    conn.query(
+      getSQLForJoinEmployee("WHERE employees.role_id = ?"),
+      roleID,
+      function (err, results) {
+        if (err) throw err;
+        // Check if an employee was found in the database
+        // Return the json of the employees
+        return res.json({ success: true, data: results });
+      }
+    );
+  } else {
+    return res.json({ success: false, msg: "Role ID not set" });
+  }
+});
+
+router.get("/edit-availability", checkRoles("admin"), (req, res) => {
+  // Display the availability page for admins
+  res.render("availability", { userName: req.session.userName, role: req.session.userRole });
+});
+
 router.put("/api/:employee_id", checkRoles("admin"), (req, res) => {
   // This api call is for updating an employees information
   // All updated fields are optional and do not have to be supplied
@@ -244,7 +270,8 @@ router.put("/api/:employee_id", checkRoles("admin"), (req, res) => {
     }
   }
   if (available !== undefined) {
-    if (Number.isInteger(available)) {
+    if (!isNaN(Number.parseInt(available))) {
+      available = Number.parseInt(available);
       if (available == 0 || available == 1) {
         toUpdateWith.available = available;
       }
@@ -398,7 +425,8 @@ router.put("/api/:employee_id/title", checkRoles("admin"), (req, res) => {
   );
 });
 
-// TODO
+// Patch route incorporates PUT routes systematically to update each component of employee details
+// Admin
 router.patch(
   "/updateEmployee/:employeeId",
   checkRoles("admin"),
@@ -421,9 +449,9 @@ router.patch(
       toUpdateWith.extension = extension;
     }
     if (external !== undefined) {
+      //Depending on if the checkbox value returns 'available' set variable to 1 or 0 if not so the database can understand the setting
       // These should be numbers supplied
       if (Number.isInteger(external)) {
-        // Check the number supplied can be a boolean interpreted by the database
         if (external == 0 || external == 1) {
           toUpdateWith.external = external;
         }
@@ -441,7 +469,8 @@ router.patch(
         toUpdateWith.external = 0;
       }
     }
-    if (available !== undefined) {
+    if (available !== undefined) { 
+      //Depending on if the checkbox value returns 'available' set variable to 1 or 0 if not so the database can understand the setting
       if (Number.isInteger(available)) {
         if (available == 0 || available == 1) {
           toUpdateWith.available = available;
@@ -467,14 +496,8 @@ router.patch(
         [toUpdateWith, employeeID],
         function (err, results) {
           if (err) throw err;
-          // If the affected rows is greater than 0 then the employee had its information updated
-          if (results.affectedRows > 0) {
-          } else {
-            // else no employee was updated, which means the employee couldn't be found
-          }
         }
       );
-    } else {
     }
     // This api call is used for updating an employees role in the company
     // The role is located in the body
@@ -484,7 +507,6 @@ router.patch(
       employee_id: employeeID,
       role_id: roleID,
     };
-    console.log("wtf");
     // First check that a role exists with this new role id
     conn.query(
       "SELECT * FROM company_roles WHERE role_id = ?",
@@ -499,12 +521,8 @@ router.patch(
             [toUpdateWith2, toUpdateWith2.employee_id],
             function (err, results) {
               if (err) throw err;
-              if (results.affectedRows > 0) {
-              } else {
-              }
             }
           );
-        } else {
         }
       }
     );
@@ -515,7 +533,6 @@ router.patch(
       employee_id: employeeID,
       department_id: departmentID,
     };
-    console.log("wtf2");
     conn.query(
       "SELECT * FROM departments WHERE department_id = ?",
       departmentID,
@@ -527,12 +544,8 @@ router.patch(
             [toUpdateWith3, toUpdateWith3.employee_id],
             function (err, results) {
               if (err) throw err;
-              if (results.affectedRows > 0) {
-              } else {
-              }
             }
           );
-        } else {
         }
       }
     );
@@ -543,7 +556,6 @@ router.patch(
       employee_id: employeeID,
       title_id: titleID,
     };
-    console.log("wtf3");
     conn.query(
       "SELECT * FROM job_title WHERE title_id = ?",
       titleID,
@@ -554,18 +566,13 @@ router.patch(
             "UPDATE job_info SET ? WHERE employee_id = ?",
             [toUpdateWith4, toUpdateWith4.employee_id],
             function (err, results) {
-              if (err) throw err;
-              if (results.affectedRows > 0) {
-              } else {
-              }
+              if (err) throw err; 
             }
           );
-        } else {
-        }
+        } 
       }
     );
-    console.log("wtf4");
-    return res.redirect("../allEmployees");
+    return res.redirect("../allEmployees"); //Return to all employees page
   }
 );
 

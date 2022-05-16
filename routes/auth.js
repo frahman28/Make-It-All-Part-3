@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const conn   = require('../dbconfig');
 
 const {secretKey, salt}           = require("../constants");
-const {verifySession, checkRoles} = require("./auth.middleware");
+const {verifySession, checkRoles} = require("../utils/auth.utils");
 
 
 // route:  GET /
@@ -18,7 +18,7 @@ const {verifySession, checkRoles} = require("./auth.middleware");
 // (session exists). Otherwise logs them out.
 app.get('/', function(req, res) {
   if (req.session.userId) {
-      if (req.user.userRole == "specialist" || req.user.userRole == "employee") {
+      if (req.session.userRole == "specialist" || req.session.userRole == "employee") {
         res.redirect("/myProblems")
       } else {
         res.redirect("/dashboard")

@@ -104,22 +104,31 @@
     <br /><br />
     <div class="container">
       <h3>Create new problem type</h3>
-      <label for="problemTypeName">Enter problem type name</label>
-      <input
-        type="text"
-        name="problemTypeName"
-        id="problemTypeName"
-        placeholder="Enter problem type name"
-      />
-      <label for="problemTypeForCreate">Select parent problem type</label>
-      <select name="problemTypeForCreate" id="problemTypeForCreate"></select>
+      <div class="row col-12">
+      <div class="col-lg-8 col-12">
+        <label for="problemTypeName">Enter problem type name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="problemTypeName"
+          id="problemTypeName"
+          placeholder="Enter problem type name"
+        />
+      </div>
+      <div class="col-lg-4 col-12">
+        <label for="problemTypeForCreate">Select parent problem type</label>
+        <select name="problemTypeForCreate"  class="form-control" id="problemTypeForCreate"></select>
+      </div>
+      </div>
+      
+      
       <button id="createProblemType" class="mb-4 mt-2 btn-lg">Create</button>
     </div>
     <br />
     <div class="container">
       <h3>Delete problem type</h3>
       <label for="problemTypesForDelete">Select problem type to delete</label>
-      <select name="problemTypesForDelete" id="problemTypesForDelete"></select>
+      <select name="problemTypesForDelete"  class="form-control" id="problemTypesForDelete"></select>
       <button id="deleteProblemTypeBtn" class="mb-4 mt-2 btn-lg">Delete</button>
     </div>
     <br />
@@ -128,7 +137,7 @@
       <label for="problemTypeView"
         >Select problem type to see specialists</label
       >
-      <select name="problemTypeView" id="problemTypeViewSelect"></select>
+      <select name="problemTypeView"  class="form-control" id="problemTypeViewSelect"></select>
       <br />
       <select
         multiple

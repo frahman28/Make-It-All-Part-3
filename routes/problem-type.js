@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { verifySession, checkRoles } = require("./auth.middleware");
+const { verifySession, checkRoles } = require("../utils/auth.utils");
 const {
   getAllProblemTypes,
   getAllChildrenForPromblemType,
@@ -16,8 +16,7 @@ const {
   reassignChildOf,
   createProblemTypeRelation,
   deleteProblemType,
-  getAssignedProblemTypes,
-} = require("./problem-type-functions");
+} = require("../utils/problem-type.utils");
 
 router.get(
   "/manage-problem-types",

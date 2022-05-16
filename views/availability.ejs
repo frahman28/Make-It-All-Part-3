@@ -11,12 +11,13 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="../css/employee_styles.css" />
+    <link rel="stylesheet" href="../css/edit-availability.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="../css/dashboard.css" />
+    <script src="../js/problems.js"></script>
+    <script src="../js/edit-availability.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../js/problems.js" defer></script>
-    <script src="../js/analysis.js" defer></script>
-    <title>All Problems</title>
+    <title>Edit availability</title>
   </head>
 
   <body>
@@ -104,66 +105,22 @@
     </nav>
     <br /><br />
     <div class="container">
-      <h2 class="problem-number-count">Current # of Problems Open:</h2>
-    </div>
-    <br />
-    <div class="container">
-      <h2>Problems Closed by Specialist</h2>
-      <br />
-      <canvas id="closedBySpecialist"></canvas>
-      <br />
-      <div class="changeData">
-        <div class="row col-12">
-          <div class="col-12 col-md-4">
-            <label for="startingDate">Starting Date</label>
-        <input type="date" class="form-control" name="startingDate" id="startingDateInput" />
-          </div>
-          <div class="col-12 col-md-4">
-            <label for="endDate">End Date</label>
-            <input type="date" class="form-control" name="endDate" id="endDateInput" />
-          </div>
-          <div class="col-12 col-md-4">
-            <br>
-            <button id="closedBySpecialistLookup" class="w-100 btn-dark btn btn-secondary m-3">Lookup</button>
-          </div>
-        </div>
-      </div>
+      <h2>Change availability of specialists</h2>
+      <br>
+      <label for="specialist">Select specialist</label>
+      <select name="specialist" id="specialistSelect"></select>
+      <label for="availability">Select availability</label>
+      <select name="availability" id="availabilitySelect">
+        <option value="1">Available</option>
+        <option value="0">Unavailable</option>
+      </select>
+      <button id="submitBtn" class="btn">Submit</button>
       <br />
     </div>
     <br />
-    <div class="container">
-      <h2>Problems Closed by Problem Type</h2>
-      <br />
-      <canvas id="closedByType"></canvas>
-      <br />
-      <div class="changeData">
-        <div class="row col-12">
-          <div class="col-12 col-md-4">
-            <label for="startingDate">Starting Date</label>
-            <input type="date" class="form-control" name="startingDate" id="startingDateInputType" />
-          </div>
-
-          <div class="col-12 col-md-4">
-            <label for="endDate">End Date</label>
-            <input type="date" class="form-control" name="endDate" id="endDateInputType" />
-          </div>
-
-          <div class="col-12 col-md-4">
-            <br>
-            <button id="closedByTypeLookup" class="w-100 btn-dark btn btn-secondary m-3">Lookup</button>
-
-          </div>
-        </div>
-        
-        
-      </div>
-      <br />
-    </div>
-    <br /><br />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-      crossorigin="anonymous"
-    ></script>
+    <br /><br >
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
   </body>
 </html>

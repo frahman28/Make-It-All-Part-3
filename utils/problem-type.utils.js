@@ -66,6 +66,8 @@ var getListOfSpecialistForProblemTypeExcluding = function (
   problemTypeID,
   specialistId
 ) {
+  // Retrieves all specialists, that are currently available, who don't have
+  // a specified id. This function is ued during specialist reassignment.
   return new Promise((resolve, reject) => {
     const sqlQuery = `
     SELECT employees.employee_id as specialistId, employees.name, COUNT(problems.problem_id) AS numberOfAssignedProblems

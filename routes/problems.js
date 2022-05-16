@@ -7,15 +7,15 @@ var express = require('express');
 var app     = express.Router();
 var conn    = require('../dbconfig');
 var moment  = require('moment');
-var {verifySession, checkRoles} = require("./auth.middleware");
-var software = require("./software");
-var hardware = require("./hardware");
-var os = require("./os");
-var solutionUtils = require("./solution");
-var problemTypes = require("./problem-type-functions");
-var problemUtils = require("./problems-functions");
+var {verifySession, checkRoles} = require("../utils/auth.utils");
+var software = require("../utils/software.utils");
+var hardware = require("../utils/hardware.utils");
+var os = require("../utils/os.utils");
+var solutionUtils = require("../utils/solution.utils");
+var problemTypes = require("../utils/problem-type.utils");
+var problemUtils = require("../utils/problems.utils");
 const e = require('connect-flash');
-var specialist = require("./specialists");
+var specialist = require("../utils/specialists.utils");
 
 // route:  GET /
 // access: ALL NOT LOGGED IN
@@ -24,7 +24,11 @@ var specialist = require("./specialists");
 // and show error message.
 app.get('/', function (req, res, next) {
     if (req.session.userId) {
-        res.redirect('/myProblems');
+        if (user.session.userRole == "specialist" || user.session.userRole == "employee") {
+            res.redirect('/myProblems');
+        } else {
+            res.redirect('/dashboard');
+        }
     } else {
         res.redirect("../login");
     } 
@@ -87,19 +91,18 @@ app.get('/myProblems', checkRoles("specialist", "employee"), async function(req,
                 ORDER BY solved DESC, problems.problem_id ASC;`,  function (err, rows) {
         if (err){
             // If error occured, return an empty array.
-            res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
+            res.render('my_problems', {userName: req.session.userName,     // displays user's username.
                                             moment: moment,                         // used for date formatting.
                                             problems: [],                           // empty array of problems.
-                                            role: req.session.userRole,
-                                            currentUser: req.session.userId,
-                                            hardware: [],                  // array of hardware to display as options.
-                                            software: [],                  // array of software to display as options.
-                                            os: [],                              // array of os to display as options.    
-                                            problemTypes: []});           // used for dynamic rendering (decides which column 
-                                                                                    // should be displayed).
+                                            role: req.session.userRole,             // user role.
+                                            hardware: [],                           // empty array of hardware.
+                                            software: [],                           // empty array of software.
+                                            os: [],                                 // empty array of os.    
+                                            problemTypes: []});                     // empty array of problem types. 
+
         } else {
             // Otherwise return an array of problems..
-            res.render('problems/my_problems', {userName: req.session.userName,     // displays user's username.
+            res.render('my_problems', {userName: req.session.userName,     // displays user's username.
                                             moment: moment,                         // used for date formatting.
                                             problems: rows,                         // array of problems.
                                             role: req.session.userRole,             // used for dynamic rendering (decides which column should be displayed).
@@ -181,7 +184,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser")
             ORDER BY problems.problem_id ASC;`, function (err, rows) {
         if (err) {
         // If error occured, return an empty array.
-            res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
+            res.render('all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: [],
                                                 problemNotes:[], 
@@ -194,7 +197,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser")
                                                 currentUser: req.session.userId,
                                                 role: req.session.userRole});                      // empty array of problems.
         } else {
-            res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
+            res.render('all_problems', {userName: req.session.userName,     // displays user's username.
                                                 moment: moment,                      // used for date formatting.
                                                 problems: rows,
                                                 problemNotes: problemNotes,
@@ -210,6 +213,10 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser")
     });
 });
 
+// route:  GET /submitProblem
+// access: SPECIALISTS, EMPLOYEES
+// Navigates users of role Specialist or Employee to problem submission page.
+// Retrieves all information for the lookup tables.
 app.get("/submitProblem", checkRoles("employee", "specialist"), async function (req, res, next) {
     var allSoftware = await software.getAllSoftware();
     var allHardware = await hardware.getAllHardware();
@@ -227,7 +234,12 @@ app.get("/submitProblem", checkRoles("employee", "specialist"), async function (
 });
 
 
-app.post("/submitProblem", checkRoles("employee", "specialist"), async function (req, res, next) {
+// route:  POST /submitProblem
+// access: SPECIALISTS, EMPLOYEES
+// Creates a new problem with information inputed by the user and matches it
+// with a specialist.
+app.post("/submitProblem", checkRoles("employee"), async function (req, res, next) {
+    // Retrieves information from the submitted form.
     let problemName = req.body.problemName;
     let problemType = req.body.problemType;
     let operatingSystem = req.body.operatingSystem.length > 0 ? req.body.operatingSystem : null;
@@ -238,14 +250,16 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
     let problemDesription = req.body.problemDesription;
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
-    
-    let openedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    let asssignedSpecialist;
 
+    // Gets the date to set as open date.
+    let openedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+
+    // If there's something wrong with the form, refresh the page.
     if (problemName.length < 1 || problemType.length < 1 || (software == null && hardware == null)) {
         return res.redirect("/submitProblem");
     }
 
+    let asssignedSpecialist;
     // Get all specialist of a specific specialisation.
     let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemType, true);
 
@@ -284,24 +298,29 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
         asssignedSpecialist = allSpecialists[0].specialistId;
     }
 
+    // Create and save a new problem in the `problems` table.
     let newProblemId = await problemUtils.createProblem(problemName, problemDesription, problemType, 
         software, hardware, license,
         serialNumber, req.session.userId, asssignedSpecialist, 
         openedOn, operatingSystem);
 
+    // Get specialist's name and save the assignment in the problem notes. 
     var specialistName = await problemUtils.getEmployeeName(asssignedSpecialist);
     await solutionUtils.addComments(newProblemId.insertId, req.session.userId, "Problem assigned to " + specialistName[0].name);
 
     await problemUtils.createProblemStatus(newProblemId.insertId);
 
     if (solution.length > 0) {
+        // If employee provided a solution for this problem, set the problem as solved and closed.
         await problemUtils.updateProblemStatus(newProblemId.insertId, 3);
         await problemUtils.setProblemSolved(newProblemId.insertId, 1);
         
+        // And the solution to the database and link it with problem.
         let problemSolution = await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solution);
         await solutionUtils.linkProblemToSolution(newProblemId.insertId, problemSolution.insertId);
 
         if (solutionNotes.length > 0) {
+            // If extra notes were provided, save them as well.
             await solutionUtils.addComments(newProblemId.insertId, req.session.userId, solutionNotes);
         }
     }
@@ -310,33 +329,36 @@ app.post("/submitProblem", checkRoles("employee", "specialist"), async function 
 });
 
 
-
+// route:  GET /submitProblem/:id
+// access: SPECIALISTS, EMPLOYEES
+// Creates a new problem with information inputed by the user and matches it
+// with a specialist.
 app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
+    // Check the id provided, and if faulty, return to the dashboard.
     let problemId = req.params["problemId"];
     if (isNaN(problemId)) return res.redirect("../myProblems");
 
+    // Retreive details about the problem from the database.
     let problem = await problemUtils.getProblemById(problemId);
 
+    // If problem not found, redirect to the dashboard.
     if (problem.length < 1) {
         return res.redirect("../myProblems");
     }
 
+    // If problem has not been reported by, or assigned to this user, prohibit enter
     if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId) {
-        // Prohibit enter.
         return res.sendStatus(401);
     }
-
-    // change problem status
-    // if (problem[0].lastReviewedBy != req.session.userId && req.session.userRole == "specialist") {
-    //     await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
-    //     await problemUtils.updateProblemStatus(problemId, 2);
-    // }
     
+    // If the employee is entering the page after receiving comments from the specialist,
+    // retrieve the solution from the database.
     let problemSolution = undefined;
     if (problem[0].solved == 1) {
         problemSolution = await solutionUtils.getSolutionForProblemId(problemId);
     }
 
+    // Get other information to show in the lookup tables.
     var allSoftware = await software.getAllSoftware();
     var allHardware = await hardware.getAllHardware();
     var allOS = await os.getAllOS();
@@ -358,56 +380,82 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async
 });
 
 
+// route:  POST /submitProblem/:id
+// access: SPECIALISTS, EMPLOYEES
+// Creates a new problem with information inputed by the user
+// adds status, notes and matches it with a specialist.
 app.post("/submitProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
+    // Retrieve problem id
     let problemId = req.params["problemId"];
+
+    // Get current user and solution form details.
     let author = req.session.userId;
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
 
+    // If no solution provided, refresh the page.
     if (solution.length < 1) return res.redirect("/submitProblem/" + problemId);
     
+    // Save the solution in the database and link to the problem.
     let newSolution = await solutionUtils.addComments(problemId, author, solution);
     await solutionUtils.linkProblemToSolution(problemId, newSolution.insertId);
 
+    // If extra notes have been provided, save them as well
     if (solutionNotes.length > 0) {
         await solutionUtils.addComments(problemId, author, solutionNotes);
     }
     
+    // Update problem status to "Solution Pending"
     await problemUtils.updateProblemStatus(problemId, 3);
 
+    // If problem approved by the employee, close it
     if (req.session.userRole == "employee") {
         await problemUtils.setProblemClosed(problemId);
-    }
-    else {
+    }else {
+        // otherwise mark as potentially solved and wait for employee's approvement
         await problemUtils.setProblemSolved(problemId, 1);
     }
-
 
     return res.redirect('/myProblems');
 });
 
+// route:  GET /assignProblem/:id
+// access: SPECIALISTS
+// Assigns a specialist to a problem after accepting the problem by them.
 app.get("/assignProblem/:problemId", checkRoles("specialist"), async function (req, res, next) {
+    // Retrieve the problem id.
     let problemId = req.params["problemId"];
+    // If problem id incorrect, redirect to the dashboard.
     if (isNaN(problemId)) return res.redirect("../myProblems");
 
+    // Assign specialist to the problem and update problem status
     await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
     await problemUtils.updateProblemStatus(problemId, 2);
 
+    // Allow to show more details about the problem.
     return res.redirect("/submitProblem/" + problemId);
 });
 
 
+// route:  GET /reassignProblem/:id
+// access: SPECIALISTS, EMPLOYEES
+// Creates a new problem with information inputed by the user and matches it
+// with a specialist.
 app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
-    // TODO
+    // Retrieve the problem id.
     let problemId = req.params["problemId"];
+    // If problem id incorrect, redirect to the dashboard.
     if (isNaN(problemId)) return res.redirect("../myProblems");
 
+    // Retrieve problem details from the database.
     let problem = await problemUtils.getProblemById(problemId);
 
+    // If problem doesn't exist, redirect to the dashboard.
     if (problem.length < 1) {
         return res.redirect("../myProblems");
     }
 
+    // If problem has not been reported by, or assigned to this user, prohibit enter
     if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId) {
         // Prohibit enter.
         return res.sendStatus(401);
@@ -416,35 +464,54 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
     let asssignedSpecialist;
     let problemType = problem[0].problemTypeId;
 
+    // Get all specialist of a specific specialisation, except the current specialist.
     let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemTypeExcluding(problemType, problem[0].assignedSpecialist);
 
     if (specialistsForProblemType.length < 1) {
+        // If there's no specialist for this specialisation, find a parent
+        // of this specialisation.
         let problemParent = await problemTypes.getChildNodeID(problemType);
+
         if (problemParent.length < 1) {
+            // If there is no specialist of this specialisation, assign
+            // a random specialist.
+
             let allSpecialists = await problemUtils.getAllSpecialists();
             asssignedSpecialist = allSpecialists[0].specialistId;
         } else {
+            // If the problem type/specialisation is a children of some other
+            // specialisation, assign a specialist of this parent specialisation
+            // to this problem.
+            
             let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemTypeExcluding(problemParent[0].child_of, problem[0].assignedSpecialist);
             if (specialistsForProblemType.length < 1) {
+                // If there is no specialist of this specialisation, assign
+                // a random specialist.
+
                 let allSpecialists = await problemUtils.getAllSpecialists();
                 asssignedSpecialist = allSpecialists[0].specialistId;
     
             } else {
+                // otherwise assign found specialist
                 asssignedSpecialist = specialistsForProblemType[0].specialistId;
             }
         }
     } else {
+        // otherwise assign found specialist
         asssignedSpecialist = specialistsForProblemType[0].specialistId;
     }
 
+    // Reassign the specialist and update problem progress and status.
     await problemUtils.reassignSpecialist(problemId, asssignedSpecialist);
     await problemUtils.updateProblemStatus(problemId, 1);
     await problemUtils.setProblemSolved(problemId, 0);
 
+    // If there's been a previously provided solution for this problem, delete it.
     if (problem[0].solved) {
         await problemUtils.deleteSolution(problemId);
     }
 
+    // Note the reassignmenet and save in the database and problem notes.
     var previousSpecialistName = await problemUtils.getEmployeeName(problem[0].assignedSpecialist);
     var newSpecialistName = await problemUtils.getEmployeeName(asssignedSpecialist);
     await solutionUtils.addComments(problemId, req.session.userId, "Reassigned Specialist from " + previousSpecialistName[0].name + " to " + newSpecialistName[0].name + ".");
@@ -452,8 +519,11 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
     return res.redirect('../myProblems');
 });
 
+// route:  GET /resolveProblem/:id
+// access: SPECIALISTS, EMPLOYEES
+// Creates a new problem with information inputed by the user and matches it
+// with a specialist.
 app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
-    // TODO
     let problemId = req.params["problemId"];
     if (isNaN(problemId)) return res.redirect("../myProblems");
 
@@ -464,10 +534,8 @@ app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), asyn
     }
 
     if (problem[0].reportedBy != req.session.userId) {
-        // Prohibit enter.
         return res.sendStatus(401);
     }
-    console.log("PROBLEM ", problemId, " RESOLVED");
     await problemUtils.setProblemClosed(problemId);
 
     return res.redirect('../myProblems');

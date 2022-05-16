@@ -88,6 +88,10 @@ $(document).ready(function(){
             } else if (value === "os") {
                 $(".os-container").removeClass("filtered-row");
             }
+        } else {
+            $(".software-container").removeClass("filtered-row");
+            $(".hardware-container").removeClass("filtered-row");
+            $(".os-container").removeClass("filtered-row");
         }
     });
 

@@ -19,57 +19,87 @@
     </div>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
         <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-links">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="main-links">
-                <ul class="navbar-nav">
-                    <% if (role == 'specialist' || role == 'employee') { %>
-                        <li class="nav-item px-4"><a href="../myProblems" class="nav-link">Home</a></li>
-                    <% } else { %>
-                        <li class="nav-item px-4"><a href="../dashboard" class="nav-link">Home</a></li>
-                    <% } %>
-                    
-                    <% if (role == 'employee') { %>
-                        <li class="nav-item px-4"><a href="../submitProblem" class="nav-link">Submit a Problem</a></li>
-                    <% } %>
-                    <li class="nav-item px-4"><a href="../allProblems" class="nav-link">All Problems</a></li>
-                    <% if (role == 'admin') { %>
-                        <li class="nav-item px-4"><a href="../allEmployees" class="nav-link">All Employees</a></li>
-                        <li class="nav-item px-4">
-                            <a href="../create-employee" class="nav-link">New Employee</a>
-                        </li>
-                        <% } %>
-                        <% if (role == 'admin' || role == 'specialist') { %>
-                        <li class="nav-item px-4"><a href="/problem-type/manage-problem-types" class="nav-link">Edit problem types</a></li>
-                        <% } %>
-                        <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
-                        <li class="nav-item px-4"><a href="../viewEquipment" class="nav-link">Equipment</a></li>
-                    <% } %>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#main-links"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="main-links">
+            <ul class="navbar-nav">
+              <% if (role == 'specialist' || role == 'employee') { %>
+              <li class="nav-item px-4">
+                <a href="../myProblems" class="nav-link">Home</a>
+              </li>
+              <% } else { %>
+              <li class="nav-item px-4">
+                <a href="../dashboard" class="nav-link">Home</a>
+              </li>
+              <% } %> <% if (role == 'specialist' || role == 'employee') { %>
+              <li class="nav-item px-4">
+                <a href="../submitProblem" class="nav-link">Submit a Problem</a>
+              </li>
+              <% } %>
+              <li class="nav-item px-4">
+                <a href="../allProblems" class="nav-link">All Problems</a>
+              </li>
+              <% if (role == 'admin') { %>
+              <li class="nav-item px-4">
+                <a href="../allEmployees" class="nav-link">All Employees</a>
+              </li>
+              <li class="nav-item px-4">
+                <a href="../create-employee" class="nav-link">New Employee</a>
+              </li>
+              <% } %> <% if (role == 'admin' || role == 'specialist') { %>
+              <li class="nav-item px-4">
+                <a href="/problem-type/manage-problem-types" class="nav-link"
+                  >Edit problem types</a
+                >
+              </li>
+              <% } %> <% if (role == 'admin' || role == 'specialist' || role ==
+              'employee') { %>
+              <li class="nav-item px-4">
+                <a href="../viewEquipment" class="nav-link">Equipment</a>
+              </li>
+              <% } %>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item dropdown px-4">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="navbarDropdownMenuLink"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <!-- Render user's username -->
+                  <%= userName %>
+                </a>
+                <ul
+                  class="dropdown-menu bg-dark dropdown-menu-dark"
+                  aria-labelledby="navbarDropdownMenuLink"
+                >
+                  <li>
+                    <a class="dropdown-item" href="../settings">Settings</a>
+                  </li>
+                  <li><a class="dropdown-item" href="../logout">Logout</a></li>
                 </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown px-4">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <!-- Render user's username -->
-                            <%= userName %> 
-                        </a>
-                        <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                          <li><a class="dropdown-item" href="../settings">Settings</a></li>
-                          <li><a class="dropdown-item" href="../logout">Logout</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+              </li>
+            </ul>
+          </div>
         </div>
-    </nav>
+      </nav>
     <br><br>
     <div class="container">
         <div class="row">
-            <div class="col-6">
+            <div class="col-lg-6 col-12">
                 <label for="employee-search">Employee Id, Name, Department or Job Title:</label>
                 <input type="text" id="employee-search" name="employee-search" class="form-control">
             </div>                
-            <div class="col-2">
+            <div class="col-lg-2 col-6">
                 <label for="role-search">System Role:</label>
                 <select id="role-search" name="role-search" class="form-select">
                     <option selected value="all">System Role</option>
@@ -78,7 +108,7 @@
                     <% } %>
                 </select>
             </div>
-            <div class="col-2">
+            <div class="col-lg-2 col-6">
                 <label for="sort-employee">Sort by:</label>
                 <select id="sort-employee" name="sort-employee" class="form-select">
                     <option selected value="all">None</option>
@@ -88,7 +118,7 @@
                     <option value="max-all">All problems (high to low)</option>
                 </select>
             </div>
-            <div class="col-2">
+            <div class="col-lg-2 col-12">
                 <br>
                 <button id="search-employee-button" name="search" value="Search"
                     class="btn btn-dark w-100 px-0 px-m-3">Search</button>
@@ -212,7 +242,7 @@
                                     <tr>
                                         <td>External:</td>
                                         <td>
-                                            <% if (employees[i]["isExternal"]) { %>
+                                            <% if (employees[i]["isExternal"]) { %> <!-- Set checkbox based on the database value returned -->
                                                 <input type="checkbox" class="external" name="external" value="external" checked>
                                                 <label for="external"> External Specialist</label>
                                                 <% } else { %>
@@ -225,7 +255,7 @@
                                     <tr>
                                         <td>Available:</td>
                                         <td>
-                                        <% if (employees[i]["isAvailable"]) { %>
+                                        <% if (employees[i]["isAvailable"]) { %> <!-- Set checkbox based on the database value returned -->
                                             <input type="checkbox" class="available" name="available" value="available" checked>
                                             <label for="available"> Available</label>
                                             <% } else { %>
