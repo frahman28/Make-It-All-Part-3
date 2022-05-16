@@ -398,7 +398,8 @@ router.put("/api/:employee_id/title", checkRoles("admin"), (req, res) => {
   );
 });
 
-// TODO
+// Patch route incorporates PUT routes systematically to update each component of employee details
+// Admin
 router.patch(
   "/updateEmployee/:employeeId",
   checkRoles("admin"),
@@ -484,7 +485,6 @@ router.patch(
       employee_id: employeeID,
       role_id: roleID,
     };
-    console.log("wtf");
     // First check that a role exists with this new role id
     conn.query(
       "SELECT * FROM company_roles WHERE role_id = ?",
@@ -515,7 +515,6 @@ router.patch(
       employee_id: employeeID,
       department_id: departmentID,
     };
-    console.log("wtf2");
     conn.query(
       "SELECT * FROM departments WHERE department_id = ?",
       departmentID,
@@ -543,7 +542,6 @@ router.patch(
       employee_id: employeeID,
       title_id: titleID,
     };
-    console.log("wtf3");
     conn.query(
       "SELECT * FROM job_title WHERE title_id = ?",
       titleID,
@@ -564,7 +562,6 @@ router.patch(
         }
       }
     );
-    console.log("wtf4");
     return res.redirect("../allEmployees");
   }
 );
