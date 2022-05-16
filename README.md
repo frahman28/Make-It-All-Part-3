@@ -33,7 +33,7 @@ In the previous part, there was a desire for analytics of problems, such as how 
 
 Based on what we had learned in the previous part and with the help of our Team Managers, we created a Gantt chart to track our progress. This was made before any coding began. Because we had broken down the initial requirements into smaller subproblems that we could tackle individually, these smaller tasks were then used for the Gantt chart. The Gantt chart also accounted for the Easter break because we knew we wouldn&#39;t be working as much or meeting as much during this time, so it was unrealistic to expect continuous development during this time. This Gantt chart was also uploaded to Trello as a reference to show us where we should be based on the date. We expected to do testing and the report during active development from the start date to the end date, not as a last-minute task to be completed, as new features should be tested before being implemented.
 
-![Gantt Chart](images/gantt_chart.PNG)
+![Gantt Chart](images/gant_chart.PNG)
 
 ## Database Schema 
 
