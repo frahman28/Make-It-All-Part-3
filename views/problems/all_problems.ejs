@@ -34,8 +34,10 @@
                     <% } %>
                     <li class="nav-item px-4"><a href="../allProblems" class="nav-link">All Problems</a></li>
                     <% if (role == 'admin') { %>
-                        <li class="nav-item px-4"><a href="../allEmployees" class="nav-link">All Employees</a></li>
+                        <li class="nav-item px-4"><a href="allEmployees" class="nav-link">All Employees</a></li>
                         <li class="nav-item px-4"><a href="/problem-type/manage-problem-types" class="nav-link">Edit problem types</a></li>
+                        <li class="nav-item px-4">
+                          <a href="../create-employee" class="nav-link">New Employee</a><li>
                     <% } %>
                     <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
                         <li class="nav-item px-4"><a href="../viewEquipment" class="nav-link">Equipment</a></li>
