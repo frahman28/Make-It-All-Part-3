@@ -22,6 +22,19 @@ var getAllChildrenForPromblemType = function (parentProblemTypeId) {
   });
 };
 
+var getAssignedProblemTypes = function (specialistID) {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "SELECT problem_types.problem_type FROM problem_types LEFT JOIN employee_problem_type_relation ON employee_problem_type_relation.problem_type_id = problem_types.problem_type_id WHERE employee_problem_type_relation.employee_id = ?",
+      specialistID,
+      (err, results) => {
+        if (err) throw err;
+        resolve(results);
+      }
+    );
+  });
+};
+
 var getListOfSpecialistForProblemType = function (
   problemTypeID,
   showOnlyAvailable
@@ -133,7 +146,9 @@ var removeProblemTypeRelationForSingleSpecialist = function (
           // Otherwise the relation couldn't be deleted
           // Most likely because the specialist isn't assigned to that problem type
           // or the problem type doesn't exist
-          reject("Problem type could not be removed from specialist");
+          reject(
+            "Problem type could not be removed from specialist, either the problem type doesn't exist or you're not assigned to that problem type"
+          );
         }
       }
     );
@@ -144,7 +159,7 @@ var isAccountSpecialist = function (accountID) {
   return new Promise((resolve, reject) => {
     conn.query(
       "SELECT * FROM employees WHERE role_id = 5 AND employee_id = ?",
-      specialistID,
+      accountID,
       (err, results) => {
         if (err) throw err;
         // If the length of the results is 0 then the employee is not a specialist
@@ -270,7 +285,7 @@ async function reassignChildOf(problemTypeID, newParentID) {
   });
 }
 
-var createProblemTypeRelation = function (specialistID, problemTypeID) {
+var createProblemTypeRelation = function (toInsert) {
   return new Promise((resolve, reject) => {
     conn.query(
       `INSERT INTO employee_problem_type_relation SET ?`,
@@ -283,10 +298,11 @@ var createProblemTypeRelation = function (specialistID, problemTypeID) {
           if (err.errno !== 1062) {
             throw err;
           } else {
-            reject("Relation already exists");
+            reject("Specialist already assigned to problem type");
           }
+        } else {
+          resolve();
         }
-        resolve();
       }
     );
   });
@@ -322,4 +338,5 @@ module.exports = {
   reassignChildOf,
   createProblemTypeRelation,
   deleteProblemType,
+  getAssignedProblemTypes,
 };

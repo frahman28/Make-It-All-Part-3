@@ -38,9 +38,19 @@
         </button>
         <div class="collapse navbar-collapse" id="main-links">
           <ul class="navbar-nav">
+            <% if (role == 'specialist' || role == 'employee') { %>
+            <li class="nav-item px-4">
+              <a href="../myProblems" class="nav-link">Home</a>
+            </li>
+            <% } else { %>
             <li class="nav-item px-4">
               <a href="../dashboard" class="nav-link">Home</a>
             </li>
+            <% } %> <% if (role == 'employee') { %>
+            <li class="nav-item px-4">
+              <a href="../submitProblem" class="nav-link">Submit a Problem</a>
+            </li>
+            <% } %>
             <li class="nav-item px-4">
               <a href="../allProblems" class="nav-link">All Problems</a>
             </li>
@@ -49,12 +59,13 @@
               <a href="../allEmployees" class="nav-link">All Employees</a>
             </li>
             <li class="nav-item px-4">
+              <a href="../create-employee" class="nav-link">New Employee</a>
+            </li>
+            <% } %> <% if (role == 'admin' || role == 'specialist') { %>
+            <li class="nav-item px-4">
               <a href="/problem-type/manage-problem-types" class="nav-link"
                 >Edit problem types</a
               >
-            </li>
-            <li class="nav-item px-4">
-              <a href="../create-employee" class="nav-link">New Employee</a>
             </li>
             <% } %> <% if (role == 'admin' || role == 'specialist' || role ==
             'employee') { %>
