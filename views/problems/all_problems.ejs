@@ -59,60 +59,58 @@
     </nav>
     <br><br>
     <div class="container">
-        <form action="">
-            <div class="row">
-                <div class="col-6">
-                    <label for="problem-search">Problem Name or Description:</label>
-                    <input type="text" id="problem-search" name="problem-search" class="form-control">
-                </div>
-                <div class="col-2">
-                    <label for="startingDate">From:</label>
-                    <input type="date" name="startingDate" id="startingDateInputType" class="form-control" />
-                </div>
-                
-                <div class="col-2">
-                    <label for="specialist-search">Assigned Specialist:</label>
-                    <select id="specialist-search" name="specialist-search" class="form-select">
-                        <option selected value="">Assigned Specialist</option>
-                        <% for (var j = 0; j < uniqueSpecialists.length; j++ ) { %> <!-- Loop through types to display and automatically display selected rows type -->
-                            <option value="<%= uniqueSpecialists[j]["id"] %>">
-                                <%= uniqueSpecialists[j]["name"] %>
-                            </option>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <label for="status-list">Problem Status:</label>
-                    <select id="status-list" name="status-list" class="form-select">
-                        <option selected value="">Problem Status</option>
-                        <option>Solved</option>
-                        <option>Awaiting support</option>
-                        <option>Comments received</option>
-                        <option>Pending solution</option>
-                    </select>
-                </div>
+        <div class="row">
+            <div class="col-6">
+                <label for="problem-search">Problem Name or Description:</label>
+                <input type="text" id="problem-search" name="problem-search" class="form-control">
+            </div>                
+            <div class="col-2">
+                <label for="specialist-search">Assigned Specialist:</label>
+                <select id="specialist-search" name="specialist-search" class="form-select">
+                    <option selected value="all">Assigned Specialist</option>
+                    <% for (var j = 0; j < uniqueSpecialists.length; j++ ) { %> <!-- Loop through types to display and automatically display selected rows type -->
+                        <option value="<%= uniqueSpecialists[j]["id"] %>">
+                            <%= uniqueSpecialists[j]["name"] %>
+                        </option>
+                    <% } %>
+                </select>
             </div>
-            <div class="container mt-2">
+            <div class="col-2">
+                <label for="status-list">Problem Status:</label>
+                <select id="status-list" name="status-list" class="form-select">
+                    <option selected value="all">Problem Status</option>
+                    <option value="Solved">Solved</option>
+                    <option value="Awaiting support">Awaiting support</option>
+                    <option value="Comments received">Comments received</option>
+                    <option value="Pending solution">Pending solution</option>
+                </select>
+            </div>
+            <div class="col-2">
+                <br>
+                <button id="search-problems-button" name="search" value="Search"
+                    class="btn btn-dark w-100 px-0 px-m-3">Search</button>
+            </div>
+        </div>
+        <div class="container mt-2">
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="solved-only">
+                <label class="form-check-label" for="solved-only">Show not closed</label>
+            </div>
+
+            <% if (role == "employee" || role == "specialist") { %> 
                 <div class="form-check form-check-inline">
-                    <input type="checkbox" class="form-check-input" id="solved-only">
-                    <label class="form-check-label" for="solved-only">Show not closed</label>
+                    <input type="checkbox" class="form-check-input" id="reported-by-me">
+                    <label class="form-check-label" for="reported-by-me">Show reported by me</label>
                 </div>
+            <% } %>
 
-                <% if (role == "employee" || role == "specialist") { %> 
-                    <div class="form-check form-check-inline">
-                        <input type="checkbox" class="form-check-input" id="reported-by-me">
-                        <label class="form-check-label" for="reported-by-me">Show reported by me</label>
-                    </div>
-                <% } %>
-
-                <% if (role == "specialist") { %> 
-                    <div class="form-check form-check-inline">
-                        <input type="checkbox" class="form-check-input" id="assigned-to-me">
-                        <label class="form-check-label" for="assigned-to-me">Show assigned to me</label>
-                    </div>
-                <% } %>
-            </div>
-        </form>
+            <% if (role == "specialist") { %> 
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" id="assigned-to-me">
+                    <label class="form-check-label" for="assigned-to-me">Show assigned to me</label>
+                </div>
+            <% } %>
+        </div>
     </div>
     <br>
     <div class="container">
