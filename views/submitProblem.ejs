@@ -84,7 +84,8 @@
             <label for="problemName">Problem Name: </label>
           </div>
           <div class = "rightCol">
-            <% if (typeof problem != 'undefined'){ %>
+            <!-- If it's specialist attempting to solve the problem, or employee looking up the solution for their problem, make the inputs non editable -->
+            <% if (typeof problem != 'undefined'){ %> 
               <input type="text" id = "problemName" name="problemName"  disabled="disabled" value="<%= problem[0]['problemName'] %>">
             <% } else{ %>  
               <input type="text" id = "problemName" name="problemName" required>
@@ -97,9 +98,11 @@
             <label for="problemType">Problem Type: </label>
           </div>
           <div class = "rightCol">
+            <!-- If it's specialist attempting to solve the problem, or employee looking up the solution for their problem, make the inputs non editable -->
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id = "problemType" name="problemType" disabled="disabled" value="<%= problem[0]["problemType"] %>">
             <% } else{ %>  
+              <!-- otherwise show a dropdown of problem types -->
               <select id = "problemType" name="problemType" >
                 <% for(var i=0; i<problemTypes.length; i++) {%>
                     <option value="<%= problemTypes[i]["problem_type_id"] %>" ><%= problemTypes[i]["problem_type"] %></option>
@@ -115,11 +118,11 @@
             <label for="operatingSystem">OS: </label>
           </div>
           <div class = "rightCol">
-
+            <!-- If it's specialist attempting to solve the problem, or employee looking up the solution for their problem, make the inputs non editable -->
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="operatingSystem" name="operatingSystem" disabled="disabled" value="<%= problem[0]['OSName'] %>">
             <% } else{ %>  
-
+            <!-- otherwise show a dropdown of operating systems -->
               <select id="operatingSystem" name="operatingSystem">
                 <option value="">Select OS</option>
                 <% for(var i=0; i<os.length; i++) {%>
@@ -128,9 +131,7 @@
                   </option>
                 <% } %>
               </select>
-
            <% } %>
-            
           </div>
         </div>
 
@@ -139,11 +140,12 @@
             <label for="license">License: </label>
           </div>
           <div class = "rightCol">
+            <!-- If it's specialist attempting to solve the problem, or employee looking up the solution for their problem, make the inputs non editable -->
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="license" name="license" disabled="disabled" value="<%= problem[0]["license"] %>">
             <% } else{ %>  
+            <!-- otherwise, allow to select the license ans software -->
               <input list="licenseList" id="license" name="license" placeholder="License">
-              
            <% } %>
             
             <datalist id="licenseList">
@@ -162,7 +164,7 @@
           </div>
           <div class = "rightCol">
             
-
+            <!-- If it's specialist attempting to solve the problem, or employee looking up the solution for their problem, make the inputs non editable -->
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="software" name="software" disabled="disabled" value="<%= problem[0]["softwareName"] %>">
             <% } else{ %>  
@@ -178,9 +180,11 @@
             <label for="serialNumber">Serial Number: </label>
           </div>
           <div class = "rightCol">
+            <!-- If it's specialist attempting to solve the problem, or employee looking up the solution for their problem, make the inputs non editable -->
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id = "serialNumber" name="serialNumber" disabled="disabled" value="<%= problem[0]["serial"] %>">
             <% } else{ %>  
+              <!-- otherwise, allow to select the serial number ans hardware -->
               <input list="serialNumbers" id="serialNumber" name="serialNumber" placeholder="Serial number">
            <% } %>
             
@@ -201,6 +205,7 @@
           </div>
           <div class = "rightCol">
 
+            <!-- If it's specialist attempting to solve the problem, or employee looking up the solution for their problem, make the inputs non editable -->
             <% if (typeof problem != 'undefined'){ %>
               <input type="text" id="hardware" name="hardware" disabled="disabled" value="<%= problem[0]["hardwareName"] %>">
             <% } else{ %>  
@@ -217,6 +222,7 @@
           </div>
           <div class = "rightCol">
             
+            <!-- If it's specialist attempting to solve the problem, or employee looking up the solution for their problem, make the inputs non editable -->
             <% if (typeof problem != 'undefined'){ %>
               <textarea name="problemDesription" disabled="disabled" id="problemDesription" rows="5" cols="40"><%= problem[0]["problemDescription"] %></textarea>
             <% } else{ %>  
@@ -227,19 +233,13 @@
         </div>
         <br>
         <br>
-        
-
       </div>
-
       <br>
-
-     
-
-
   </article>
 
 
   <article class = "col-sm-6">
+<!-- If it's employee creating a problem, or assigned specialist, show the solution and lookup tables  -->
 <% if ((role == "employee") || (role == "specialist" && typeof problem == 'undefined') || (role == "specialist" && problem[0]["lastReviewedBy"] == currentUser)) { %>
 
 <div id="lookupTables">
@@ -274,6 +274,7 @@
           </div>
         </div>
 
+        <!-- If the employee received a solution, they can mark it as working or reject it -->
         <% if (typeof problemSolution != 'undefined' && role == "employee") { %> 
           <div class="row">
             <div class=" d-flex justify-content-end">
@@ -282,31 +283,16 @@
             </div>
             </div>
         <% } else if (role == "specialist") { %> 
+          <!-- A button for specialists to send over their solutions -->
           <input type="submit" name="largeSubmit" class="mb-4 mt-2 btn-lg w-100">
         <% } %> 
-      
       </div>
+
+      <!-- Allow the assigned specialist to look up notes about the problem -->
       <% if (typeof problemNotes != 'undefined' && role == "specialist") { %>    
       <div class="accordion">Look up Problem Notes</div>
       <div class="panel">
-      
         <br>
-      
-        <!-- <div class="row">
-          <div class = "leftCol">
-            <select name="Filter" id="solutionColumn">
-                <option value="0">Problem Name</option>
-                <option value="1">Solution</option>
-                <option value="2">Problem Type</option>
-              </select>
-          </div>
-          <div class = "rightCol">
-            <input list="solutions" id = "solutionSearch" name="solutionSearch" onkeyup="solutionsFunction()">
-          </div>
-        </div>
-      
-        <br> -->
-      
           <table class="table table-bordered">
           <thead>
             <tr>
@@ -341,7 +327,6 @@
 
 <div class="accordion">Look up Previous Solutions</div>
 <div class="panel">
-
   <br>
 
   <div class="row">
@@ -362,6 +347,7 @@
       </tr>
     </thead>
     <tbody>
+      <!-- Loop through all solutions and their problem details -->
       <% for(var i=0; i<solution.length; i++) {%>
         <tr class="solution-row">
             <td><%= solution[i]["problemName"] %></td>
@@ -385,7 +371,6 @@
              
             <td class="d-none"><%= solution[i]["problemDescription"] %></td>
             <td class="d-none"><%= solution[i]["osName"] %></td>
-
         </tr>
     <% } %>
     </tbody>
@@ -393,6 +378,7 @@
 <br>
 </div>
 
+<!-- Button for employees to submit their problem (and optional solutions) -->
 <% if (role == "employee" && typeof problemSolution == 'undefined') { %>
   <input type="submit" name="largeSubmit" id="submitProblemButton" class = "mb-4 mt-2 btn-lg w-100">
 <% } %>    
@@ -401,6 +387,7 @@
 </div>
 <% } %>
 
+<!-- Before assiging the problem to a specialist, show a popup allowing to accept or reject the assigned by system problem -->
 <% if ((role == "specialist" && typeof problem != 'undefined') && (role == "specialist" && problem[0]["lastReviewedBy"] != currentUser)) { %>
 <div  class="panel" style="max-height: 998px;">
   <br><br>

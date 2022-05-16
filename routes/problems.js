@@ -259,7 +259,7 @@ app.post("/submitProblem", checkRoles("employee"), async function (req, res, nex
         return res.redirect("/submitProblem");
     }
 
-    let assignedSpecialist;
+    let asssignedSpecialist;
     // Get all specialist of a specific specialisation.
     let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemType(problemType, true);
 
@@ -346,16 +346,10 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async
         return res.redirect("../myProblems");
     }
 
+    // If problem has not been reported by, or assigned to this user, prohibit enter
     if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId) {
-        // Prohibit enter.
         return res.sendStatus(401);
     }
-
-    // change problem status
-    // if (problem[0].lastReviewedBy != req.session.userId && req.session.userRole == "specialist") {
-    //     await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
-    //     await problemUtils.updateProblemStatus(problemId, 2);
-    // }
     
     // If the employee is entering the page after receiving comments from the specialist,
     // retrieve the solution from the database.
@@ -388,62 +382,80 @@ app.get("/submitProblem/:problemId", checkRoles("employee", "specialist"), async
 
 // route:  POST /submitProblem/:id
 // access: SPECIALISTS, EMPLOYEES
-// Creates a new problem with information inputed by the user and matches it
-// with a specialist.
+// Creates a new problem with information inputed by the user
+// adds status, notes and matches it with a specialist.
 app.post("/submitProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
+    // Retrieve problem id
     let problemId = req.params["problemId"];
+
+    // Get current user and solution form details.
     let author = req.session.userId;
     let solution = req.body.solution;
     let solutionNotes = req.body.solutionNotes;
 
+    // If no solution provided, refresh the page.
     if (solution.length < 1) return res.redirect("/submitProblem/" + problemId);
     
+    // Save the solution in the database and link to the problem.
     let newSolution = await solutionUtils.addComments(problemId, author, solution);
     await solutionUtils.linkProblemToSolution(problemId, newSolution.insertId);
 
+    // If extra notes have been provided, save them as well
     if (solutionNotes.length > 0) {
         await solutionUtils.addComments(problemId, author, solutionNotes);
     }
     
+    // Update problem status to "Solution Pending"
     await problemUtils.updateProblemStatus(problemId, 3);
 
+    // If problem approved by the employee, close it
     if (req.session.userRole == "employee") {
         await problemUtils.setProblemClosed(problemId);
-    }
-    else {
+    }else {
+        // otherwise mark as potentially solved and wait for employee's approvement
         await problemUtils.setProblemSolved(problemId, 1);
     }
-
 
     return res.redirect('/myProblems');
 });
 
+// route:  GET /assignProblem/:id
+// access: SPECIALISTS
+// Assigns a specialist to a problem after accepting the problem by them.
 app.get("/assignProblem/:problemId", checkRoles("specialist"), async function (req, res, next) {
+    // Retrieve the problem id.
     let problemId = req.params["problemId"];
+    // If problem id incorrect, redirect to the dashboard.
     if (isNaN(problemId)) return res.redirect("../myProblems");
 
+    // Assign specialist to the problem and update problem status
     await problemUtils.updateProblemLastViewedBy(problemId, req.session.userId);
     await problemUtils.updateProblemStatus(problemId, 2);
 
+    // Allow to show more details about the problem.
     return res.redirect("/submitProblem/" + problemId);
 });
 
 
-// route:  GET /submitProblem/:id
+// route:  GET /reassignProblem/:id
 // access: SPECIALISTS, EMPLOYEES
 // Creates a new problem with information inputed by the user and matches it
 // with a specialist.
 app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
-    // TODO
+    // Retrieve the problem id.
     let problemId = req.params["problemId"];
+    // If problem id incorrect, redirect to the dashboard.
     if (isNaN(problemId)) return res.redirect("../myProblems");
 
+    // Retrieve problem details from the database.
     let problem = await problemUtils.getProblemById(problemId);
 
+    // If problem doesn't exist, redirect to the dashboard.
     if (problem.length < 1) {
         return res.redirect("../myProblems");
     }
 
+    // If problem has not been reported by, or assigned to this user, prohibit enter
     if (problem[0].reportedBy != req.session.userId && problem[0].assignedSpecialist != req.session.userId) {
         // Prohibit enter.
         return res.sendStatus(401);
@@ -452,35 +464,54 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
     let asssignedSpecialist;
     let problemType = problem[0].problemTypeId;
 
+    // Get all specialist of a specific specialisation, except the current specialist.
     let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemTypeExcluding(problemType, problem[0].assignedSpecialist);
 
     if (specialistsForProblemType.length < 1) {
+        // If there's no specialist for this specialisation, find a parent
+        // of this specialisation.
         let problemParent = await problemTypes.getChildNodeID(problemType);
+
         if (problemParent.length < 1) {
+            // If there is no specialist of this specialisation, assign
+            // a random specialist.
+
             let allSpecialists = await problemUtils.getAllSpecialists();
             asssignedSpecialist = allSpecialists[0].specialistId;
         } else {
+            // If the problem type/specialisation is a children of some other
+            // specialisation, assign a specialist of this parent specialisation
+            // to this problem.
+            
             let specialistsForProblemType = await problemTypes.getListOfSpecialistForProblemTypeExcluding(problemParent[0].child_of, problem[0].assignedSpecialist);
             if (specialistsForProblemType.length < 1) {
+                // If there is no specialist of this specialisation, assign
+                // a random specialist.
+
                 let allSpecialists = await problemUtils.getAllSpecialists();
                 asssignedSpecialist = allSpecialists[0].specialistId;
     
             } else {
+                // otherwise assign found specialist
                 asssignedSpecialist = specialistsForProblemType[0].specialistId;
             }
         }
     } else {
+        // otherwise assign found specialist
         asssignedSpecialist = specialistsForProblemType[0].specialistId;
     }
 
+    // Reassign the specialist and update problem progress and status.
     await problemUtils.reassignSpecialist(problemId, asssignedSpecialist);
     await problemUtils.updateProblemStatus(problemId, 1);
     await problemUtils.setProblemSolved(problemId, 0);
 
+    // If there's been a previously provided solution for this problem, delete it.
     if (problem[0].solved) {
         await problemUtils.deleteSolution(problemId);
     }
 
+    // Note the reassignmenet and save in the database and problem notes.
     var previousSpecialistName = await problemUtils.getEmployeeName(problem[0].assignedSpecialist);
     var newSpecialistName = await problemUtils.getEmployeeName(asssignedSpecialist);
     await solutionUtils.addComments(problemId, req.session.userId, "Reassigned Specialist from " + previousSpecialistName[0].name + " to " + newSpecialistName[0].name + ".");
@@ -488,12 +519,11 @@ app.get("/reassignProblem/:problemId", checkRoles("employee", "specialist"), asy
     return res.redirect('../myProblems');
 });
 
-// route:  GET /submitProblem/:id
+// route:  GET /resolveProblem/:id
 // access: SPECIALISTS, EMPLOYEES
 // Creates a new problem with information inputed by the user and matches it
 // with a specialist.
 app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), async function (req, res, next) {
-    // TODO
     let problemId = req.params["problemId"];
     if (isNaN(problemId)) return res.redirect("../myProblems");
 
@@ -504,10 +534,8 @@ app.get("/resolveProblem/:problemId", checkRoles("employee", "specialist"), asyn
     }
 
     if (problem[0].reportedBy != req.session.userId) {
-        // Prohibit enter.
         return res.sendStatus(401);
     }
-    console.log("PROBLEM ", problemId, " RESOLVED");
     await problemUtils.setProblemClosed(problemId);
 
     return res.redirect('../myProblems');
