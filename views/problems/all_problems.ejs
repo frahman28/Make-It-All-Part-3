@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/employee_styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="../js/problems.js" defer></script>
+    <script src="../js/search-functions.js" defer></script>
     <title>All Problems</title>
 </head>
 
@@ -60,29 +61,58 @@
     </nav>
     <br><br>
     <div class="container">
-        <form action="">
-            <div class="row">
-                <div class="col-6">
-                    <input type="text" id="search-area" name="search-area" class="form-control">
-                </div>
-                <div class="col-4">
-                    <select id="search-by" name="search-by" class="form-select">
-                        <option selected>Search By</option>
-                        <option value="problem-id">Problem ID</option>
-                        <option value="closed-date">Closed Date</option>
-                        <option value="problem-name">Problem Name</option>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <input type="submit" id="search" name="search" value="Search"
-                        class="btn btn-dark w-100 px-0 px-m-3">
-                </div>
+        <div class="row">
+            <div class="col-6">
+                <label for="problem-search">Problem Name or Description:</label>
+                <input type="text" id="problem-search" name="problem-search" class="form-control">
+            </div>                
+            <div class="col-2">
+                <label for="specialist-search">Assigned Specialist:</label>
+                <select id="specialist-search" name="specialist-search" class="form-select">
+                    <option selected value="all">Assigned Specialist</option>
+                    <% for (var j = 0; j < uniqueSpecialists.length; j++ ) { %> <!-- Loop through types to display and automatically display selected rows type -->
+                        <option value="<%= uniqueSpecialists[j]["id"] %>">
+                            <%= uniqueSpecialists[j]["name"] %>
+                        </option>
+                    <% } %>
+                </select>
             </div>
-            <div class="col">
+            <div class="col-2">
+                <label for="status-list">Problem Status:</label>
+                <select id="status-list" name="status-list" class="form-select">
+                    <option selected value="all">Problem Status</option>
+                    <option value="Solved">Solved</option>
+                    <option value="Awaiting support">Awaiting support</option>
+                    <option value="Comments received">Comments received</option>
+                    <option value="Pending solution">Pending solution</option>
+                </select>
+            </div>
+            <div class="col-2">
+                <br>
+                <button id="search-problems-button" name="search" value="Search"
+                    class="btn btn-dark w-100 px-0 px-m-3">Search</button>
+            </div>
+        </div>
+        <div class="container mt-2">
+            <div class="form-check form-check-inline">
                 <input type="checkbox" class="form-check-input" id="solved-only">
-                <label class="form-check-label" for="solved-only">Show solved only</label>
+                <label class="form-check-label" for="solved-only">Show open</label>
             </div>
-        </form>
+
+            <% if (role == "employee" || role == "specialist") { %> 
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" id="reported-by-me">
+                    <label class="form-check-label" for="reported-by-me">Show reported by me</label>
+                </div>
+            <% } %>
+
+            <% if (role == "specialist") { %> 
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" id="assigned-to-me">
+                    <label class="form-check-label" for="assigned-to-me">Show assigned to me</label>
+                </div>
+            <% } %>
+        </div>
     </div>
     <br>
     <div class="container">
@@ -95,7 +125,7 @@
             </tr>
             <!-- Loop through all problems and render their details. -->
             <% for(var i=0; i<problems.length; i++) {%>
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                <tr class="visible-row accordion problem-row" data-bs-toggle="collapse">
                     <td>#<%= problems[i]["problemId"] %></td>
                     <td>
                         <!-- Check whether problem has resolution date, and label accordingly  -->
@@ -105,7 +135,7 @@
                             <%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %>
                         <% } %>
                     </td>
-                    <td><%= problems[i]["problemName"] %></td>
+                    <td class="problem-name"><%= problems[i]["problemName"] %></td>
                     <td>
                         <div class="status">
                             <!-- Check if problem has been closed nd if so, correct its label. -->
@@ -127,7 +157,7 @@
                         <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
                             <br>
                             <% if (role == "admin") { %> <!-- Make table for admins where they can edit the selected problem -->
-                                <form action="/allProblems/<%= problems[i]["problemId"] %>?_method=PATCH" method="POST">
+                                <form action="/allProblems/<%= problems[i]['problemId'] %>?_method=PATCH" method="POST">
                                     <table class="hidden-table table table-striped table-bordered">
                                         <tr>
                                             <th>Update</th>
@@ -142,6 +172,7 @@
                                         <tr>
                                             <td>Problem Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <td><input type="text" id="update-name" name="name" class="form-control" value="<%= problems[i]["problemName"] %>"></td>
+                                            <span class="d-none problem-name"><%= problems[i]["problemName"] %></span>
                                         </tr>
                                         <tr>
                                             <td>Problem Type:</td>
@@ -158,8 +189,15 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            <td>Reported By:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                            <td>
+                                                <%= problems[i]["reportedByName"] %>
+                                                <span class="d-none reported-by"><%= problems[i]["reportedById"] %></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td>Problem Description:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                            <td><textarea id="update-desc" name="desc" class="form-control" cols="40" rows="5"><%= problems[i]["problemDesc"] %></textarea></td>
+                                            <td><textarea id="update-desc" name="desc" class="form-control problem-description" cols="40" rows="5"><%= problems[i]["problemDesc"] %></textarea></td>
                                         </tr>
                                         <tr>
                                             <td>Solution:</td>
@@ -201,7 +239,7 @@
                                             <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                                 <% for (var j = 0; j < uniqueSpecialists.length; j++) { %>
                                                     <% if (problems[i]["specialistName"] == uniqueSpecialists[j]["name"]) {%>
-                                                        <input type="hidden" name="specialist" id="specialistHidden" value="<%= uniqueSpecialists[j]["id"] %>">
+                                                        <input type="hidden" name="specialist" class="specialistHidden" id="specialistHidden" value="<%= uniqueSpecialists[j]["id"] %>">
                                                             <strong><%= uniqueSpecialists[j]["name"] %></strong> - | <!-- Display specialist assigned with loop adding each specialty of problem type -->
                                                             <% for (var k = 0; k < specialists.length; k++) {  %>
                                                                 <% if (specialists[k]["name"] == uniqueSpecialists[j]["name"]) {%>
@@ -322,15 +360,22 @@
                                     </tr>
                                     <tr>
                                         <td>Problem Name:</td>
-                                        <td><%= problems[i]["problemName"] %></td>
+                                        <td class="problem-name"><%= problems[i]["problemName"] %></td>
                                     </tr>
                                     <tr>
                                         <td>Problem Description:</td>
                                         <% if (problems[i]["problemDescription"] != undefined) { %>
-                                            <td><%= problems[i]["problemDescription"] %></td>
+                                            <td class="problem-description"><%= problems[i]["problemDescription"] %></td>
                                         <%} else { %>
-                                            <td>N/A</td>
+                                            <td class="problem-description">N/A</td>
                                         <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Reported By:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td>
+                                            <%= problems[i]["reportedByName"] %>
+                                            <span class="d-none reported-by"><%= problems[i]["reportedById"] %></span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Opened on:</td>
@@ -395,7 +440,10 @@
                                     <tr>
                                         <td>Specialist Name:</td>
                                         <% if (problems[i]["specialistName"] != undefined) { %>
-                                            <td><%= problems[i]["specialistName"] %></td>
+                                            <td>
+                                                <%= problems[i]["specialistName"] %>
+                                                <input type="hidden" name="specialist" class="specialistHidden" value="<%= problems[i]["specialistId"] %>">
+                                            </td>
                                         <%} else { %>
                                             <td>N/A</td>
                                         <% } %>
@@ -433,6 +481,7 @@
                 </tr>
             <% } %>
         </table>
+        <span class="d-none" id="current-user-id"><%= currentUser %></span>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
