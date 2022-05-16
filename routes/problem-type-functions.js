@@ -22,6 +22,19 @@ var getAllChildrenForPromblemType = function (parentProblemTypeId) {
   });
 };
 
+var getAssignedProblemTypes = function (specialistID) {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "SELECT problem_types.problem_type FROM problem_types LEFT JOIN employee_problem_type_relation ON employee_problem_type_relation.problem_type_id = problem_types.problem_type_id WHERE employee_problem_type_relation.employee_id = ?",
+      specialistID,
+      (err, results) => {
+        if (err) throw err;
+        resolve(results);
+      }
+    );
+  });
+};
+
 var getListOfSpecialistForProblemType = function (
   problemTypeID,
   showOnlyAvailable
@@ -323,4 +336,5 @@ module.exports = {
   reassignChildOf,
   createProblemTypeRelation,
   deleteProblemType,
+  getAssignedProblemTypes,
 };

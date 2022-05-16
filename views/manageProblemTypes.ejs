@@ -91,18 +91,35 @@
       </div>
     </nav>
     <br /><br />
-    <div class="container">
-      <h3>Add new problem type to account</h3>
-      <label for="problemTypeToAdd">Select problem type</label>
-      <select name="problemTypeToAdd" id="problemTypeToAdd"></select>
-      <button id="addProblemType" class="mb-4 mt-2 btn-lg">Add</button>
-    </div>
-    <br />
-    <div class="container">
-      <h3>Delete problem type</h3>
-      <label for="problemTypeToDelete">Select problem type to delete</label>
-      <select name="problemTypeToDelete" id="problemTypeToDelete"></select>
-      <button id="deleteProblemTypeBtn" class="mb-4 mt-2 btn-lg">Delete</button>
+    <div class="row">
+      <div class="col">
+        <div class="container">
+          <h3>Add new problem type to account</h3>
+          <label for="problemTypeToAdd">Select problem type</label>
+          <select name="problemTypeToAdd" id="problemTypeToAdd"></select>
+          <button id="addProblemType" class="mb-4 mt-2 btn-lg">Add</button>
+        </div>
+        <br />
+        <div class="container">
+          <h3>Delete problem type</h3>
+          <label for="problemTypeToDelete">Select problem type to delete</label>
+          <select name="problemTypeToDelete" id="problemTypeToDelete"></select>
+          <button id="deleteProblemTypeBtn" class="mb-4 mt-2 btn-lg">
+            Delete
+          </button>
+        </div>
+      </div>
+      <div class="col">
+        <div class="container">
+          <h3>Your assigned problem types</h3>
+          <select
+            name="assignedProblemTypes"
+            id="assignedProblemTypes"
+            multiple
+            disabled
+          ></select>
+        </div>
+      </div>
     </div>
     <br />
 

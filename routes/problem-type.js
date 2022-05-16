@@ -16,6 +16,7 @@ const {
   reassignChildOf,
   createProblemTypeRelation,
   deleteProblemType,
+  getAssignedProblemTypes,
 } = require("./problem-type-functions");
 
 router.get(
@@ -56,6 +57,24 @@ router.get("/api/children", checkRoles("specialist", "admin"), (req, res) => {
   getAllChildrenForPromblemType(problemTypeID).then((results) => {
     return res.json({ success: true, data: results });
   });
+});
+
+router.get("/api/specialist/active", checkRoles("specialist"), (req, res) => {
+  // This API call will return a list of specialists who match to a problem type
+  // this can be used to find specialists who specialize in a given problem type, useful for assigning problems to
+  // the correct people
+  const specialistID = req.session.userId;
+  // Check to see if the problem type id supplied is valid and was supplied
+  if (specialistID === undefined) {
+    return res.json({ success: false, msg: "Invalid account" });
+  }
+  getAssignedProblemTypes(specialistID)
+    .then((results) => {
+      return res.json({ success: true, data: results });
+    })
+    .catch(() => {
+      return res.json({ success: false, msg: "Something went wrong" });
+    });
 });
 
 router.get("/api/specialist", verifySession, (req, res) => {

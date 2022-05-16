@@ -28,7 +28,6 @@ $(document).ready(function () {
   $("#addProblemType").click(function () {
     // Get the selected problem type for the child
     const selected = $("#problemTypeToAdd").val();
-    // Get the problem type name to make
     $.ajax({
       type: "POST",
       url: "/problem-type/api/specialist",
@@ -46,10 +45,33 @@ $(document).ready(function () {
   });
 });
 
+var popualteSelect = () => {
+  $.ajax({
+    type: "GET",
+    url: "/problem-type/api/specialist/active",
+    data: "",
+    dataType: "json",
+    success: function (response) {
+      if (response.success) {
+        problemTypes = response.data.map(
+          (problemType) => problemType.problem_type
+        );
+        htmlCode = "";
+        $("#assignedProblemTypes").html(htmlCode);
+        problemTypes.forEach((problemType) => {
+          htmlCode += "<option>" + problemType + "</option>";
+        });
+        $("#assignedProblemTypes").html(htmlCode);
+      }
+    },
+  });
+};
+
 function refreshProblemTypes() {
   // Set the problem types for every select that needs to display the problem types
   setProblemTypes("#problemTypeToAdd");
   setProblemTypes("#problemTypeToDelete");
+  popualteSelect();
 }
 
 function createSelect(parentsList, identifier) {
