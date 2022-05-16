@@ -1,6 +1,6 @@
 bthompson	: 	specialist
-chart 		: 	specialisst
-njefferson	: 	specialisst
+chart 		: 	specialist
+njefferson	: 	specialist
 tperry		:	adviser
 bigddavidson	:	adviser
 lpoole		: 	employee
