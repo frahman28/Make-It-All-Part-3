@@ -62,12 +62,12 @@
     <br><br>
     <div class="container">
         <div class="row">
-            <div class="col-6">
+            <div class="col-lg-6 col-12">
                 <label for="problem-search">Problem Name or Description:</label>
                 <input type="text" id="problem-search" name="problem-search" class="form-control">
             </div>                
-            <div class="col-2">
-                <label for="specialist-search">Assigned Specialist:</label>
+            <div class="col-6 col-lg-2">
+                <label for="specialist-search">Specialist:</label>
                 <select id="specialist-search" name="specialist-search" class="form-select">
                     <option selected value="all">Assigned Specialist</option>
                     <% for (var j = 0; j < uniqueSpecialists.length; j++ ) { %> <!-- Loop through types to display and automatically display selected rows type -->
@@ -77,7 +77,7 @@
                     <% } %>
                 </select>
             </div>
-            <div class="col-2">
+            <div class="col-lg-2 col-6">
                 <label for="status-list">Problem Status:</label>
                 <select id="status-list" name="status-list" class="form-select">
                     <option selected value="all">Problem Status</option>
@@ -87,7 +87,7 @@
                     <option value="Pending solution">Pending solution</option>
                 </select>
             </div>
-            <div class="col-2">
+            <div class="col-lg-2 col-12">
                 <br>
                 <button id="search-problems-button" name="search" value="Search"
                     class="btn btn-dark w-100 px-0 px-m-3">Search</button>
