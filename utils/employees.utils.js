@@ -1,5 +1,6 @@
 var conn = require("../dbconfig");
 
+// Get all system roles.
 var getAllRoles = function () {
   return new Promise((resolve, reject) => {
     conn.query("SELECT * FROM company_roles", (err, results) => {
@@ -9,6 +10,7 @@ var getAllRoles = function () {
   });
 };
 
+// Get all usernames.
 var getAllUsernames = function () {
   return new Promise((resolve, reject) => {
     conn.query("SELECT username FROM login_info", (err, results) => {
@@ -18,6 +20,7 @@ var getAllUsernames = function () {
   });
 };
 
+// Get all departments.
 var getAllDepartments = function () {
   return new Promise((resolve, reject) => {
     conn.query("SELECT * FROM departments", (err, results) => {
@@ -27,6 +30,7 @@ var getAllDepartments = function () {
   });
 };
 
+// Get all job titles.
 var getJobTitles = function () {
   return new Promise((resolve, reject) => {
     conn.query("SELECT * FROM job_title", (err, results) => {
@@ -36,6 +40,7 @@ var getJobTitles = function () {
   });
 };
 
+// Get all specialists and their specialistations. 
 var getSpecialistsAndSpecialisations = function () {
   return new Promise((resolve, reject) => {
     conn.query(
@@ -52,6 +57,7 @@ var getSpecialistsAndSpecialisations = function () {
   });
 };
 
+// Check whether employee Id already exists 
 var isIDInUse = function (employee_id) {
   return new Promise((resolve, reject) => {
     conn.query(
