@@ -16,14 +16,26 @@ const {
   reassignChildOf,
   createProblemTypeRelation,
   deleteProblemType,
+  getAssignedProblemTypes,
 } = require("./problem-type-functions");
 
-router.get("/manage-problem-types", checkRoles("admin"), (req, res) => {
-  res.render("editProblemTypes", {
-    userName: req.session.userName,
-    role: req.session.userRole,
-  });
-});
+router.get(
+  "/manage-problem-types",
+  checkRoles("admin", "specialist"),
+  (req, res) => {
+    if (req.session.userRole == "admin") {
+      res.render("editProblemTypes", {
+        userName: req.session.userName,
+        role: req.session.userRole,
+      });
+    } else {
+      res.render("manageProblemTypes", {
+        userName: req.session.userName,
+        role: req.session.userRole,
+      });
+    }
+  }
+);
 
 router.get("/api", verifySession, (req, res) => {
   // This API call will return the list of all problem types in the database
@@ -47,11 +59,28 @@ router.get("/api/children", checkRoles("specialist", "admin"), (req, res) => {
   });
 });
 
+router.get("/api/specialist/active", checkRoles("specialist"), (req, res) => {
+  // This API call will return a list of specialists who match to a problem type
+  // this can be used to find specialists who specialize in a given problem type, useful for assigning problems to
+  // the correct people
+  const specialistID = req.session.userId;
+  // Check to see if the problem type id supplied is valid and was supplied
+  if (specialistID === undefined) {
+    return res.json({ success: false, msg: "Invalid account" });
+  }
+  getAssignedProblemTypes(specialistID)
+    .then((results) => {
+      return res.json({ success: true, data: results });
+    })
+    .catch(() => {
+      return res.json({ success: false, msg: "Something went wrong" });
+    });
+});
+
 router.get("/api/specialist", verifySession, (req, res) => {
   // This API call will return a list of specialists who match to a problem type
   // this can be used to find specialists who specialize in a given problem type, useful for assigning problems to
   // the correct people
-  console.log(req.query);
   let { problemTypeID, showOnlyAvailable } = req.query;
   // Check to see if the problem type id supplied is valid and was supplied
   if (problemTypeID === undefined || isNaN(Number.parseInt(problemTypeID))) {
@@ -66,19 +95,20 @@ router.get("/api/specialist", verifySession, (req, res) => {
 });
 
 router.delete(
-  "/api/specialist/:specialist_id",
+  "/api/specialist",
   checkRoles("specialist", "admin"),
   (req, res) => {
     // This API will remove problem types that a user is specialised in
     // The parameter will take the specialist id
     // The body of the request will be the problem type id to remove the user from
-    const { problemTypeID } = req.body;
-    const specialistID = req.params.specialist_id;
+    let { problemTypeID } = req.body;
+    problemTypeID = Number.parseInt(problemTypeID);
+    const specialistID = req.session.userId;
     // Check the problem type id and specialist id were defined, and the problem type id supplied is not a number
     if (
       problemTypeID === undefined ||
       specialistID === undefined ||
-      !Number.isInteger(problemTypeID)
+      isNaN(problemTypeID)
     ) {
       return res.json({ success: false, msg: "Invalid request" });
     }
@@ -113,19 +143,20 @@ router.delete(
 );
 
 router.post(
-  "/api/specialist/:specialist_id",
+  "/api/specialist/",
   checkRoles("specialist", "admin"),
   (req, res) => {
     // This API will add a specialist to a problem type
     // The parameter will take the specialist id
     // The body of the request will be the problem type id to remove the user from
-    const { problemTypeID } = req.query;
-    const specialistID = req.params.specialist_id;
+    let { problemTypeID } = req.body;
+    problemTypeID = Number.parseInt(problemTypeID);
+    const specialistID = req.session.userId;
     // Check the problem type id and specialist id were defined, and the problem type id supplied is not a number
     if (
       problemTypeID === undefined ||
       specialistID === undefined ||
-      !Number.isInteger(problemTypeID)
+      isNaN(problemTypeID)
     ) {
       return res.json({ success: false, msg: "Invalid request" });
     }
@@ -142,7 +173,7 @@ router.post(
               problem_type_id: problemTypeID,
               employee_id: specialistID,
             };
-            createProblemTypeRelation(specialistID, problemTypeID)
+            createProblemTypeRelation(toInsert)
               .then(() => {
                 return res.json({
                   success: true,

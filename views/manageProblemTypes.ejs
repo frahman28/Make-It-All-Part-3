@@ -13,10 +13,9 @@
     <link rel="stylesheet" href="../css/employee_styles.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="../css/dashboard.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../js/problems.js" defer></script>
-    <script src="../js/analysis.js" defer></script>
-    <title>All Problems</title>
+    <link rel="stylesheet" href="../css/problemTypeAdmin.css" />
+    <script src="../js/problemTypeSpecialsit.js" defer></script>
+    <title>Edit problem types</title>
   </head>
 
   <body>
@@ -103,42 +102,38 @@
       </div>
     </nav>
     <br /><br />
-    <div class="container">
-      <h2>Analysis Dashboard</h2>
-      <p class="problem-number-count">Current number of problems open:</p>
+    <div class="row">
+      <div class="col">
+        <div class="container">
+          <h3>Add new problem type to account</h3>
+          <label for="problemTypeToAdd">Select problem type to add</label>
+          <select name="problemTypeToAdd" id="problemTypeToAdd"></select>
+          <button id="addProblemType" class="mb-4 mt-2 btn-lg">Add</button>
+        </div>
+        <br />
+        <div class="container">
+          <h3>Remove problem type</h3>
+          <label for="problemTypeToDelete">Select problem type to remove</label>
+          <select name="problemTypeToDelete" id="problemTypeToDelete"></select>
+          <button id="deleteProblemTypeBtn" class="mb-4 mt-2 btn-lg">
+            Remove
+          </button>
+        </div>
+      </div>
+      <div class="col">
+        <div class="container">
+          <h3>Your assigned problem types</h3>
+          <select
+            name="assignedProblemTypes"
+            id="assignedProblemTypes"
+            multiple
+            disabled
+          ></select>
+        </div>
+      </div>
     </div>
     <br />
-    <div class="container">
-      <h2>Problems closed by specialist</h2>
-      <br />
-      <canvas id="closedBySpecialist"></canvas>
-      <br />
-      <div class="changeData">
-        <label for="startingDate">Starting Date</label>
-        <input type="date" name="startingDate" id="startingDateInput" />
-        <label for="endDate">End Date</label>
-        <input type="date" name="endDate" id="endDateInput" />
-        <button id="closedBySpecialistLookup" class="mb-4 mt-2 btn-lg">
-          Lookup
-        </button>
-      </div>
-      <br />
-    </div>
-    <br />
-    <div class="container">
-      <h2>Problems closed by problem type</h2>
-      <br />
-      <canvas id="closedByType"></canvas>
-      <br />
-      <div class="changeData">
-        <label for="startingDate">Starting Date</label>
-        <input type="date" name="startingDate" id="startingDateInputType" />
-        <label for="endDate">End Date</label>
-        <input type="date" name="endDate" id="endDateInputType" />
-        <button id="closedByTypeLookup" class="mb-4 mt-2 btn-lg">Lookup</button>
-      </div>
-      <br />
-    </div>
+
     <br /><br />
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
