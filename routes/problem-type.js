@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { verifySession, checkRoles } = require("/utils/auth.utils");
+const { verifySession, checkRoles } = require("../utils/auth.utils");
 const {
   getAllProblemTypes,
   getAllChildrenForPromblemType,
@@ -16,7 +16,7 @@ const {
   reassignChildOf,
   createProblemTypeRelation,
   deleteProblemType,
-} = require("/utils/problem-type.utils");
+} = require("../utils/problem-type.utils");
 
 router.get("/manage-problem-types", checkRoles("admin"), (req, res) => {
   res.render("editProblemTypes", { userName: req.session.userName, role: req.session.userRole });

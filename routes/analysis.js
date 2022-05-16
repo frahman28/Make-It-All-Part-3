@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { verifySession, checkRoles } = require("/utils/auth.utils");
+const { verifySession, checkRoles } = require("../utils/auth.utils");
 const {
   getClosedByProblemTypeCount,
   checkTwoDates,
   getClosedBySpecialistCount,
   getNumOfOpenProblems,
-} = require("/utils/analysis.utils");
+} = require("../utils/analysis.utils");
 
 router.get(
   "/api/problem-type",

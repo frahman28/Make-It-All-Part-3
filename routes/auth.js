@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const conn   = require('../dbconfig');
 
 const {secretKey, salt}           = require("../constants");
-const {verifySession, checkRoles} = require("/utils/auth.utils");
+const {verifySession, checkRoles} = require("../utils/auth.utils");
 
 
 // route:  GET /
