@@ -79,36 +79,58 @@
   </nav>
     <br /><br />
     <div class="container">
-      <h2>Analysis Dashboard</h2>
-      <p class="problem-number-count">Current number of problems open:</p>
+      <h2 class="problem-number-count">Current # of Problems Open:</h2>
     </div>
     <br />
     <div class="container">
-      <h2>Problems closed by specialist</h2>
+      <h2>Problems Closed by Specialist</h2>
       <br />
       <canvas id="closedBySpecialist"></canvas>
       <br />
       <div class="changeData">
-        <label for="startingDate">Starting Date</label>
-        <input type="date" name="startingDate" id="startingDateInput" />
-        <label for="endDate">End Date</label>
-        <input type="date" name="endDate" id="endDateInput" />
-        <button id="closedBySpecialistLookup" class="mb-4 mt-2 btn-lg">Lookup</button>
+        <div class="row col-12">
+          <div class="col-12 col-md-4">
+            <label for="startingDate">Starting Date</label>
+        <input type="date" class="form-control" name="startingDate" id="startingDateInput" />
+          </div>
+          <div class="col-12 col-md-4">
+            <label for="endDate">End Date</label>
+            <input type="date" class="form-control" name="endDate" id="endDateInput" />
+          </div>
+          <div class="col-12 col-md-4">
+            <br>
+            <button id="closedBySpecialistLookup" class="w-100 btn-dark btn btn-secondary m-3">Lookup</button>
+          </div>
+        </div>
       </div>
       <br />
     </div>
     <br />
     <div class="container">
-      <h2>Problems closed by problem type</h2>
+      <h2>Problems Closed by Problem Type</h2>
       <br />
       <canvas id="closedByType"></canvas>
       <br />
       <div class="changeData">
-        <label for="startingDate">Starting Date</label>
-        <input type="date" name="startingDate" id="startingDateInputType" />
-        <label for="endDate">End Date</label>
-        <input type="date" name="endDate" id="endDateInputType" />
-        <button id="closedByTypeLookup" class="mb-4 mt-2 btn-lg">Lookup</button>
+        <div class="row col-12">
+          <div class="col-12 col-md-4">
+            <label for="startingDate">Starting Date</label>
+            <input type="date" class="form-control" name="startingDate" id="startingDateInputType" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="endDate">End Date</label>
+            <input type="date" class="form-control" name="endDate" id="endDateInputType" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <br>
+            <button id="closedByTypeLookup" class="w-100 btn-dark btn btn-secondary m-3">Lookup</button>
+
+          </div>
+        </div>
+        
+        
       </div>
       <br />
     </div>
