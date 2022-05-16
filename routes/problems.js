@@ -15,7 +15,7 @@ var solutionUtils = require("../utils/solution.utils");
 var problemTypes = require("../utils/problem-type.utils");
 var problemUtils = require("../utils/problems.utils");
 const e = require('connect-flash');
-var specialist = require("./specialists");
+var specialist = require("../utils/specialists.utils");
 
 // route:  GET /
 // access: ALL NOT LOGGED IN
