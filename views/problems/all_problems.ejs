@@ -133,7 +133,7 @@
                             <%= moment(problems[i]["dateClosed"]).format('Do MMMM, YYYY') %>
                         <% } %>
                     </td>
-                    <td><%= problems[i]["problemName"] %></td>
+                    <td class="problem-name"><%= problems[i]["problemName"] %></td>
                     <td>
                         <div class="status">
                             <!-- Check if problem has been closed nd if so, correct its label. -->
@@ -170,6 +170,7 @@
                                         <tr>
                                             <td>Problem Name:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
                                             <td><input type="text" id="update-name" name="name" class="form-control" value="<%= problems[i]["problemName"] %>"></td>
+                                            <span class="d-none problem-name"><%= problems[i]["problemName"] %></span>
                                         </tr>
                                         <tr>
                                             <td>Problem Type:</td>
@@ -194,7 +195,7 @@
                                         </tr>
                                         <tr>
                                             <td>Problem Description:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
-                                            <td><textarea id="update-desc" name="desc" class="form-control" cols="40" rows="5"><%= problems[i]["problemDesc"] %></textarea></td>
+                                            <td><textarea id="update-desc" name="desc" class="form-control problem-description" cols="40" rows="5"><%= problems[i]["problemDesc"] %></textarea></td>
                                         </tr>
                                         <tr>
                                             <td>Solution:</td>
