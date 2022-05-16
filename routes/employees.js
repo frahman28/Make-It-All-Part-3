@@ -422,9 +422,9 @@ router.patch(
       toUpdateWith.extension = extension;
     }
     if (external !== undefined) {
+      //Depending on if the checkbox value returns 'available' set variable to 1 or 0 if not so the database can understand the setting
       // These should be numbers supplied
       if (Number.isInteger(external)) {
-        // Check the number supplied can be a boolean interpreted by the database
         if (external == 0 || external == 1) {
           toUpdateWith.external = external;
         }
@@ -442,7 +442,8 @@ router.patch(
         toUpdateWith.external = 0;
       }
     }
-    if (available !== undefined) {
+    if (available !== undefined) { 
+      //Depending on if the checkbox value returns 'available' set variable to 1 or 0 if not so the database can understand the setting
       if (Number.isInteger(available)) {
         if (available == 0 || available == 1) {
           toUpdateWith.available = available;

@@ -216,7 +216,7 @@
                                     <tr>
                                         <td>External:</td>
                                         <td>
-                                            <% if (employees[i]["isExternal"]) { %>
+                                            <% if (employees[i]["isExternal"]) { %> <!-- Set checkbox based on the database value returned -->
                                                 <input type="checkbox" class="external" name="external" value="external" checked>
                                                 <label for="external"> External Specialist</label>
                                                 <% } else { %>
@@ -229,7 +229,7 @@
                                     <tr>
                                         <td>Available:</td>
                                         <td>
-                                        <% if (employees[i]["isAvailable"]) { %>
+                                        <% if (employees[i]["isAvailable"]) { %> <!-- Set checkbox based on the database value returned -->
                                             <input type="checkbox" class="available" name="available" value="available" checked>
                                             <label for="available"> Available</label>
                                             <% } else { %>
