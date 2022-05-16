@@ -46,6 +46,8 @@ $(document).ready(function () {
 });
 
 var popualteSelect = () => {
+  // This will populate the select box with all of the
+  // specialists currently assigned problem types
   $.ajax({
     type: "GET",
     url: "/problem-type/api/specialist/active",
@@ -53,14 +55,18 @@ var popualteSelect = () => {
     dataType: "json",
     success: function (response) {
       if (response.success) {
+        // Use map to conver to array
         problemTypes = response.data.map(
           (problemType) => problemType.problem_type
         );
+        // Reset the select box options
         htmlCode = "";
         $("#assignedProblemTypes").html(htmlCode);
+        // Create option html for each problem type
         problemTypes.forEach((problemType) => {
           htmlCode += "<option>" + problemType + "</option>";
         });
+        // Set the select box to have the new options
         $("#assignedProblemTypes").html(htmlCode);
       }
     },
