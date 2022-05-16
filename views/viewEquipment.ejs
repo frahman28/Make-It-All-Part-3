@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/employee_styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="../js/problems.js" defer></script>
+    <script src="../js/search-functions.js" defer></script>
 </head>
 
 <body>
@@ -58,34 +59,31 @@
     </nav>
     <br><br>
     <div class="container">
-        <form action="">
-            <div class="row">
-                <div class="col-6">
-                    <input type="text" id="search-area" name="search-area" class="form-control" placeholder="Search..">
-                </div>
-                <div class="col-4">
-                    <select id="search-by" name="search-by" class="form-select">
-                        <option selected>Search By</option>
-                        <option value="first">ID</option>
-                        <option value="second">Name</option>
-                        <option value="td:third">Type</option>
-                        <option value="td:fourth">Serial/License Number</option>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <input type="submit" id= "search" name="search" value="Search"
-                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Search...">
-                </div>
+        <div class="row">
+            <div class="col-6">
+                <label for="equipment-search">Equipment Name, Type, License or Serial Number:</label>
+                <input type="text" id="equipment-search" name="equipment-search" class="form-control">
+            </div>                
+            <div class="col-4">
+                <label for="equipment-type-list">Equipment Type:</label>
+                <select id="equipment-type-list" name="equipment-type-list" class="form-select">
+                    <option selected value="all">Equipment Type</option>
+                    <option value="hardware">Hardware</option>
+                    <option value="software">Software</option>
+                    <option value="os">Operating System</option>
+                </select>
             </div>
-            <div class="col">
-                <input type="checkbox" class="form-check-input" id="solved-only">
-                <label class="form-check-label" for="solved-only">Show solved only</label>
+            <div class="col-2">
+                <br>
+                <button id="search-equipment-button" name="search" value="Search"
+                    class="btn btn-dark w-100 px-0 px-m-3">Search</button>
             </div>
-        </form>
+        </div>
     </div>
+    <br>
     <% if (role == 'admin') { %>
     <br>
-    <div class="container">
+    <div class="container hardware-container">
         <div class="container">
             <table class="all-problem-table table table-bordered accordion">
                 <tbody id="view-addHardware-table">
@@ -135,7 +133,7 @@
     </div>
     <br>
     <% } %>
-    <div class="container">
+    <div class="container hardware-container">
         <table class="all-problem-table table table-bordered accordion">
             <thead>
                 <tr class="table-secondary">
@@ -148,7 +146,7 @@
             
             <tbody id="view-hardware-table">
                 <% for (var i = 0; i < hardware.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                <tr class="visible-row accordion  equipment-row" data-bs-toggle="collapse">
                     <td>#<%= hardware[i]["hardware_id"] %> </td>
                     <td><%= hardware[i]["name"] %></td>
                     <td><%= hardware[i]["type"] %></td>
@@ -206,7 +204,7 @@
     </div>
     <% if (role == 'admin') { %>
     <br>
-    <div class="container">
+    <div class="container software-container">
         <div class="container">
             <table class="all-problem-table table table-bordered accordion">
                 <tbody id="view-addSoftware-table">
@@ -256,7 +254,7 @@
     </div>
     <br>
     <% } %>
-    <div class="container">
+    <div class="container software-container">
         <table class="all-problem-table table table-bordered accordion">
             <thead>
                 <tr class="table-secondary">
@@ -268,7 +266,7 @@
             </thead>
             <tbody id="view-software-table">
                 <% for (var i = 0; i < software.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                <tr class="visible-row accordion  equipment-row" data-bs-toggle="collapse">
                     <td>#<%= software[i]["software_id"] %> </td>
                     <td><%= software[i]["name"] %></td>
                     <td><%= software[i]["type"] %></td>
@@ -325,7 +323,7 @@
     </div>
     <% if (role == 'admin') { %>
     <br>
-    <div class="container">
+    <div class="container os-container">
         <div class="container">
             <table class="all-problem-table table table-bordered accordion">
                 <tbody id="view-addOS-table">
@@ -361,7 +359,7 @@
     </div>
     <br>
     <% } %>
-    <div class="container">
+    <div class="container os-container">
         <table class="all-problem-table table table-bordered accordion">
             <thead>
                 <tr class="table-secondary">
@@ -371,7 +369,7 @@
             </thead>
             <tbody id="view-os-table">
                 <% for (var i = 0; i < os.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                <tr class="visible-row accordion  equipment-row" data-bs-toggle="collapse">
                     <td>#<%= os[i]["os_id"] %> </td>
                     <td><%= os[i]["name"] %></td>
                 </tr>
@@ -408,14 +406,6 @@
     </div>
 
         <script>
-            $(document).ready(function(){
-              $("#search-area").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $("#view-equipment-table tr").filter(function() {
-                    $(this).toggle($(this).find(("#search-by").value).text().toLowerCase().indexOf(value) > -1)                });
-              });
-            });
-            
             var checkUrl = window.location.href;
 
             if (checkUrl.substring(checkUrl.length-12, checkUrl.length) == 'CannotDelete') {

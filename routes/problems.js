@@ -138,6 +138,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser")
                 employee as reportedById,
                 employees.name as reportedByName,
                 specialists.name as specialistName,
+                specialists.employee_id as specialistId,
                 opened_on as dateOpened,
                 closed_on as dateClosed,
                 status,
@@ -190,6 +191,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser")
                                                 problemTypes: [],          // array of problem types to display as options.
                                                 specialists: [],            // array of specialists to display as options.
                                                 uniqueSpecialists: [],
+                                                currentUser: req.session.userId,
                                                 role: req.session.userRole});                      // empty array of problems.
         } else {
             res.render('problems/all_problems', {userName: req.session.userName,     // displays user's username.
@@ -201,6 +203,7 @@ app.all('/allProblems', checkRoles("specialist", "employee", "admin", "adviser")
                                                 software: allSoftware,                  // array of software to display as options.
                                                 os: allOS,                              // array of os to display as options.    
                                                 problemTypes: allProblemTypes,          // array of problem types to display as options.
+                                                currentUser: req.session.userId,
                                                 specialists: allSpecialists,            // array of specialists to display as options.
                                                 uniqueSpecialists: eachSpecialist}); // array of each unique specialist to display as options.
         }
@@ -495,9 +498,6 @@ app.post('/myProblems/:id', checkRoles("employee"), async function (req, res) {
 //Access to admin users
 app.patch('/allProblems/:id', checkRoles("admin"), async function (req, res) {
     const { name, desc, type, hardware, software, os, specialist, lastSpecialist } = req.body;
-    console.log("------------BODY------------")
-
-    console.log(req.body)
     const id = parseInt(req.params.id);
 
     if (req.body.update) {
@@ -627,8 +627,7 @@ app.patch('/allProblems/:id', checkRoles("admin"), async function (req, res) {
                                 problem_id = '${id}'`);
                 }
             }
-            console.log("------------SPECIALIST------------")
-            console.log(lastSpecialist, specialist)
+
             if (lastSpecialist) {
                 if (lastSpecialist != specialist) {
                     await problemUtils.reassignSpecialist(id, lastSpecialist);
