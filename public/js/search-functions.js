@@ -9,13 +9,10 @@ $(document).ready(function(){
     });
 
     $("#search-problems-button").click(function() {
-        // $(".problem-row").each(function() {$(this).removeClass("filtered-row");});
         var currentUser = $(document).find("#current-user-id").text();
-        // console.log("1111", rows)
 
         $(".problem-row").each(function() {
             $(this).removeClass("filtered-row");
-            console.log($(this))
 
             if($("#solved-only").is(':checked')) {
                 if(($(this).find("div.status").text().indexOf("Solved")>0)) {
@@ -49,12 +46,39 @@ $(document).ready(function(){
                 }
             }
 
-            var value = $('#status-list').val();
+            value = $('#status-list').val();
             if (value !== 'all') {
                 if(($(this).find("div.status").text().indexOf(value) < 0)) {
                     $(this).addClass("filtered-row");
                 }
             }
         });
+    });
+
+    $("#search-equipment-button").click(function() {   
+        $(".equipment-row").each(function() {
+            $(this).removeClass("filtered-row");
+            var value = $("#equipment-search").val().toLowerCase();
+
+            if ($(this).text().toLowerCase().indexOf(value) < 0) {
+                $(this).addClass("filtered-row");
+            }
+        });
+
+        var value = $('#equipment-type-list').val();
+
+        if (value !== 'all') {
+            $(".software-container").addClass("filtered-row");
+            $(".hardware-container").addClass("filtered-row");
+            $(".os-container").addClass("filtered-row");
+
+            if (value === "hardware") {
+                $(".hardware-container").removeClass("filtered-row");
+            } else if (value === "software") {
+                $(".software-container").removeClass("filtered-row");
+            } else if (value === "os") {
+                $(".os-container").removeClass("filtered-row");
+            }
+        }
     });
 });
