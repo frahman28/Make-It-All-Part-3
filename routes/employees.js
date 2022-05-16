@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const { secretKey, salt } = require("../constants");
 const { verifySession, checkRoles } = require("../utils/auth.utils");
-const employeesUtils = require("./employees-functions");
+const employeesUtils = require("../utils/employees.utils");
 
 var conn = require("../dbconfig");
 
