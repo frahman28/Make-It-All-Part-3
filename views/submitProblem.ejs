@@ -292,7 +292,7 @@
       </div>
 
       <!-- Allow the assigned specialist to look up notes about the problem -->
-      <% if (typeof problemNotes != 'undefined' && role == "specialist") { %>    
+      <% if (typeof problemNotes != 'undefined' && (role == "specialist" || role == "employee")) { %>    
       <div class="accordion">Look up Problem Notes</div>
       <div class="panel">
         <br>
