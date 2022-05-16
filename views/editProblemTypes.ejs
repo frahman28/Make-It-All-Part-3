@@ -38,25 +38,31 @@
         </button>
         <div class="collapse navbar-collapse" id="main-links">
           <ul class="navbar-nav">
-            <% if (role == 'specialist' || role == 'employee') { %>
-                <li class="nav-item px-4"><a href="../myProblems" class="nav-link">Home</a></li>
-            <% } else { %>
-                <li class="nav-item px-4"><a href="../dashboard" class="nav-link">Home</a></li>
-            <% } %>
-            
-            <% if (role == 'specialist' || role == 'employee') { %>
-                <li class="nav-item px-4"><a href="../submitProblem" class="nav-link">Submit a Problem</a></li>
-            <% } %>
-            <li class="nav-item px-4"><a href="../allProblems" class="nav-link">All Problems</a></li>
+            <li class="nav-item px-4">
+              <a href="../dashboard" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item px-4">
+              <a href="../allProblems" class="nav-link">All Problems</a>
+            </li>
             <% if (role == 'admin') { %>
-                <li class="nav-item px-4"><a href="../allEmployees" class="nav-link">All Employees</a></li>
-                <li class="nav-item px-4"><a href="/problem-type/manage-problem-types" class="nav-link">Edit problem types</a></li>
-                <li class="nav-item px-4"><a href="/edit-availability" class="nav-link">Edit availability</a></li>
+            <li class="nav-item px-4">
+              <a href="../allEmployees" class="nav-link">All Employees</a>
+            </li>
+            <li class="nav-item px-4">
+              <a href="/problem-type/manage-problem-types" class="nav-link"
+                >Edit problem types</a
+              >
+            </li>
+            <li class="nav-item px-4">
+              <a href="../create-employee" class="nav-link">New Employee</a>
+            </li>
+            <% } %> <% if (role == 'admin' || role == 'specialist' || role ==
+            'employee') { %>
+            <li class="nav-item px-4">
+              <a href="../viewEquipment" class="nav-link">Equipment</a>
+            </li>
             <% } %>
-            <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
-                <li class="nav-item px-4"><a href="../viewEquipment" class="nav-link">Equipment</a></li>
-            <% } %>
-        </ul>
+          </ul>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown px-4">
               <a
@@ -96,14 +102,14 @@
       />
       <label for="problemTypeForCreate">Select parent problem type</label>
       <select name="problemTypeForCreate" id="problemTypeForCreate"></select>
-      <button id="createProblemType" class="btn">Create</button>
+      <button id="createProblemType" class="mb-4 mt-2 btn-lg">Create</button>
     </div>
     <br />
     <div class="container">
       <h3>Delete problem type</h3>
       <label for="problemTypesForDelete">Select problem type to delete</label>
       <select name="problemTypesForDelete" id="problemTypesForDelete"></select>
-      <button id="deleteProblemTypeBtn" class="btn">Delete</button>
+      <button id="deleteProblemTypeBtn" class="mb-4 mt-2 btn-lg">Delete</button>
     </div>
     <br />
     <div class="container">

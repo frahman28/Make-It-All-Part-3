@@ -34,7 +34,6 @@
                     <% if (role == 'admin') { %>
                         <li class="nav-item px-4"><a href="../allEmployees" class="nav-link">All Employees</a></li>
                         <li class="nav-item px-4"><a href="/problem-type/manage-problem-types" class="nav-link">Edit problem types</a></li>
-                        <li class="nav-item px-4"><a href="/edit-availability" class="nav-link">Edit availability</a></li>
                     <% } %>
                     <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
                         <li class="nav-item px-4"><a href="../viewEquipment" class="nav-link">Equipment</a></li>
@@ -44,7 +43,7 @@
                     <li class="nav-item dropdown px-4">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <!-- Render user's username -->
-                            <%= userName %>
+                            <%= userName %> 
                         </a>
                         <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
                           <li><a class="dropdown-item" href="../settings">Settings</a></li>
@@ -104,15 +103,45 @@
 
                     <td>
                     <% if (role == 'specialist') { %>
-                        <% if (problems[i]["solved"] == 0) { %>
+                        <% if (problems[i]["lastReviewedBy"] != currentUser) { %>
+                            <a class="btn btn-secondary" href='submitProblem/<%= problems[i]["problemId"] %>'>Lookup</a>
+                        <% } else if (problems[i]["solved"] == 0) { %>
                             <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
                         <% } %>
                     <% } else { %>
                         <% if (problems[i]["solved"] == 1) { %>
                             <a class="btn btn-success" href='submitProblem/<%= problems[i]["problemId"] %>'>Resolve</a>
+                        <% } else { %>
+                            <a class="btn btn-secondary editNotesButton">Add Note</a>
                         <% } %>
                     <% } %>
                     </td>   
+                </tr>
+
+                <tr>
+                    <% if (role == "employee") { %> <!-- Allow employees to be able to edit their problems -->
+                    <td class="hidden-data" colspan="6">
+                        <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
+                            <br>
+                            <form action="/myProblems/<%= problems[i]['problemId'] %>" method="POST">
+                                <table class="hidden-table table table-striped table-bordered">
+                                    <tr>
+                                        <td>Problem Note:</td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <td>
+                                            <textarea id="add-note" name="problemNote" class="form-control" cols="40" rows="5"></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </table>
+                            </form>
+                            <br>
+                        </div>
+                    </td>
+                    <% } %>
                 </tr>
 
             <% } %>

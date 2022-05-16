@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/employee_styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/js/problems.js" defer></script>
+    <script src="/js/search-functions.js" defer></script>
     <title>All Employees</title>
 </head>
 
@@ -34,14 +35,22 @@
                     <% } %>
                     <li class="nav-item px-4"><a href="../allProblems" class="nav-link">All Problems</a></li>
                     <% if (role == 'admin') { %>
-                        <li class="nav-item px-4"><a href="../allEmployees" class="nav-link">All Employees</a></li>
-                        <li class="nav-item px-4"><a href="/problem-type/manage-problem-types" class="nav-link">Edit problem types</a></li>
-                        <li class="nav-item px-4"><a href="/edit-availability" class="nav-link">Edit availability</a></li>
-                    <% } %>
-                    <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
-                        <li class="nav-item px-4"><a href="../viewEquipment" class="nav-link">Equipment</a></li>
-                    <% } %>
-                </ul>
+                      <li class="nav-item px-4">
+                        <a href="allEmployees" class="nav-link">All Employees</a>
+                      </li>
+                      <li class="nav-item px-4">
+                        <a href="/problem-type/manage-problem-types" class="nav-link"
+                          >Edit problem types</a
+                        >
+                      </li>
+                      <li class="nav-item px-4">
+                        <a href="../create-employee" class="nav-link">New Employee</a>
+                      </li>
+                  <% } %>
+                  <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
+                    <li class="nav-item px-4"><a href="viewEquipment" class="nav-link">Equipment</a></li>
+                <% } %>
+                  </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown px-4">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -59,31 +68,52 @@
     </nav>
     <br><br>
     <div class="container">
-        <form action="">
-            <div class="row">
-                <div class="col-6">
-                    <input type="text" id="search-area" name="search-area" class="form-control">
-                </div>
-                <div class="col-4">
-                    <select id="search-by" name="search-by" class="form-select">
-                        <option selected>Search By</option>
-                        <option value="problem-id">Employee ID</option>
-                        <option value="closed-date">Job Title</option>
-                        <option value="problem-name">Department</option>
-                        <option value="problem-name">Ongoing Problems</option>
-                        <option value="problem-name">All Problems</option>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <input type="submit" id="search" name="search" value="Search"
-                        class="btn btn-dark w-100 px-0 px-m-3">
-                </div>
+        <div class="row">
+            <div class="col-6">
+                <label for="employee-search">Employee Id, Name, Department or Job Title:</label>
+                <input type="text" id="employee-search" name="employee-search" class="form-control">
+            </div>                
+            <div class="col-2">
+                <label for="role-search">System Role:</label>
+                <select id="role-search" name="role-search" class="form-select">
+                    <option selected value="all">System Role</option>
+                    <% for (var j = 0; j < companyRoles.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                        <option value="<%= companyRoles[j]['role_id'] %>"><%= companyRoles[j]["role"] %></option>   
+                    <% } %>
+                </select>
             </div>
-        </form>
+            <div class="col-2">
+                <label for="sort-employee">Sort by:</label>
+                <select id="sort-employee" name="sort-employee" class="form-select">
+                    <option selected value="all">None</option>
+                    <option value="min-current">Ongoing problems (low to high)</option>
+                    <option value="max-current">Ongoing problems (high to low)</option>
+                    <option value="min-all">All problems (low to high)</option>
+                    <option value="max-all">All problems (high to low)</option>
+                </select>
+            </div>
+            <div class="col-2">
+                <br>
+                <button id="search-employee-button" name="search" value="Search"
+                    class="btn btn-dark w-100 px-0 px-m-3">Search</button>
+            </div>
+        </div>
+        <div class="container mt-2">
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="available-only">
+                <label class="form-check-label" for="available-only">Show available</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="external-only">
+                <label class="form-check-label" for="external-only">Show external exmployees</label>
+            </div>
+        </div>
     </div>
     <br>
     <div class="container">
         <table class="all-problem-table table table-bordered accordion">
+            <thead>
             <tr class="table-secondary">
                 <th>Employee ID</th>
                 <th>Employee Name</th>
@@ -91,18 +121,20 @@
                 <th>Ongoing Problems</th>
                 <th>All Problems</th>
             </tr>
+            </thead>
             <!-- Loop through all problems and render their details. -->
+            <tbody>
             <% for(var i=0; i<employees.length; i++) {%>
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                <tr class="visible-row accordion employee-row" data-bs-toggle="collapse">
                     <td><%= employees[i]["employeeId"] %></td>
 
                     <td><%= employees[i]["employeeName"] %></td>
 
                     <td><%= employees[i]["jobTitle"] %></td>
 
-                    <td><%= employees[i]["ongoingProblems"] %></td>
+                    <td class="ongoing-problems"><%= employees[i]["ongoingProblems"] %></td>
 
-                    <td><%= employees[i]["allProblems"] %></td>
+                    <td class="all-problems"><%= employees[i]["allProblems"] %></td>
                 </tr>
 
                 <tr class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
@@ -110,64 +142,124 @@
                         <div class="accordion-collapse collapse" data-bs-parent=".my-problem-table">
                             <br>
                             <table class="hidden-table table table-striped table-bordered">
+                                <form action="updateEmployee/<%= employees[i]['employeeId'] %>?_method=PATCH" method="post">
                                 <tr>
                                     <td>Employee ID:</td>
                                     <td><%= employees[i]["employeeId"] %></td>
                                 </tr>
                                 <tr>
                                     <td>Employee Name:</td>
-                                    <td><%= employees[i]["employeeName"] %></td>
+                                    <td><input type="text" id="update-name" name="name" class="form-control" value="<%= employees[i]['employeeName'] %>"></td>
                                 </tr>
                                 <tr>
                                     <td>Job Title:</td>
-                                    <td><%= employees[i]["jobTitle"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>Role:</td>
-                                    <td><%= employees[i]["role"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>Department:</td>
-                                    <td><%= employees[i]["departmentName"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>Extension:</td>
-                                    <td><%= employees[i]["extension"] %></td>
-                                </tr>
-                                <tr>
-                                    <td>External:</td>
-                                    <td>
-                                        <% if (employees[i]["isExternal"]) { %>
-                                            <input type="checkbox" name="external" value="true" checked>
-                                        <% } else { %>
-                                            <input type="checkbox" name="external" value="false">
-                                        <% } %>
-                                        </td>
-                                </tr>
-                                <tr>
-                                    <td>Available:</td>
-                                    <td>
-                                    <% if (employees[i]["isAvailable"]) { %>
-                                        <input type="checkbox" name="available" value="true" checked>
-                                    <% } else { %>
-                                        <input type="checkbox" name="available" value="false">
-                                    <% } %>
+                                    <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <select id="update-title" name="title_id" class="form-select">
+                                            <% for (var j = 0; j < jobTitles.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                <% if (employees[i]["jobTitle"]== jobTitles[j]["title"] ) {%>
+                                                    <option value="<%= jobTitles[j]['title_id'] %>" selected><%= jobTitles[j]["title"] %></option>
+                                                <% } else { %>  
+                                                    <option value="<%= jobTitles[j]['title_id'] %>"><%= jobTitles[j]["title"] %></option>   
+                                                <% } %>
+                                            <% } %>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Ongoing Problems:</td>
-                                    <td><%= employees[i]["ongoingProblems"] %></td>
+                                    <td>Department:</td>
+                                    <td>
+                                        <select id="update-department" name="department_id" class="form-select">
+                                            <% for (var j = 0; j < departments.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                <% if (employees[i]["departmentName"] == departments[j]["name"] ) {%>
+                                                    <option  value="<%= departments[j]['department_id'] %>" selected><%= departments[j]["name"] %></option>
+                                                <% } else { %>  
+                                                    <option value="<%= departments[j]['department_id'] %>"><%= departments[j]["name"] %></option>   
+                                                <% } %>
+                                            <% } %>
+                                        </select>
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>All Problems:</td>
-                                    <td><%= employees[i]["allProblems"] %></td>
+                                    <td>Role:</td>
+                                    <% if (employees[i]["role"] == "Admin") { %>
+                                        <td>
+                                            Admin
+                                            <input  id="update-role" type="text" value="1" name="role_id" hidden="hidden"> <!-- Pass role id through as default for admin -->
+                                        </td> 
+                                    <% } else { %>     
+                                    <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                        <select id="update-role" name="role_id" class="form-select">
+                                            <% for (var j = 0; j < companyRoles.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                <% if (employees[i]["role"] == companyRoles[j]["role"] ) {%>
+                                                    <option value="<%= companyRoles[j]['role_id'] %>" selected><%= companyRoles[j]["role"] %></option>
+                                                <% } else { %>  
+                                                    <option value="<%= companyRoles[j]['role_id'] %>"><%= companyRoles[j]["role"] %></option>   
+                                                <% } %>
+                                            <% } %>
+                                        </select>
+                                    </td>
+                                    <% } %> 
                                 </tr>
+                                <% if (employees[i]["role"] == "Specialist" ) {%>
+                                    <tr>
+                                        <td>Specialisations:</td>
+                                        <td> <!-- Pass data through to route to display on next page, saved as value if new data is not entered -->
+                                            <% for (var j = 0; j < specialistsAndProblemTypes.length; j++ ) {%> <!-- Loop through types to display and automatically display selected rows type -->
+                                                <% if (employees[i]["employeeId"] == specialistsAndProblemTypes[j]["specialistId"] ) {%>
+                                                    <p><%= specialistsAndProblemTypes[j]["problemType"] %></p>
+                                                <% } %>
+                                            <% } %>
+                                            
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>External:</td>
+                                        <td>
+                                            <% if (employees[i]["isExternal"]) { %>
+                                                <input type="checkbox" class="external" name="external" value="external" checked>
+                                                <label for="external"> External Specialist</label>
+                                                <% } else { %>
+                                                <input type="checkbox" class="external" name="external" value="external">
+                                                <label for="external"> Internal Specialist</label>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                    <tr>
+                                        <td>Available:</td>
+                                        <td>
+                                        <% if (employees[i]["isAvailable"]) { %>
+                                            <input type="checkbox" class="available" name="available" value="available" checked>
+                                            <label for="available"> Available</label>
+                                            <% } else { %>
+                                            <input type="checkbox" class="available" name="available" value="available">
+                                            <label for="available"> Away</label>
+
+                                        <% } %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ongoing Problems:</td>
+                                        <td><%= employees[i]["ongoingProblems"] %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>All Problems:</td>
+                                        <td><%= employees[i]["allProblems"] %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submit:</td>
+                                        <td><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
+                                    </tr>
+                                </form>
                             </table>
                             <br>
                         </div>
                     </td>
                 </tr>
             <% } %>
+        </tbody>
         </table>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"

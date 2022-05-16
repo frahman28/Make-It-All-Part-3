@@ -226,6 +226,14 @@ button:hover {
 }
 
 
+input#software, input#hardware {
+  cursor: default;
+  background-color: #EFEFEF4D;
+}
+
+input#software:focus, input#hardware:focus{
+  outline: none;
+}
 
 
 

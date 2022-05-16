@@ -58,6 +58,9 @@
         </div>
     </nav>
     <br><br>
+    <section class = "container-fluid">
+    <div class = "row">
+    <article class = "col-sm-6".col-sm-6>
     <p class="text-center">Change Password</p>
     <form method="post">
         <div class="row">
@@ -81,12 +84,50 @@
             <input type="submit" id="submit" name="submit" class="btn btn-dark">
         </div>
     </form>
+</article>
+
+    <article class = "col-sm-6".col-sm-6>
+    <br><br>
+    <p class="text-center">Update Specialty</p>
+
+    <br>
+
+
+
+
+    <div class="dropdown text-center">
+      <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownSpecialistSpecialiality" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Speciality
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+        <a class="dropdown-item" href="#">Something else here</a>
+      </div>
+    </div>
+
+
+
+    <br>
+    <p class="text-center" id = "currentSpecilaity">Current Specilaity: </p>
+
+    <br>
+
+    <br>
+
+    <div class="text-center">
+                <input type="submit" id="submit" name="submit" class="btn btn-dark">
+            </div>
+
+
+    <br>
+    </article>
     <!-- Displays an error message in case of unsuccessful password change. -->
     <% if (typeof message != "undefined") { %>
-		<div class="alert alert-<%= messageType %> mt-4 col-md-6 container main-alerts" role="alert">
-			<%= message %>
-		</div>
-	<% } %>
+    <div class="alert alert-<%= messageType %> mt-4 col-md-6 container main-alerts" role="alert">
+      <%= message %>
+    </div>
+  <% } %>
     <div class="alert alert-danger mt-4 col-md-6 container inputValidation" role="alert" style="display:none"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

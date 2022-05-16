@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/employee_styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="../js/problems.js" defer></script>
+    <script src="../js/search-functions.js" defer></script>
 </head>
 
 <body>
@@ -35,21 +36,21 @@
                     <% if (role == 'admin') { %>
                         <li class="nav-item px-4"><a href="../allEmployees" class="nav-link">All Employees</a></li>
                         <li class="nav-item px-4"><a href="/problem-type/manage-problem-types" class="nav-link">Edit problem types</a></li>
-                        <li class="nav-item px-4"><a href="/edit-availability" class="nav-link">Edit availability</a></li>
+                        <li class="nav-item px-4"><a href="../create-employee" class="nav-link">New Employee</a></li>
                     <% } %>
                     <% if (role == 'admin' || role == 'specialist' || role == 'employee') { %>
                         <li class="nav-item px-4"><a href="../viewEquipment" class="nav-link">Equipment</a></li>
                     <% } %>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown  px-4">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <%= userName %>
+                    <li class="nav-item dropdown px-4">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <!-- Render user's username -->
+                            <%= userName %> 
                         </a>
                         <ul class="dropdown-menu bg-dark dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="../settings">Settings</a></li>
-                            <li><a class="dropdown-item" href="../logout">Logout</a></li>
+                          <li><a class="dropdown-item" href="../settings">Settings</a></li>
+                          <li><a class="dropdown-item" href="../logout">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -58,33 +59,81 @@
     </nav>
     <br><br>
     <div class="container">
-        <form action="">
-            <div class="row">
-                <div class="col-6">
-                    <input type="text" id="search-area" name="search-area" class="form-control" placeholder="Search..">
-                </div>
-                <div class="col-4">
-                    <select id="search-by" name="search-by" class="form-select">
-                        <option selected>Search By</option>
-                        <option value="first">ID</option>
-                        <option value="second">Name</option>
-                        <option value="td:third">Type</option>
-                        <option value="td:fourth">Serial/License Number</option>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <input type="submit" id= "search" name="search" value="Search"
-                        class="btn btn-dark w-100 px-0 px-m-3" placeholder="Search...">
-                </div>
+        <div class="row">
+            <div class="col-6">
+                <label for="equipment-search">Equipment Name, Type, License or Serial Number:</label>
+                <input type="text" id="equipment-search" name="equipment-search" class="form-control">
+            </div>                
+            <div class="col-4">
+                <label for="equipment-type-list">Equipment Type:</label>
+                <select id="equipment-type-list" name="equipment-type-list" class="form-select">
+                    <option selected value="all">Equipment Type</option>
+                    <option value="hardware">Hardware</option>
+                    <option value="software">Software</option>
+                    <option value="os">Operating System</option>
+                </select>
             </div>
-            <div class="col">
-                <input type="checkbox" class="form-check-input" id="solved-only">
-                <label class="form-check-label" for="solved-only">Show solved only</label>
+            <div class="col-2">
+                <br>
+                <button id="search-equipment-button" name="search" value="Search"
+                    class="btn btn-dark w-100 px-0 px-m-3">Search</button>
             </div>
-        </form>
+        </div>
     </div>
     <br>
-    <div class="container">
+    <% if (role == 'admin') { %>
+    <br>
+    <div class="container hardware-container">
+        <div class="container">
+            <table class="all-problem-table table table-bordered accordion">
+                <tbody id="view-addHardware-table">
+                    <tr class="visible-row accordion" data-bs-toggle="collapse">
+                        <td>Add Hardware</td>
+                    </tr> 
+                    <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                        <td class="hidden-data" colspan="4"> 
+                            <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                                <form action="/addHardware" method="POST">
+                                    <table class="hidden-table table table-striped table-bordered">
+                                        <tr>
+                                            <th>Add New</th>
+                                            <td>Enter Fields:</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Name:</td>
+                                            <td><input type="text" id="new-name" name="name" class="form-control" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Type:</td>
+                                            <td>
+                                                <select id="new-type" name="type" class="form-select">
+                                                    <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
+                                                    <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Serial Number:</td>
+                                            <td><input type="text" id="new-serial" name="serial" class="form-control" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Submit:</td>
+                                            <td><input type="submit" id= "new_hardware" name="new_hardware" value="Add"
+                                                class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Hardware"></td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                        </td>    
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    <% } %>
+    <div class="container hardware-container">
         <table class="all-problem-table table table-bordered accordion">
             <thead>
                 <tr class="table-secondary">
@@ -94,9 +143,10 @@
                     <th value = "3" >Serial Number</th>
                 </tr>
             </thead>
+            
             <tbody id="view-hardware-table">
                 <% for (var i = 0; i < hardware.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                <tr class="visible-row accordion  equipment-row" data-bs-toggle="collapse">
                     <td>#<%= hardware[i]["hardware_id"] %> </td>
                     <td><%= hardware[i]["name"] %></td>
                     <td><%= hardware[i]["type"] %></td>
@@ -137,74 +187,9 @@
                                     </tr>
                                     <tr>
                                         <td>Submit:</td>
-                                        <td><input type="submit" id= "update" name="update" value="Update"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
-                                    </tr>
-                                </table>
-                            </form>
-                            <br>
-                            <form action="deleteHardware/<%= hardware[i]["hardware_id"] %>?_method=DELETE" method="POST">
-                                <table class="hidden-table table table-striped table-bordered">
-                                    <tr>
-                                        <th>Delete #<%= hardware[i]["hardware_id"] %></th> <!-- Display id of selected row -->
-                                    </tr>
-                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
-                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
-                                        <td><input type="text" id="update-name" name="name" class="form-control" value="<%= hardware[i]["name"] %>"></td>
-                                    </tr>
-                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
-                                        <td>Type:</td>
-                                        <td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
-                                            <select id="update-type" name="type" class="form-select">
-                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%>  <!-- Loop through types and automatically set selected row's type -->
-                                                    <% if (hardwareTypes[j]["type"] == hardware[i]["type"] ) {%>
-                                                        <option selected><%= hardwareTypes[j]["type"] %></option>
-                                                    <% } else { %>  
-                                                        <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>   
-                                                    <% } %>
-                                                <% } %>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
-                                        <td>Serial Number:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
-                                        <td><input type="text" id="update-serial" name="serial" class="form-control" value="<%= hardware[i]["serial"] %>" ></td>
-                                    </tr>
-                                    <tr>
                                         <td><input type="submit" id= "delete" name="delete" value="Delete"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
-                                    </tr>
-                                </table>
-                            </form>
-                            <br>
-                            <form action="/addHardware" method="POST">
-                                <table class="hidden-table table table-striped table-bordered">
-                                    <tr>
-                                        <th>Add New</th>
-                                        <td>Enter Fields:</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Name:</td>
-                                        <td><input type="text" id="new-name" name="name" class="form-control" required></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Type:</td>
-                                        <td>
-                                            <select id="new-type" name="type" class="form-select">
-                                                <% for (var j = 0; j < hardwareTypes.length; j++ ) {%> 
-                                                <option value="<%= hardwareTypes[j]["type"] %>"><%= hardwareTypes[j]["type"] %></option>
-                                                <% } %>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Serial Number:</td>
-                                        <td><input type="text" id="new-serial" name="serial" class="form-control" required></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Submit:</td>
-                                        <td><input type="submit" id= "new_hardware" name="new_hardware" value="Add"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Hardware"></td>
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Delete"><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Update"></td>
                                     </tr>
                                 </table>
                             </form>
@@ -217,8 +202,59 @@
             </tbody>
         </table>
     </div>
+    <% if (role == 'admin') { %>
     <br>
-    <div class="container">
+    <div class="container software-container">
+        <div class="container">
+            <table class="all-problem-table table table-bordered accordion">
+                <tbody id="view-addSoftware-table">
+                    <tr class="visible-row accordion" data-bs-toggle="collapse">
+                        <td>Add Software</td>
+                    </tr> 
+                    <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                        <td class="hidden-data" colspan="4"> 
+                            <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                                <form action="/addSoftware" method="POST">
+                                    <table class="hidden-table table table-striped table-bordered">
+                                        <tr>
+                                            <th>Add New</th>
+                                            <td>Enter Fields:</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Name:</td>
+                                            <td><input type="text" id="new-name" name="name" class="form-control" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Type:</td>
+                                            <td>
+                                                <select id="new-type" name="type" class="form-select">
+                                                    <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
+                                                    <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>License Number:</td>
+                                            <td><input type="text" id="new-serial" name="license" class="form-control" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Submit:</td>
+                                            <td><input type="submit" id= "new_software" name="new_software" value="Add"
+                                                class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Software"></td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                        </td>    
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    <% } %>
+    <div class="container software-container">
         <table class="all-problem-table table table-bordered accordion">
             <thead>
                 <tr class="table-secondary">
@@ -230,7 +266,7 @@
             </thead>
             <tbody id="view-software-table">
                 <% for (var i = 0; i < software.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                <tr class="visible-row accordion  equipment-row" data-bs-toggle="collapse">
                     <td>#<%= software[i]["software_id"] %> </td>
                     <td><%= software[i]["name"] %></td>
                     <td><%= software[i]["type"] %></td>
@@ -271,78 +307,12 @@
                                     </tr>
                                     <tr>
                                         <td>Submit:</td>
-                                        <td><input type="submit" id= "update" name="update" value="Update"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
-                                    </tr>
-                                </table>
-                            </form>
-                            <br>
-                            <form action="/deleteSoftware/<%= software[i]["software_id"] %>?_method=DELETE" method="POST">
-                                <table class="hidden-table table table-striped table-bordered">
-                                    <tr>
-                                        <th>Delete #<%= software[i]["software_id"] %></th> <!-- Display id of selected row -->
-                                    </tr>
-                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
-                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
-                                        <td><input type="text" id="delete-name" name="name" class="form-control" value="<%= software[i]["name"] %>"></td>
-                                    </tr>
-                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
-                                        <td>Type:</td> 
-                                        <td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
-                                            <select id="delete-type" name="type" class="form-select">
-                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> <!-- Loop through types and automatically set selected row's type -->
-                                                    <% if (softwareTypes[j]["type"] == software[i]["type"] ) {%>
-                                                        <option selected><%= softwareTypes[j]["type"] %></option>
-                                                    <% } else { %>  
-                                                        <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>   
-                                                    <% } %>
-                                                <% } %>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
-                                        <td>License Number:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
-                                        <td><input type="text" id="delete-serial" name="license" class="form-control" value="<%= software[i]["license"] %>"></td>
-                                    </tr>
-                                    <tr>
                                         <td><input type="submit" id= "delete" name="delete" value="Delete"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Delete"><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Update"></td>
                                     </tr>
                                 </table>
                             </form>
-                            <br>
-                            <form action="/addSoftware" method="POST">
-                                <table class="hidden-table table table-striped table-bordered">
-                                    <tr>
-                                        <th>Add New</th>
-                                        <td>Enter Fields:</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Name:</td>
-                                        <td><input type="text" id="new-name" name="name" class="form-control" required></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Type:</td>
-                                        <td>
-                                            <select id="new-type" name="type" class="form-select">
-                                                <% for (var j = 0; j < softwareTypes.length; j++ ) {%> 
-                                                <option value="<%= softwareTypes[j]["type"] %>"><%= softwareTypes[j]["type"] %></option>
-                                                <% } %>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>License Number:</td>
-                                        <td><input type="text" id="new-serial" name="license" class="form-control" required></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Submit:</td>
-                                        <td><input type="submit" id= "new_software" name="new_software" value="Add"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New Software"></td>
-                                    </tr>
-                                </table>
-                            </form>
-                            <br>
                         </div>
                     </td>
                     <% } %>
@@ -351,8 +321,45 @@
             </tbody>
         </table>
     </div>
+    <% if (role == 'admin') { %>
     <br>
-    <div class="container">
+    <div class="container os-container">
+        <div class="container">
+            <table class="all-problem-table table table-bordered accordion">
+                <tbody id="view-addOS-table">
+                    <tr class="visible-row accordion" data-bs-toggle="collapse">
+                        <td>Add OS</td>
+                    </tr> 
+                    <tr class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                        <td class="hidden-data" colspan="4"> 
+                            <div class="accordion-collapse collapse" data-bs-parent=".all-problem-table">
+                                <form action="/addOS" method="POST">
+                                    <table class="hidden-table table table-striped table-bordered">
+                                        <tr>
+                                            <th>Add New</th>
+                                            <td>Enter Fields:</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Name:</td>
+                                            <td><input type="text" id="new-name" name="name" class="form-control" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Submit:</td>
+                                            <td><input type="submit" id= "new_os" name="new_os" value="Add"
+                                                class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New OS"></td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                        </td>    
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    <% } %>
+    <div class="container os-container">
         <table class="all-problem-table table table-bordered accordion">
             <thead>
                 <tr class="table-secondary">
@@ -362,7 +369,7 @@
             </thead>
             <tbody id="view-os-table">
                 <% for (var i = 0; i < os.length; i++ ) {%> <!-- Loop through hardware data to display and produce dropdown functions individually -->
-                <tr class="visible-row accordion" data-bs-toggle="collapse">
+                <tr class="visible-row accordion  equipment-row" data-bs-toggle="collapse">
                     <td>#<%= os[i]["os_id"] %> </td>
                     <td><%= os[i]["name"] %></td>
                 </tr>
@@ -383,46 +390,12 @@
                                     </tr>
                                     <tr>
                                         <td>Submit:</td>
-                                        <td><input type="submit" id= "update" name="update" value="Update"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Update"></td>
-                                    </tr>
-                                </table>
-                            </form>
-                            <br>
-                            <form action="/deleteOS/<%= os[i]["os_id"] %>?_method=DELETE" method="POST">
-                                <table class="hidden-table table table-striped table-bordered">
-                                    <tr>
-                                        <th>Delete #<%= os[i]["os_id"] %></th> <!-- Display id of selected row -->
-                                    </tr>
-                                    <tr hidden = "hidden"> <!-- Keep row hidden to not display but save value -->
-                                        <td>Name:</td> <!-- Pass data through to route to display on next page, saved as value as new data is not entered -->
-                                        <td><input type="text" id="delete-name" name="name" class="form-control" value="<%= os[i]["name"] %>"></td>
-                                    </tr>
-                                    <tr>
                                         <td><input type="submit" id= "delete" name="delete" value="Delete"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Delete"></td>
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Delete"><input type="submit" id= "update" name="update" value="Update"
+                                            class="btn btn-dark w-50 px-0 px-m-3" placeholder="Update"></td>
                                     </tr>
                                 </table>
                             </form>
-                            <br>
-                            <form action="/addOS" method="POST">
-                                <table class="hidden-table table table-striped table-bordered">
-                                    <tr>
-                                        <th>Add New</th>
-                                        <td>Enter Fields:</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Name:</td>
-                                        <td><input type="text" id="new-name" name="name" class="form-control" required></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Submit:</td>
-                                        <td><input type="submit" id= "new_os" name="new_os" value="Add"
-                                            class="btn btn-dark w-100 px-0 px-m-3" placeholder="Add New OS"></td>
-                                    </tr>
-                                </table>
-                            </form>
-                            <br>
                         </div>
                     </td>
                     <% } %>
@@ -433,16 +406,13 @@
     </div>
 
         <script>
-            $(document).ready(function(){
-              $("#search-area").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $("#view-equipment-table tr").filter(function() {
-                    $(this).toggle($(this).find(("#search-by").value).text().toLowerCase().indexOf(value) > -1)                });
-              });
-            });
+            var checkUrl = window.location.href;
 
+            if (checkUrl.substring(checkUrl.length-12, checkUrl.length) == 'CannotDelete') {
+                alert("Cannot Delete the Row");
+                window.location = '/viewEquipment';
+            }
 
-            
         </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"

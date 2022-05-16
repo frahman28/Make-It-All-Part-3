@@ -1,4 +1,5 @@
 var conn = require("../dbconfig");
+var moment  = require('moment');
 
 var getAllProblems = function () {
   // Retrieves all problems from the database, or
@@ -10,6 +11,52 @@ var getAllProblems = function () {
     });
   });
 };
+
+var getAllProblemNotes = function () {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      SELECT 
+        problem_id as problemId, 
+        name, 
+        comment 
+      FROM comments
+      JOIN employees 
+        ON author = employee_id
+      WHERE comment_id NOT IN
+        (SELECT comment_id from solutions);`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
+var setProblemSolutionDate = function (problemId, closedOn) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      UPDATE problems 
+      SET closed_on = "${closedOn}"
+      WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
+var getEmployeeName = function (employeeId) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      SELECT name
+      FROM employees 
+      WHERE employee_id = ${employeeId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+};
+
 
 var getProblemById = function (problemId) {
     // Gets information of a problem of particular id, or
@@ -135,7 +182,8 @@ var updateProblemStatus = function (problemId, statusId) {
     });
 };
 
-var setProblemClosed = function (problemId, closedOn) {
+var setProblemClosed = function (problemId) {
+  var closedOn = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
   return new Promise((resolve, reject) => {
       conn.query(`
       UPDATE problems
@@ -148,11 +196,23 @@ var setProblemClosed = function (problemId, closedOn) {
   });
 };
 
+var deleteSolution = function(problemId) {
+  return new Promise((resolve, reject) => {
+      conn.query(`
+      DELETE FROM solutions WHERE problem_id = ${problemId};`,
+      (err, results) => {
+          if (err) throw err;
+          resolve(results);
+      });
+  });
+  
+}
+
 var setProblemSolved = function (problemId, solved) {
   return new Promise((resolve, reject) => {
       conn.query(`
       UPDATE problems
-      SET solved = ${solved}, closed = 0
+      SET solved = ${solved}, closed = 0, closed_on = NULL
       WHERE problem_id = ${problemId};`,
       (err, results) => {
           if (err) throw err;
@@ -197,6 +257,7 @@ var createProblem = function (problemName,
 
   module.exports = {
     getAllProblems,
+    deleteSolution,
     getProblemById,
     deleteProblemById,
     reassignSpecialist,
@@ -206,6 +267,9 @@ var createProblem = function (problemName,
     getAllSpecialists,
     createProblemStatus,
     updateProblemStatus,
+    setProblemSolutionDate,
     updateProblemLastViewedBy,
+    getAllProblemNotes,
     createProblem,
+    getEmployeeName
   };

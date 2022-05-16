@@ -18,7 +18,11 @@ const {verifySession, checkRoles} = require("../utils/auth.utils");
 // (session exists). Otherwise logs them out.
 app.get('/', function(req, res) {
   if (req.session.userId) {
-    res.redirect("/myProblems")
+      if (req.user.userRole == "specialist" || req.user.userRole == "employee") {
+        res.redirect("/myProblems")
+      } else {
+        res.redirect("/dashboard")
+      }
   } else {
     res.redirect('/logout');
   }
