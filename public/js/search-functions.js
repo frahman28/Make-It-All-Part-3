@@ -90,4 +90,102 @@ $(document).ready(function(){
             }
         }
     });
+
+
+    // Search and filter employee register.
+    $("#search-employee-button").click(function() {  
+        var value = $("#sort-employee").val().toLowerCase();
+        
+        // Sort the table.
+        if (value == "min-current") {
+            // Sort the table based on ongoing problems (from lowest to highest).
+
+            var tbody = $('tbody');
+            const rows = tbody.find('tr.employee-row').sort(function(a, b) {
+                let ap = $(a).find('.ongoing-problems');
+                let bp = $(b).find('.ongoing-problems');
+                if (ap.length && bp.length) {
+                return ap[0].innerHTML - bp[0].innerHTML;
+                }
+            });
+            $('tbody').empty();
+            $('tbody').append(rows);
+        
+        } else if (value == "max-current") {
+            // Sort the table based on ongoing problems (from highest to lowest).
+
+            var tbody = $('tbody');
+            var rows = tbody.find('tr.employee-row').sort(function(a, b) {
+                let ap = $(a).find('.ongoing-problems');
+                let bp = $(b).find('.ongoing-problems');
+                if (ap.length && bp.length) {
+                return bp[0].innerHTML - ap[0].innerHTML;
+                }
+            });
+            $('tbody').empty();
+            $('tbody').append(rows);
+        } else if (value == "min-all") {
+            // Sort the table based on all problems (from lowest to highest).
+
+            var tbody = $('tbody');
+            var rows = tbody.find('tr.employee-row').sort(function(a, b) {
+                let ap = $(a).find('.all-problems');
+                let bp = $(b).find('.all-problems');
+                if (ap.length && bp.length) {
+                return ap[0].innerHTML - bp[0].innerHTML;
+                }
+            });
+            $('tbody').empty();
+            $('tbody').append(rows);
+        } else if (value == "max-all") {
+            // Sort the table based on all problems (from highest to lowest).
+
+            var tbody = $('tbody');
+            var rows = tbody.find('tr.employee-row').sort(function(a, b) {
+                let ap = $(a).find('.all-problems');
+                let bp = $(b).find('.all-problems');
+                if (ap.length && bp.length) {
+                return bp[0].innerHTML - ap[0].innerHTML;
+                }
+            });
+            $('tbody').empty();
+            $('tbody').append(rows);
+        } else {
+        }
+        
+
+        // Filter employee based on their details. 
+        $(".employee-row").each(function() {
+            // Reset rows, if previously filtered.
+            $(this).removeClass("filtered-row");
+
+            // Show all employees of particular system role.
+            var value = $("#employee-search").val().toLowerCase();
+            if ($(this).text().toLowerCase().indexOf(value) < 0) {
+                $(this).addClass("filtered-row");
+            }
+
+            // Show all employees of particular system role. 
+            value = $("#role-search").val();
+            if (value !== 'all') {
+                if ($(this).next().find("#update-role").val() !== value) {
+                    $(this).addClass("filtered-row");
+                }
+            }
+
+            // Show all external employees.
+            if ($("#external-only").is(':checked')) {
+                if (!$(this).next().find(".external").is(':checked')) {
+                    $(this).addClass("filtered-row")
+                }
+            }
+
+            // Show all available employees.
+            if ($("#available-only").is(':checked')) {
+                if (!$(this).next().find(".available").is(':checked')) {
+                    $(this).addClass("filtered-row")
+                }
+            }
+        });
+    });
 });
