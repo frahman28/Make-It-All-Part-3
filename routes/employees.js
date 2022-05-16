@@ -468,14 +468,8 @@ router.patch(
         [toUpdateWith, employeeID],
         function (err, results) {
           if (err) throw err;
-          // If the affected rows is greater than 0 then the employee had its information updated
-          if (results.affectedRows > 0) {
-          } else {
-            // else no employee was updated, which means the employee couldn't be found
-          }
         }
       );
-    } else {
     }
     // This api call is used for updating an employees role in the company
     // The role is located in the body
@@ -499,12 +493,8 @@ router.patch(
             [toUpdateWith2, toUpdateWith2.employee_id],
             function (err, results) {
               if (err) throw err;
-              if (results.affectedRows > 0) {
-              } else {
-              }
             }
           );
-        } else {
         }
       }
     );
@@ -526,12 +516,8 @@ router.patch(
             [toUpdateWith3, toUpdateWith3.employee_id],
             function (err, results) {
               if (err) throw err;
-              if (results.affectedRows > 0) {
-              } else {
-              }
             }
           );
-        } else {
         }
       }
     );
@@ -552,17 +538,13 @@ router.patch(
             "UPDATE job_info SET ? WHERE employee_id = ?",
             [toUpdateWith4, toUpdateWith4.employee_id],
             function (err, results) {
-              if (err) throw err;
-              if (results.affectedRows > 0) {
-              } else {
-              }
+              if (err) throw err; 
             }
           );
-        } else {
-        }
+        } 
       }
     );
-    return res.redirect("../allEmployees");
+    return res.redirect("../allEmployees"); //Return to all employees page
   }
 );
 
