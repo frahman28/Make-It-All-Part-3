@@ -33,23 +33,28 @@ In the previous part, there was a desire for analytics of problems, such as how 
 
 Based on what we had learned in the previous part and with the help of our Team Managers, we created a Gantt chart to track our progress. This was made before any coding began. Because we had broken down the initial requirements into smaller subproblems that we could tackle individually, these smaller tasks were then used for the Gantt chart. The Gantt chart also accounted for the Easter break because we knew we wouldn&#39;t be working as much or meeting as much during this time, so it was unrealistic to expect continuous development during this time. This Gantt chart was also uploaded to Trello as a reference to show us where we should be based on the date. We expected to do testing and the report during active development from the start date to the end date, not as a last-minute task to be completed, as new features should be tested before being implemented.
 
-## Database Schema ![](RackMultipart20220516-1-f0s1ce_html_5e7e7e40df5fe673.png)
+![Gantt Chart](images/gantt_chart.PNG)
+
+## Database Schema 
+
 
 To create the database, we first created a schema, which made it much easier to make changes and check for problems because it was much easier to visualise in the chart than as a physical database. Working as a team was extremely beneficial in this situation. After the original schema was created, it was proposed to other members of the team, with feedback coming in about possible changes to make that would improve database efficiency and better database creation practises. One proposed change was to make the foreign keys integers rather than varchar, resulting in the creation of additional tables for relationships.
 
 This is the very first schema that was developed:
 
-## ![](RackMultipart20220516-1-f0s1ce_html_23055f232c82021d.png)
+![Schema 1](images/schema1.PNG)
 
-And the final schema that was made, this is the one the database is based on: ![](RackMultipart20220516-1-f0s1ce_html_21ca2afb9d6e7f31.png)
+And the final schema that was made, this is the one the database is based on:
+
+![Schema 2](images/schema2.PNG)
 
 ## Wireframes Developed
 
 As recommended by our Team Managers, we created wireframes as a mock-up of how we expect the website to look. This included some of the features that the backend developers would need to create for, as well as a good idea of what the frontend designers should be designing for. Some of the wireframes we created are shown below.
 
-![](RackMultipart20220516-1-f0s1ce_html_7324e8524d74a29.png)
+![Mockup 1](images/mockup1.PNG)
 
-![](RackMultipart20220516-1-f0s1ce_html_8ea016a0a23b1eab.png)
+![Mockup 2](images/mockup2.PNG)
 
 ## Use of Trello to Focus on Tasks
 
