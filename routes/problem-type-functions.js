@@ -39,7 +39,7 @@ var getListOfSpecialistForProblemType = function (
     FROM employees 
     LEFT JOIN employee_problem_type_relation ON employee_problem_type_relation.employee_id = employees.employee_id
     LEFT JOIN problems ON problems.assigned_to = employees.employee_id
-    WHERE employees.role_id = 5 AND employee_problem_type_relation.problem_type_id = ${problemTypeID} 
+    WHERE employees.role_id = 5 AND employees.available = 1 AND employee_problem_type_relation.problem_type_id = ${problemTypeID} 
     ${availableQuery}
     GROUP BY problems.assigned_to DESC;`;
     conn.query(sqlQuery, problemTypeID, (err, results) => {
